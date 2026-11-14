@@ -423,4 +423,278 @@
 
   <main class="max-w-3xl mx-auto p-4 space-y-6">
     <div class="grid grid-cols-4 bg-white rounded-xl shadow p-1 gap-1 text-center">
-      <button onclick="cambiarTab('corrales')" id="btnTabCorrales" class="py-2 font-bold text-xs rounded-lg bg-emerald-
+      <button onclick="cambiarTab('corrales')" id="btnTabCorrales" class="py-2 font-bold text-xs rounded-lg bg-emerald-600 text-white transition">Lotes / Stock</button>
+      <button onclick="cambiarTab('fletes')" id="btnTabFletes" class="py-2 font-bold text-xs rounded-lg text-slate-600 transition">Fletes</button>
+      <button onclick="cambiarTab('tareas')" id="btnTabTareas" class="py-2 font-bold text-xs rounded-lg text-slate-600 transition">Tablero</button>
+      <button onclick="cambiarTab('historial')" id="btnTabHistorial" class="py-2 font-bold text-xs rounded-lg text-slate-600 transition">Historial</button>
+    </div>
+
+    <section class="grid grid-cols-4 gap-2">
+      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-emerald-600">
+        <p class="text-[9px] font-bold text-slate-400 uppercase">Cabezas</p>
+        <p id="statTotalVacas" class="text-xl font-black text-slate-800">0</p>
+      </div>
+      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-blue-600">
+        <p class="text-[9px] font-bold text-slate-400 uppercase">Lotes</p>
+        <p id="statTotalCorrales" class="text-xl font-black text-slate-800">0</p>
+      </div>
+      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-amber-500">
+        <p class="text-[9px] font-bold text-slate-400 uppercase">Fletes</p>
+        <p id="statTotalFletes" class="text-xl font-black text-slate-800">0</p>
+      </div>
+      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-indigo-500">
+        <p class="text-[9px] font-bold text-slate-400 uppercase">Tareas</p>
+        <p id="statTotalTareas" class="text-xl font-black text-slate-800">0</p>
+      </div>
+    </section>
+
+    <!-- Sección Corrales -->
+    <div id="seccionCorrales" class="space-y-4">
+      <div class="flex justify-between items-center">
+        <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> Operaciones de Hacienda y Lotes</h2>
+        <button onclick="toggleModal('modalNuevoCorral', true)" class="bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow"><i class="fa-solid fa-plus"></i> Nuevo Lote</button>
+      </div>
+      <div class="grid grid-cols-3 gap-2">
+        <button onclick="abrirModal('modalIngresar')" class="bg-emerald-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-plus text-xl"></i><span class="text-xs">INGRESAR</span></button>
+        <button onclick="abrirModal('modalEgresar')" class="bg-rose-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-minus text-xl"></i><span class="text-xs">EGRESAR</span></button>
+        <button onclick="abrirModal('modalTraslado')" class="bg-blue-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-arrow-right-arrow-left text-xl"></i><span class="text-xs">TRASLADAR</span></button>
+      </div>
+      <div id="listaCorrales" class="space-y-3"></div>
+    </div>
+
+    <!-- Sección Fletes -->
+    <div id="seccionFletes" class="space-y-4 hidden">
+      <div class="flex justify-between items-center">
+        <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-truck-moving"></i> Registro de Transportes</h2>
+        <button onclick="toggleModal('modalFlete', true)" class="bg-blue-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow">+ Nuevo Flete</button>
+      </div>
+      <div class="bg-blue-50 border border-blue-200 p-3 rounded-xl flex justify-between items-center text-xs">
+        <div>Total Gastado: <strong id="fletesTotalGastado" class="text-blue-900">$0</strong></div>
+        <div>Pendiente: <strong id="fletesTotalPendiente" class="text-amber-700">$0</strong></div>
+      </div>
+      <div id="listaFletes" class="space-y-3"></div>
+    </div>
+
+    <!-- Sección Tareas -->
+    <div id="seccionTareas" class="space-y-4 hidden">
+      <div class="flex justify-between items-center">
+        <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-clipboard-list"></i> Tablero de Labores</h2>
+        <div class="flex gap-1">
+          <button onclick="toggleModal('modalArchivadas', true)" class="bg-slate-700 text-white text-xs px-2.5 py-2 rounded-lg font-bold">Archivadas (<span id="countArchivadasBtn">0</span>)</button>
+          <button onclick="archivarCompletadas()" class="bg-slate-200 text-slate-700 text-xs px-2.5 py-2 rounded-lg font-bold">Archivar</button>
+          <button onclick="toggleModal('modalNuevaTarea', true)" class="bg-indigo-600 text-white text-xs px-3 py-2 rounded-lg font-bold">+ Nueva</button>
+        </div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div class="bg-slate-200/70 p-3 rounded-xl space-y-2">
+          <div class="flex justify-between font-bold text-xs"><span>Tomadas</span><span id="countTomado" class="bg-slate-300 px-2 py-0.5 rounded-full">0</span></div>
+          <div id="colTomado" class="space-y-2 min-h-[120px]"></div>
+        </div>
+        <div class="bg-amber-50 p-3 rounded-xl space-y-2 border border-amber-200">
+          <div class="flex justify-between font-bold text-xs text-amber-800"><span>En Ejecución</span><span id="countEjecucion" class="bg-amber-200 px-2 py-0.5 rounded-full">0</span></div>
+          <div id="colEjecucion" class="space-y-2 min-h-[120px]"></div>
+        </div>
+        <div class="bg-emerald-50 p-3 rounded-xl space-y-2 border border-emerald-200">
+          <div class="flex justify-between font-bold text-xs text-emerald-800"><span>Completadas</span><span id="countCompletado" class="bg-emerald-200 px-2 py-0.5 rounded-full">0</span></div>
+          <div id="colCompletado" class="space-y-2 min-h-[120px]"></div>
+        </div>
+      </div>
+      <div class="bg-white p-4 rounded-xl shadow space-y-3 mt-6">
+        <h3 class="text-sm font-bold text-slate-700"><i class="fa-solid fa-note-sticky text-amber-500"></i> Notas Rápidas</h3>
+        <div class="flex gap-2">
+          <input type="text" id="notaRapidaInput" placeholder="Anotación..." class="w-full border rounded-lg p-2 text-sm outline-none">
+          <button onclick="guardarNotaRapida()" class="bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-bold">Anotar</button>
+        </div>
+        <div id="listaNotasRapidas" class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2"></div>
+      </div>
+    </div>
+
+    <!-- Sección Historial -->
+    <div id="seccionHistorial" class="space-y-4 hidden">
+      <div class="flex justify-between items-center">
+        <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Historial</h2>
+        <button onclick="toggleModal('modalReset', true)" class="bg-rose-100 text-rose-700 text-xs px-3 py-1.5 rounded-lg font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Reiniciar Base</button>
+      </div>
+      <div id="listaHistorial" class="bg-white rounded-xl shadow divide-y divide-slate-100 max-h-96 overflow-y-auto"></div>
+    </div>
+  </main>
+
+  <!-- Modales -->
+  <div id="modalNuevoCorral" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+      <h3 class="text-lg font-bold">Agregar Lote</h3>
+      <input type="text" id="nombreCorralInput" placeholder="Nombre (Ej: Lote 2)" class="w-full border rounded-lg p-3 outline-none">
+      <input type="text" id="obsCorralInput" placeholder="Observación" class="w-full border rounded-lg p-3 outline-none">
+      <select id="colorCorralInput" class="w-full border rounded-lg p-3 bg-white">
+        <option value="emerald">Verde</option><option value="blue">Azul</option><option value="amber">Ámbar</option><option value="rose">Rojo</option>
+      </select>
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="toggleModal('modalNuevoCorral', false)" class="px-4 py-2 text-slate-600">Cancelar</button>
+        <button onclick="crearCorral()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg font-bold">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalEditarCorral" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+      <h3 class="text-lg font-bold">Editar Lote</h3>
+      <input type="hidden" id="editCorralIdInput">
+      <input type="text" id="editNombreCorralInput" class="w-full border rounded-lg p-3 outline-none">
+      <input type="text" id="editObsCorralInput" class="w-full border rounded-lg p-3 outline-none">
+      <select id="editColorCorralInput" class="w-full border rounded-lg p-3 bg-white">
+        <option value="emerald">Verde</option><option value="blue">Azul</option><option value="amber">Ámbar</option><option value="rose">Rojo</option>
+      </select>
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="toggleModal('modalEditarCorral', false)" class="px-4 py-2 text-slate-600">Cancelar</button>
+        <button onclick="guardarEdicionCorral()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg font-bold">Actualizar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalIngresar" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
+      <h3 class="text-lg font-bold text-emerald-700">Ingresar Animales</h3>
+      <select id="ingCorralSelect" class="w-full border rounded-lg p-3 bg-white text-sm"></select>
+      <input type="number" id="ingCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-lg p-3 text-sm">
+      <select id="ingMotivoSelect" class="w-full border rounded-lg p-3 bg-white text-sm"><option value="Compra">Compra</option><option value="Nacimiento">Nacimiento</option><option value="Ajuste (+)">Ajuste (+)</option></select>
+      <input type="text" id="ingUsuarioInput" placeholder="Registra (Opcional)" class="w-full border rounded-lg p-3 text-sm">
+      <input type="text" id="ingNotasInput" placeholder="Notas" class="w-full border rounded-lg p-3 text-sm">
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="toggleModal('modalIngresar', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
+        <button onclick="ejecutarIngreso()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalEgresar" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
+      <h3 class="text-lg font-bold text-rose-700">Egresar Animales</h3>
+      <select id="egCorralSelect" class="w-full border rounded-lg p-3 bg-white text-sm"></select>
+      <input type="number" id="egCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-lg p-3 text-sm">
+      <select id="egMotivoSelect" class="w-full border rounded-lg p-3 bg-white text-sm"><option value="Venta">Venta</option><option value="Muerte">Muerte</option><option value="Ajuste (-)">Ajuste (-)</option></select>
+      <input type="text" id="egUsuarioInput" placeholder="Registra" class="w-full border rounded-lg p-3 text-sm">
+      <input type="text" id="egNotasInput" placeholder="Notas" class="w-full border rounded-lg p-3 text-sm">
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="toggleModal('modalEgresar', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
+        <button onclick="ejecutarEgreso()" class="bg-rose-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalTraslado" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
+      <h3 class="text-lg font-bold text-blue-700">Traslado</h3>
+      <label class="text-xs">Origen:</label><select id="trOrigenSelect" class="w-full border rounded-lg p-2.5 bg-white text-sm"></select>
+      <label class="text-xs">Destino:</label><select id="trDestinoSelect" class="w-full border rounded-lg p-2.5 bg-white text-sm"></select>
+      <input type="number" id="trCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-lg p-3 text-sm">
+      <input type="text" id="trUsuarioInput" placeholder="Registra" class="w-full border rounded-lg p-3 text-sm">
+      <input type="text" id="trNotasInput" placeholder="Notas" class="w-full border rounded-lg p-3 text-sm">
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="toggleModal('modalTraslado', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
+        <button onclick="ejecutarTraslado()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalFlete" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
+      <h3 class="text-lg font-bold">Registrar Flete</h3>
+      <input type="text" id="fleteTransportista" placeholder="Transportista" class="w-full border rounded-lg p-3 text-sm">
+      <div class="grid grid-cols-2 gap-2">
+        <input type="text" id="fleteChofer" placeholder="Chofer" class="w-full border rounded-lg p-2.5 text-sm">
+        <input type="text" id="fleteGuia" placeholder="Guía DTE" class="w-full border rounded-lg p-2.5 text-sm">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <input type="number" id="fleteCantidad" placeholder="Cabezas" class="w-full border rounded-lg p-2.5 text-sm">
+        <input type="number" id="fleteCosto" placeholder="Costo ($)" class="w-full border rounded-lg p-2.5 text-sm">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <input type="text" id="fleteDestino" placeholder="Destino" class="w-full border rounded-lg p-2.5 text-sm">
+        <select id="fleteEstadoPago" class="w-full border rounded-lg p-2.5 text-sm bg-white"><option value="Pendiente">Pendiente</option><option value="Pagado">Pagado</option></select>
+      </div>
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="toggleModal('modalFlete', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
+        <button onclick="guardarFlete()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalNuevaTarea" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
+      <h3 class="text-lg font-bold text-indigo-700">Nueva Tarea</h3>
+      <input type="text" id="tareaTituloInput" placeholder="¿Qué hay que hacer?" class="w-full border rounded-lg p-3 text-sm">
+      <input type="text" id="tareaObsInput" placeholder="Observaciones" class="w-full border rounded-lg p-3 text-sm">
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="toggleModal('modalNuevaTarea', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
+        <button onclick="guardarTarea()" class="bg-indigo-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalArchivadas" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4 max-h-[80vh] flex flex-col">
+      <h3 class="text-lg font-bold border-b pb-2">Tareas Archivadas</h3>
+      <div id="listaTareasArchivadas" class="space-y-2 overflow-y-auto flex-1"></div>
+      <button onclick="toggleModal('modalArchivadas', false)" class="bg-slate-700 text-white px-5 py-2 rounded-lg font-bold text-sm self-end">Cerrar</button>
+    </div>
+  </div>
+
+  <div id="modalReset" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+      <h3 class="text-lg font-bold text-rose-700">Reinicio de Base</h3>
+      <div class="space-y-2 bg-slate-50 p-3 rounded-xl text-sm">
+        <label class="flex items-center gap-2"><input type="checkbox" id="chkCabezas" class="w-4 h-4 text-rose-600"><span>Cabezas en 0</span></label>
+        <label class="flex items-center gap-2"><input type="checkbox" id="chkCorrales" class="w-4 h-4 text-rose-600"><span>Borrar todos los lotes</span></label>
+        <label class="flex items-center gap-2"><input type="checkbox" id="chkFletes" class="w-4 h-4 text-rose-600"><span>Borrar Fletes</span></label>
+        <label class="flex items-center gap-2"><input type="checkbox" id="chkHistorial" class="w-4 h-4 text-rose-600"><span>Borrar Historial</span></label>
+        <label class="flex items-center gap-2"><input type="checkbox" id="chkTareas" class="w-4 h-4 text-rose-600"><span>Borrar Tablero</span></label>
+        <label class="flex items-center gap-2"><input type="checkbox" id="chkNotas" class="w-4 h-4 text-rose-600"><span>Borrar Notas</span></label>
+      </div>
+      <input type="text" id="inputPalabraBorrar" placeholder="Escribí BORRAR" class="w-full border rounded-lg p-2.5 text-sm uppercase">
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="toggleModal('modalReset', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
+        <button onclick="ejecutarReinicioSeguro()" class="bg-rose-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Ejecutar</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.cambiarTab = function(tab) {
+      ['seccionCorrales', 'seccionFletes', 'seccionTareas', 'seccionHistorial'].forEach(s => document.getElementById(s).classList.add('hidden'));
+      ['btnTabCorrales', 'btnTabFletes', 'btnTabTareas', 'btnTabHistorial'].forEach(b => document.getElementById(b).className = "py-2 font-bold text-xs rounded-lg text-slate-600 transition");
+      
+      if (tab === 'corrales') {
+        document.getElementById('seccionCorrales').classList.remove('hidden');
+        document.getElementById('btnTabCorrales').className = "py-2 font-bold text-xs rounded-lg bg-emerald-600 text-white transition";
+      } else if (tab === 'fletes') {
+        document.getElementById('seccionFletes').classList.remove('hidden');
+        document.getElementById('btnTabFletes').className = "py-2 font-bold text-xs rounded-lg bg-blue-600 text-white transition";
+      } else if (tab === 'tareas') {
+        document.getElementById('seccionTareas').classList.remove('hidden');
+        document.getElementById('btnTabTareas').className = "py-2 font-bold text-xs rounded-lg bg-indigo-600 text-white transition";
+      } else if (tab === 'historial') {
+        document.getElementById('seccionHistorial').classList.remove('hidden');
+        document.getElementById('btnTabHistorial').className = "py-2 font-bold text-xs rounded-lg bg-slate-700 text-white transition";
+      }
+    };
+
+    window.toggleModal = function(id, show) {
+      const m = document.getElementById(id);
+      if (show) {
+        if (id === 'modalIngresar' || id === 'modalEgresar' || id === 'modalTraslado') populateSelects();
+        m.classList.remove('hidden');
+      } else {
+        m.classList.add('hidden');
+      }
+    };
+
+    window.abrirModal = function(id) {
+      if (Object.keys(window.corralesData || {}).length === 0) {
+        alert("Primero debés crear al menos un lote o corral.");
+        return;
+      }
+      toggleModal(id, true);
+    };
+  </script>
+</body>
+</html>
