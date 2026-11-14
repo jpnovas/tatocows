@@ -12,7 +12,7 @@
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('./sw.js')
-          .then(reg => console.log('SW registrado correctamente:', reg.scope))
+          .then(reg => console.log('SW registrado:', reg.scope))
           .catch(err => console.log('SW error:', err));
       });
     }
@@ -59,6 +59,13 @@
       populateSelects();
     });
 
+    onValue(animalesRef, (snapshot) => {
+      window.animalesData = snapshot.val() || {};
+      renderAnimales();
+      renderCorrales(); // Actualiza conteo de lotes basado en caravanas
+      renderStats();
+    });
+
     onValue(historialRef, (snapshot) => {
       const data = snapshot.val() || {};
       window.historialData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
@@ -85,19 +92,13 @@
       renderNotas();
     });
 
-    onValue(animalesRef, (snapshot) => {
-      window.animalesData = snapshot.val() || {};
-      renderAnimales();
-      renderStats();
-    });
-
     function populateSelects() {
       const corrales = window.corralesData || {};
       const opciones = Object.keys(corrales).map(id => 
-        `<option value="${id}">${corrales[id].nombre} (${corrales[id].cantidad || 0} cab.)</option>`
+        `<option value="${id}">${corrales[id].nombre}</option>`
       ).join('');
       
-      ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect', 'animalCorralSelect'].forEach(id => {
+      ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect', 'animalCorralSelect', 'editAnimalCorralSelect'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = opciones;
       });
@@ -107,13 +108,16 @@
     // EXPORTAR A CSV (EXCEL)
     window.exportarStockCSV = function() {
       const corrales = window.corralesData || {};
+      const animales = window.animalesData || {};
       const keys = Object.keys(corrales);
       if (keys.length === 0) return alert("No hay datos de lotes para exportar.");
 
       let csvContent = "\uFEFFLote / Corral,Observacion / Cultivo,Cantidad Cabezas\n";
       keys.forEach(id => {
         const c = corrales[id];
-        csvContent += `"${(c.nombre || '').replace(/"/g, '""')}","${(c.observacion || '').replace(/"/g, '""')}",${c.cantidad || 0}\n`;
+        // Cuenta caravanas activas en este corral
+        const cabezas = Object.values(animales).filter(a => a.corralId === id && a.estado === 'activo').length || c.cantidad || 0;
+        csvContent += `"${(c.nombre || '').replace(/"/g, '""')}","${(c.observacion || '').replace(/"/g, '""')}",${cabezas}\n`;
       });
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -126,7 +130,7 @@
       document.body.removeChild(a);
     };
 
-    // GESTIÓN DE ANIMALES INDIVIDUALES (CARAVANAS)
+    // GESTIÓN DE ANIMALES (CARAVANAS) CON SECUENCIA AUTOMÁTICA
     window.guardarAnimal = function() {
       const caravana = document.getElementById('animalCaravanaInput').value.trim();
       const raza = document.getElementById('animalRazaInput').value.trim();
@@ -143,12 +147,37 @@
       set(nuevoRef, {
         caravana, raza, edad, peso, corralId, observaciones: obs, estado: 'activo', timestamp: Date.now()
       }).then(() => {
-        document.getElementById('animalCaravanaInput').value = '';
+        // Autoincrementa la siguiente caravana si es numérica para facilitar la carga en manga
+        const inputCaravana = document.getElementById('animalCaravanaInput');
+        if (!isNaN(caravana)) {
+          inputCaravana.value = parseInt(caravana, 10) + 1;
+        } else {
+          inputCaravana.value = '';
+        }
         document.getElementById('animalRazaInput').value = '';
-        document.getElementById('animalEdadInput').value = '';
         document.getElementById('animalPesoInput').value = '';
         document.getElementById('animalObsInput').value = '';
       });
+    };
+
+    window.abrirMoverCaravana = function(id) {
+      const animal = window.animalesData[id];
+      if (!animal) return;
+      document.getElementById('moverAnimalId').value = id;
+      document.getElementById('moverCaravanaTxt').innerText = animal.caravana;
+      populateSelects();
+      // Selecciona por defecto el corral actual del animal
+      document.getElementById('moverCorralSelect').value = animal.corralId || '';
+      toggleModal('modalMoverCaravana', true);
+    };
+
+    window.ejecutarMoverCaravana = function() {
+      const id = document.getElementById('moverAnimalId').value;
+      const nuevoCorralId = document.getElementById('moverCorralSelect').value;
+      if (!id || !nuevoCorralId) return;
+
+      toggleModal('modalMoverCaravana', false);
+      update(ref(db, `animales/${id}`), { corralId: nuevoCorralId });
     };
 
     window.eliminarAnimal = function(id, caravana) {
@@ -157,7 +186,7 @@
       }
     };
 
-    // OPERACIONES DE CORRALES Y MOVIMIENTOS
+    // OPERACIONES DE CORRALES
     window.crearCorral = function() {
       const nombre = document.getElementById('nombreCorralInput').value.trim();
       const observacion = document.getElementById('obsCorralInput').value.trim();
@@ -205,7 +234,8 @@
       if (!corral) return;
       
       toggleModal('modalIngresar', false);
-      set(ref(db, `corrales/${corralId}/cantidad`), (corral.cantidad || 0) + cantidad);
+      const stockActual = (corral.cantidad || 0) + cantidad;
+      set(ref(db, `corrales/${corralId}/cantidad`), stockActual);
       set(push(historialRef), { corralId, nombreCorral: corral.nombre, tipo: 'SUMAR', cantidad, motivo, notas, usuario, timestamp: Date.now() });
     };
 
@@ -218,10 +248,10 @@
       if (!corralId || isNaN(cantidad) || cantidad <= 0) return alert("Ingresá una cantidad válida");
       const corral = window.corralesData[corralId];
       if (!corral) return;
-      if (cantidad > (corral.cantidad || 0) && !confirm(`La cantidad supera el stock (${corral.cantidad || 0}). ¿Continuar?`)) return;
       
       toggleModal('modalEgresar', false);
-      set(ref(db, `corrales/${corralId}/cantidad`), Math.max(0, (corral.cantidad || 0) - cantidad));
+      const stockActual = Math.max(0, (corral.cantidad || 0) - cantidad);
+      set(ref(db, `corrales/${corralId}/cantidad`), stockActual);
       set(push(historialRef), { corralId, nombreCorral: corral.nombre, tipo: 'RESTAR', cantidad, motivo, notas, usuario, timestamp: Date.now() });
     };
 
@@ -312,8 +342,14 @@
     // ESTADÍSTICAS
     function renderStats() {
       const corrales = window.corralesData || {};
+      const animales = window.animalesData || {};
       const keys = Object.keys(corrales);
-      let total = keys.reduce((acc, k) => acc + (corrales[k].cantidad || 0), 0);
+      
+      // Total de cabezas (prioriza contar caravanas activas, sino suma stock genérico)
+      let totalCaravanas = Object.values(animales).filter(a => a.estado === 'activo').length;
+      let totalGenerico = keys.reduce((acc, k) => acc + (corrales[k].cantidad || 0), 0);
+      let total = totalCaravanas > 0 ? totalCaravanas : totalGenerico;
+
       let tareasActivas = Object.values(window.tareasData || {}).filter(t => !t.archivada).length;
       document.getElementById('statTotalVacas').innerText = total;
       document.getElementById('statTotalCorrales').innerText = keys.length;
@@ -371,7 +407,10 @@
                 <h3 class="font-black text-base text-slate-800">Caravana: ${a.caravana}</h3>
                 <p class="text-xs text-slate-500">Lote actual: <strong class="text-emerald-900">${corralNombre}</strong></p>
               </div>
-              <button onclick="eliminarAnimal('${id}', '${a.caravana}')" class="text-slate-300 hover:text-rose-600 p-1"><i class="fa-solid fa-trash"></i></button>
+              <div class="flex items-center gap-1">
+                <button onclick="abrirMoverCaravana('${id}')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-arrow-right-arrow-left mr-1"></i> Mover</button>
+                <button onclick="eliminarAnimal('${id}', '${a.caravana}')" class="text-slate-300 hover:text-rose-600 p-1.5"><i class="fa-solid fa-trash"></i></button>
+              </div>
             </div>
             <div class="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-lg text-xs">
               <div><span class="text-slate-400">Raza:</span> <strong>${a.raza || 'N/D'}</strong></div>
@@ -384,10 +423,11 @@
       }).join('');
     }
 
-    // RENDERIZAR LOTES
+    // RENDERIZAR LOTES (Contando automáticamente las caravanas que tienen adentro)
     window.renderCorrales = function() {
       const container = document.getElementById('listaCorrales');
       const corrales = window.corralesData || {};
+      const animales = window.animalesData || {};
       let keys = Object.keys(corrales);
       if (!container) return;
 
@@ -408,12 +448,16 @@
 
       const ordenEl = document.getElementById('ordenCorralSelect');
       const criterioOrden = ordenEl ? ordenEl.value : 'nombre';
+      
       keys.sort((a, b) => {
         const cA = corrales[a];
         const cB = corrales[b];
+        const cantA = Object.values(animales).filter(anim => anim.corralId === a && anim.estado === 'activo').length || cA.cantidad || 0;
+        const cantB = Object.values(animales).filter(anim => anim.corralId === b && anim.estado === 'activo').length || cB.cantidad || 0;
+
         if (criterioOrden === 'nombre') return (cA.nombre || '').localeCompare(cB.nombre || '');
-        if (criterioOrden === 'mayor_cantidad') return (cB.cantidad || 0) - (cA.cantidad || 0);
-        if (criterioOrden === 'menor_cantidad') return (cA.cantidad || 0) - (cB.cantidad || 0);
+        if (criterioOrden === 'mayor_cantidad') return cantB - cantA;
+        if (criterioOrden === 'menor_cantidad') return cantA - cantB;
         return 0;
       });
 
@@ -433,6 +477,9 @@
 
       container.innerHTML = keys.map(id => {
         const c = corrales[id];
+        // Conteo automático de cabezas por caravanas activas en este corral
+        const cantidadCabezas = Object.values(animales).filter(anim => anim.corralId === id && anim.estado === 'activo').length || c.cantidad || 0;
+
         return `
           <div class="bg-white p-4 rounded-xl shadow flex items-center justify-between gap-3 ${colorMap[c.color] || colorMap.emerald}">
             <div class="min-w-0 flex-1">
@@ -441,7 +488,7 @@
             </div>
             <div class="flex items-center gap-2">
               <div class="text-right mr-1">
-                <span class="text-xl font-black text-emerald-900">${c.cantidad || 0}</span>
+                <span class="text-xl font-black text-emerald-900">${cantidadCabezas}</span>
                 <span class="block text-[10px] text-slate-500">cabezas</span>
               </div>
               <button onclick="abrirEditarCorral('${id}')" class="text-slate-400 hover:text-blue-700 p-2 bg-white rounded-lg shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
@@ -788,7 +835,7 @@
   <div id="modalNuevoAnimal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
       <h3 class="text-lg font-bold text-emerald-900">Registrar Nueva Caravana</h3>
-      <input type="text" id="animalCaravanaInput" placeholder="Nro de Caravana (Ej: 9876)" class="w-full border rounded-lg p-3 text-sm outline-none">
+      <input type="text" id="animalCaravanaInput" placeholder="Nro de Caravana (Ej: 1001)" class="w-full border rounded-lg p-3 text-sm outline-none">
       <div class="grid grid-cols-2 gap-2">
         <input type="text" id="animalRazaInput" placeholder="Raza (Ej: Angus)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
         <input type="text" id="animalEdadInput" placeholder="Edad (Ej: 14 meses)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
@@ -801,6 +848,19 @@
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalNuevoAnimal', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
         <button onclick="guardarAnimal()" class="bg-emerald-900 text-white px-5 py-2 rounded-lg font-bold text-sm">Guardar Caravana</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalMoverCaravana" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
+      <h3 class="text-lg font-bold text-blue-700">Mover Caravana: <span id="moverCaravanaTxt"></span></h3>
+      <input type="hidden" id="moverAnimalId">
+      <label class="text-xs font-bold text-slate-600">Nuevo Lote / Corral Destino:</label>
+      <select id="moverCorralSelect" class="w-full border rounded-lg p-3 bg-white text-sm outline-none"></select>
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="toggleModal('modalMoverCaravana', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
+        <button onclick="ejecutarMoverCaravana()" class="bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar Traslado</button>
       </div>
     </div>
   </div>
@@ -838,7 +898,7 @@
 
   <div id="modalIngresar" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
-      <h3 class="text-lg font-bold text-emerald-900">Ingresar Animales</h3>
+      <h3 class="text-lg font-bold text-emerald-900">Ingresar Animales (Genérico)</h3>
       <select id="ingCorralSelect" class="w-full border rounded-lg p-3 bg-white text-sm"></select>
       <input type="number" id="ingCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-lg p-3 text-sm">
       <select id="ingMotivoSelect" class="w-full border rounded-lg p-3 bg-white text-sm"><option value="Compra">Compra</option><option value="Nacimiento">Nacimiento</option><option value="Ajuste (+)">Ajuste (+)</option></select>
@@ -853,7 +913,7 @@
 
   <div id="modalEgresar" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
-      <h3 class="text-lg font-bold text-rose-700">Egresar Animales</h3>
+      <h3 class="text-lg font-bold text-rose-700">Egresar Animales (Genérico)</h3>
       <select id="egCorralSelect" class="w-full border rounded-lg p-3 bg-white text-sm"></select>
       <input type="number" id="egCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-lg p-3 text-sm">
       <select id="egMotivoSelect" class="w-full border rounded-lg p-3 bg-white text-sm"><option value="Venta">Venta</option><option value="Muerte">Muerte</option><option value="Ajuste (-)">Ajuste (-)</option></select>
@@ -868,7 +928,7 @@
 
   <div id="modalTraslado" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
-      <h3 class="text-lg font-bold text-blue-700">Traslado</h3>
+      <h3 class="text-lg font-bold text-blue-700">Traslado de Tropa (Genérico)</h3>
       <label class="text-xs">Origen:</label><select id="trOrigenSelect" class="w-full border rounded-lg p-2.5 bg-white text-sm"></select>
       <label class="text-xs">Destino:</label><select id="trDestinoSelect" class="w-full border rounded-lg p-2.5 bg-white text-sm"></select>
       <input type="number" id="trCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-lg p-3 text-sm">
