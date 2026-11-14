@@ -137,7 +137,7 @@
       document.body.removeChild(a);
     };
 
-    // GESTIÓN DE ANIMALES (CARAVANAS) CON EDICIÓN SEGURA Y SECUENCIA
+    // GESTIÓN DE ANIMALES (CARAVANAS) CON EDICIÓN SEGURA (SIN CAMBIO DE LOTE)
     window.guardarAnimal = function() {
       const caravana = document.getElementById('animalCaravanaInput').value.trim();
       const raza = document.getElementById('animalRazaInput').value.trim();
@@ -161,7 +161,7 @@
           tipo: 'SUMAR',
           cantidad: 1,
           motivo: `Alta Caravana ${caravana}`,
-          notas: `${raza ? raza + ' • ' : ''}${peso ? peso + 'kg' : ''}`,
+          notas: obs || 'Ingreso individual con caravana',
           usuario: 'Operador',
           timestamp: Date.now()
         });
@@ -187,8 +187,8 @@
       document.getElementById('editAnimalEdadInput').value = animal.edad || '';
       document.getElementById('editAnimalPesoInput').value = animal.peso || '';
       
-      const loteNombre = window.corralesData[animal.corralId]?.nombre || 'Sin asignar';
-      document.getElementById('editAnimalCorralLocked').value = loteNombre;
+      const corralNombre = window.corralesData[animal.corralId]?.nombre || 'Sin asignar';
+      document.getElementById('editAnimalCorralBloqueado').value = corralNombre;
       
       document.getElementById('editAnimalObsInput').value = animal.observaciones || '';
       toggleModal('modalEditarAnimal', true);
@@ -204,6 +204,7 @@
 
       if (!id || !caravana) return alert("El número de caravana es obligatorio.");
       toggleModal('modalEditarAnimal', false);
+      // Actualiza únicamente los atributos de la ficha; el corralId queda intacto por seguridad
       update(ref(db, `animales/${id}`), { caravana, raza, edad, peso, observaciones });
     };
 
@@ -225,7 +226,7 @@
 
       const corralOrigenId = animal.corralId;
       if (corralOrigenId === nuevoCorralId) {
-        return alert("Seleccioná un lote de destino diferente al actual.");
+        return alert("El animal ya se encuentra en ese lote.");
       }
 
       toggleModal('modalMoverCaravana', false);
@@ -265,15 +266,7 @@
     window.actualizarListaCaravanasMasivo = function() {
       const origenId = document.getElementById('masivoOrigenSelect').value;
       const container = document.getElementById('masivoListaCaravanasContainer');
-      const infoGenEl = document.getElementById('masivoDisponiblesGenTxt');
       const animales = window.animalesData || {};
-      const corralOrigen = window.corralesData[origenId];
-
-      if (infoGenEl && corralOrigen) {
-        const genDisp = corralOrigen.cantidadGenerica !== undefined ? corralOrigen.cantidadGenerica : (corralOrigen.cantidad || 0);
-        infoGenEl.innerText = `(Disponibles en origen: ${genDisp})`;
-      }
-
       if (!container) return;
 
       const caravanasEnOrigen = Object.keys(animales).filter(id => animales[id].corralId === origenId && animales[id].estado === 'activo');
@@ -312,7 +305,7 @@
 
       const genOrigen = corralOrigen.cantidadGenerica !== undefined ? corralOrigen.cantidadGenerica : (corralOrigen.cantidad || 0);
 
-      if (cantidadGen < 0 || cantidadGen > genOrigen) {
+      if (cantidadGen > genOrigen) {
         return alert(`⚠️ No se pueden trasladar ${cantidadGen} cabezas genéricas. El lote "${corralOrigen.nombre}" solo tiene ${genOrigen} disponibles.`);
       }
 
@@ -547,7 +540,7 @@
       document.getElementById('statTotalTareas').innerText = tareasActivas;
     }
 
-    // RENDERIZAR ANIMALES (Buscador ahora incluye Lote)
+    // RENDERIZAR ANIMALES (Con búsqueda por lote, caravana, raza y obs)
     window.renderAnimales = function() {
       const container = document.getElementById('listaAnimales');
       const animales = window.animalesData || {};
@@ -565,7 +558,7 @@
       if (filtro) {
         keys = keys.filter(id => {
           const a = animales[id];
-          const nombreLote = corrales[a.corralId] ? corrales[a.corralId].nombre.toLowerCase() : '';
+          const nombreLote = corrales[a.corralId]?.nombre ? corrales[a.corralId].nombre.toLowerCase() : '';
           return (a.caravana && a.caravana.toLowerCase().includes(filtro)) || 
                  (a.raza && a.raza.toLowerCase().includes(filtro)) ||
                  (a.observaciones && a.observaciones.toLowerCase().includes(filtro)) ||
@@ -616,7 +609,7 @@
       }).join('');
     }
 
-    // RENDERIZAR LOTES (Con los nuevos colores agregados)
+    // RENDERIZAR LOTES (Con paleta ampliada de 8 colores)
     window.renderCorrales = function() {
       const container = document.getElementById('listaCorrales');
       const corrales = window.corralesData || {};
@@ -669,7 +662,7 @@
         blue: 'border-l-8 border-blue-700 bg-blue-50/20',
         amber: 'border-l-8 border-amber-600 bg-amber-50/20',
         rose: 'border-l-8 border-rose-700 bg-rose-50/20',
-        purple: 'border-l-8 border-purple-800 bg-purple-50/20',
+        purple: 'border-l-8 border-purple-700 bg-purple-50/20',
         cyan: 'border-l-8 border-cyan-600 bg-cyan-50/20',
         orange: 'border-l-8 border-orange-600 bg-orange-50/20',
         slate: 'border-l-8 border-slate-600 bg-slate-50/30'
@@ -939,7 +932,6 @@
         </select>
       </div>
 
-      <!-- Botones de Acción Rápida -->
       <div class="grid grid-cols-4 gap-1.5">
         <button onclick="abrirModal('modalIngresar')" class="bg-emerald-900 hover:bg-emerald-800 text-white font-bold p-2.5 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-plus text-lg"></i><span class="text-[10px]">INGRESAR</span></button>
         <button onclick="abrirModal('modalEgresar')" class="bg-rose-700 hover:bg-rose-600 text-white font-bold p-2.5 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-minus text-lg"></i><span class="text-[10px]">EGRESAR</span></button>
@@ -1048,9 +1040,9 @@
         <input type="number" id="animalPesoInput" placeholder="Peso (kg)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
         <select id="animalCorralSelect" class="w-full border rounded-lg p-2.5 text-sm bg-white outline-none"></select>
       </div>
-      <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded-lg border border-amber-200">
-        <i class="fa-solid fa-circle-info mr-1"></i> <strong>Importante:</strong> Una vez guardado el lote inicial, solo podrá cambiarse mediante la herramienta de <strong>Traslado</strong> para mantener el registro en el historial.
-      </p>
+      <div class="bg-amber-50 border border-amber-200 p-2 rounded-lg text-[11px] text-amber-900">
+        <i class="fa-solid fa-lock mr-1"></i> <strong>Aviso:</strong> El lote inicial quedará fijado. Para cambiar el animal de potrero a futuro deberás usar la opción <em>Traslado</em> para mantener el historial.
+      </div>
       <input type="text" id="animalObsInput" placeholder="Observaciones" class="w-full border rounded-lg p-3 text-sm outline-none">
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalNuevoAnimal', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
@@ -1070,11 +1062,9 @@
       </div>
       <div class="grid grid-cols-2 gap-2">
         <input type="number" id="editAnimalPesoInput" placeholder="Peso (kg)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
-        <div>
-          <input type="text" id="editAnimalCorralLocked" disabled class="w-full border rounded-lg p-2.5 text-sm bg-slate-100 text-slate-500 font-bold cursor-not-allowed" title="Para cambiar de lote usá el botón Mover o Traslado Masivo">
-        </div>
+        <input type="text" id="editAnimalCorralBloqueado" disabled class="w-full border rounded-lg p-2.5 text-sm bg-slate-100 text-slate-500 font-semibold cursor-not-allowed" title="Para cambiar de lote usá Traslado">
       </div>
-      <p class="text-[10px] text-slate-500 italic">El lote actual está bloqueado en edición. Para mover el animal usá el botón <strong>Mover</strong> o <strong>Masivo</strong>.</p>
+      <p class="text-[11px] text-slate-500"><i class="fa-solid fa-shield-halved text-emerald-800 mr-1"></i> El lote no puede editarse aquí; usá <strong>Mover</strong> o <strong>Traslado Masivo</strong> para dejar registro.</p>
       <input type="text" id="editAnimalObsInput" placeholder="Observaciones" class="w-full border rounded-lg p-3 text-sm outline-none">
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalEditarAnimal', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
@@ -1113,7 +1103,7 @@
       </div>
 
       <div>
-        <label class="text-xs font-bold text-slate-600">Cantidad de cabezas genéricas a mover: <span id="masivoDisponiblesGenTxt" class="text-emerald-800"></span></label>
+        <label class="text-xs font-bold text-slate-600">Cantidad de cabezas genéricas a mover:</label>
         <input type="number" id="masivoCantidadGenerica" value="0" min="0" class="w-full border rounded-lg p-2.5 text-sm outline-none mt-1">
       </div>
 
@@ -1145,9 +1135,9 @@
         <option value="amber">Ámbar</option>
         <option value="rose">Rojo</option>
         <option value="purple">Violeta</option>
-        <option value="cyan">Cian</option>
+        <option value="cyan">Celeste</option>
         <option value="orange">Naranja</option>
-        <option value="slate">Gris</option>
+        <option value="slate">Gris Pizarra</option>
       </select>
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalNuevoCorral', false)" class="px-4 py-2 text-slate-600">Cancelar</button>
@@ -1168,9 +1158,9 @@
         <option value="amber">Ámbar</option>
         <option value="rose">Rojo</option>
         <option value="purple">Violeta</option>
-        <option value="cyan">Cian</option>
+        <option value="cyan">Celeste</option>
         <option value="orange">Naranja</option>
-        <option value="slate">Gris</option>
+        <option value="slate">Gris Pizarra</option>
       </select>
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalEditarCorral', false)" class="px-4 py-2 text-slate-600">Cancelar</button>
