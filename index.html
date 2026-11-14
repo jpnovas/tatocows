@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Administración Encargado de Mantenimiento</title>
+  <title>Encargado de Mantenimiento</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
@@ -111,15 +111,16 @@
       document.body.removeChild(a);
     };
 
+    // CIERRE INMEDIATO DE MODALES (Incluso offline)
     window.crearCorral = function() {
       const nombre = document.getElementById('nombreCorralInput').value.trim();
       const observacion = document.getElementById('obsCorralInput').value.trim();
       const color = document.getElementById('colorCorralInput').value;
       if (!nombre) return;
+      toggleModal('modalNuevoCorral', false);
       set(push(corralesRef), { nombre, observacion, color, cantidad: 0 }).then(() => {
         document.getElementById('nombreCorralInput').value = '';
         document.getElementById('obsCorralInput').value = '';
-        toggleModal('modalNuevoCorral', false);
       });
     };
 
@@ -139,7 +140,8 @@
       const observacion = document.getElementById('editObsCorralInput').value.trim();
       const color = document.getElementById('editColorCorralInput').value;
       if (!id || !nombre) return alert("El nombre no puede estar vacío.");
-      update(ref(db, `corrales/${id}`), { nombre, observacion, color }).then(() => toggleModal('modalEditarCorral', false));
+      toggleModal('modalEditarCorral', false);
+      update(ref(db, `corrales/${id}`), { nombre, observacion, color });
     };
 
     window.eliminarCorral = function(id, nombre) {
@@ -155,7 +157,9 @@
       if (!corralId || isNaN(cantidad) || cantidad <= 0) return alert("Ingresá una cantidad válida");
       const corral = window.corralesData[corralId];
       if (!corral) return;
-      toggleModal('modalIngresar', false);
+      
+      toggleModal('modalIngresar', false); // Cierra ventana de inmediato
+
       set(ref(db, `corrales/${corralId}/cantidad`), (corral.cantidad || 0) + cantidad);
       set(push(historialRef), { corralId, nombreCorral: corral.nombre, tipo: 'SUMAR', cantidad, motivo, notas, usuario, timestamp: Date.now() });
     };
@@ -170,7 +174,9 @@
       const corral = window.corralesData[corralId];
       if (!corral) return;
       if (cantidad > (corral.cantidad || 0) && !confirm(`La cantidad supera el stock (${corral.cantidad || 0}). ¿Continuar?`)) return;
-      toggleModal('modalEgresar', false);
+      
+      toggleModal('modalEgresar', false); // Cierra ventana de inmediato
+
       set(ref(db, `corrales/${corralId}/cantidad`), Math.max(0, (corral.cantidad || 0) - cantidad));
       set(push(historialRef), { corralId, nombreCorral: corral.nombre, tipo: 'RESTAR', cantidad, motivo, notas, usuario, timestamp: Date.now() });
     };
@@ -185,7 +191,9 @@
       const corralOrigen = window.corralesData[origenId];
       const corralDestino = window.corralesData[destinoId];
       if (!corralOrigen || !corralDestino) return;
-      toggleModal('modalTraslado', false);
+      
+      toggleModal('modalTraslado', false); // Cierra ventana de inmediato
+
       set(ref(db, `corrales/${origenId}/cantidad`), Math.max(0, (corralOrigen.cantidad || 0) - cantidad));
       set(ref(db, `corrales/${destinoId}/cantidad`), (corralDestino.cantidad || 0) + cantidad);
       set(push(historialRef), { tipo: 'TRASLADO', cantidad, motivo: 'Traslado entre lotes', nombreCorral: `Desde ${corralOrigen.nombre} hacia ${corralDestino.nombre}`, notas, usuario, timestamp: Date.now() });
@@ -200,7 +208,8 @@
       const costo = parseFloat(document.getElementById('fleteCosto').value) || 0;
       const estadoPago = document.getElementById('fleteEstadoPago').value;
       if (!transportista || isNaN(cantidad) || cantidad <= 0) return alert("Completá transportista y cantidad.");
-      set(push(fletesRef), { transportista, chofer, guia, destino, cantidad, costo, estadoPago, timestamp: Date.now() }).then(() => toggleModal('modalFlete', false));
+      toggleModal('modalFlete', false);
+      set(push(fletesRef), { transportista, chofer, guia, destino, cantidad, costo, estadoPago, timestamp: Date.now() });
     };
 
     window.toggleEstadoPagoFlete = function(id, actual) {
@@ -213,7 +222,8 @@
       const titulo = document.getElementById('tareaTituloInput').value.trim();
       const observaciones = document.getElementById('tareaObsInput').value.trim();
       if (!titulo) return alert("Ingresá la tarea.");
-      set(push(tareasRef), { titulo, observaciones, estado: 'tomado', archivada: false, timestamp: Date.now() }).then(() => toggleModal('modalNuevaTarea', false));
+      toggleModal('modalNuevaTarea', false);
+      set(push(tareasRef), { titulo, observaciones, estado: 'tomado', archivada: false, timestamp: Date.now() });
     };
 
     window.cambiarEstadoTarea = function(id, estado) { update(ref(db, `tareas/${id}`), { estado }); };
@@ -256,7 +266,7 @@
       document.getElementById('inputPalabraBorrar').value = '';
     };
 
-    // FUNCIONES DE RENDERIZADO CON FILTRO Y ORDENAMIENTO
+    // RENDERIZADO DE ESTADÍSTICAS
     function renderStats() {
       const corrales = window.corralesData || {};
       const keys = Object.keys(corrales);
@@ -268,6 +278,7 @@
       document.getElementById('statTotalTareas').innerText = tareasActivas;
     }
 
+    // RENDERIZADO DE LOTES (Con Buscador y Orden)
     window.renderCorrales = function() {
       const container = document.getElementById('listaCorrales');
       const corrales = window.corralesData || {};
@@ -278,7 +289,6 @@
         return;
       }
 
-      // Aplicar filtro de búsqueda
       const buscadorEl = document.getElementById('buscarCorralInput');
       const filtro = buscadorEl ? buscadorEl.value.toLowerCase().trim() : '';
       if (filtro) {
@@ -289,34 +299,29 @@
         });
       }
 
-      // Aplicar ordenamiento
       const ordenEl = document.getElementById('ordenCorralSelect');
       const criterioOrden = ordenEl ? ordenEl.value : 'nombre';
       keys.sort((a, b) => {
         const cA = corrales[a];
         const cB = corrales[b];
-        if (criterioOrden === 'nombre') {
-          return (cA.nombre || '').localeCompare(cB.nombre || '');
-        } else if (criterioOrden === 'mayor_cantidad') {
-          return (cB.cantidad || 0) - (cA.cantidad || 0);
-        } else if (criterioOrden === 'menor_cantidad') {
-          return (cA.cantidad || 0) - (cB.cantidad || 0);
-        }
+        if (criterioOrden === 'nombre') return (cA.nombre || '').localeCompare(cB.nombre || '');
+        if (criterioOrden === 'mayor_cantidad') return (cB.cantidad || 0) - (cA.cantidad || 0);
+        if (criterioOrden === 'menor_cantidad') return (cA.cantidad || 0) - (cB.cantidad || 0);
         return 0;
       });
 
       if (keys.length === 0) {
-        container.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-slate-400 text-sm">No se encontraron lotes con ese criterio de búsqueda.</div>`;
+        container.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-slate-400 text-sm">No se encontraron lotes con ese criterio.</div>`;
         return;
       }
 
       const colorMap = {
-        emerald: 'border-l-8 border-emerald-600 bg-emerald-50/20',
-        blue: 'border-l-8 border-blue-600 bg-blue-50/20',
-        amber: 'border-l-8 border-amber-500 bg-amber-50/20',
-        purple: 'border-l-8 border-purple-600 bg-purple-50/20',
-        rose: 'border-l-8 border-rose-600 bg-rose-50/20',
-        slate: 'border-l-8 border-slate-400 bg-white'
+        emerald: 'border-l-8 border-emerald-800 bg-emerald-50/20',
+        blue: 'border-l-8 border-blue-700 bg-blue-50/20',
+        amber: 'border-l-8 border-amber-600 bg-amber-50/20',
+        purple: 'border-l-8 border-purple-800 bg-purple-50/20',
+        rose: 'border-l-8 border-rose-700 bg-rose-50/20',
+        slate: 'border-l-8 border-slate-600 bg-white'
       };
 
       container.innerHTML = keys.map(id => {
@@ -329,31 +334,58 @@
             </div>
             <div class="flex items-center gap-2">
               <div class="text-right mr-1">
-                <span class="text-xl font-black text-emerald-700">${c.cantidad || 0}</span>
+                <span class="text-xl font-black text-emerald-900">${c.cantidad || 0}</span>
                 <span class="block text-[10px] text-slate-500">cabezas</span>
               </div>
-              <button onclick="abrirEditarCorral('${id}')" class="text-slate-400 hover:text-blue-600 p-2 bg-white rounded-lg shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
-              <button onclick="eliminarCorral('${id}', '${c.nombre.replace(/'/g, "\\'")}')" class="text-slate-300 hover:text-rose-500 p-2"><i class="fa-solid fa-trash text-xs"></i></button>
+              <button onclick="abrirEditarCorral('${id}')" class="text-slate-400 hover:text-blue-700 p-2 bg-white rounded-lg shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
+              <button onclick="eliminarCorral('${id}', '${c.nombre.replace(/'/g, "\\'")}')" class="text-slate-300 hover:text-rose-600 p-2"><i class="fa-solid fa-trash text-xs"></i></button>
             </div>
           </div>
         `;
       }).join('');
     }
 
-    function renderHistorial() {
+    // RENDERIZADO DE HISTORIAL (Con Buscador y Orden)
+    window.renderHistorial = function() {
       const container = document.getElementById('listaHistorial');
-      const list = window.historialData || [];
+      let list = window.historialData || [];
       if (list.length === 0) {
         container.innerHTML = `<div class="p-4 text-center text-slate-400 text-sm">Sin movimientos registrados aún.</div>`;
         return;
       }
+
+      const buscadorEl = document.getElementById('buscarHistorialInput');
+      const filtro = buscadorEl ? buscadorEl.value.toLowerCase().trim() : '';
+      if (filtro) {
+        list = list.filter(h => {
+          return (h.nombreCorral && h.nombreCorral.toLowerCase().includes(filtro)) ||
+                 (h.motivo && h.motivo.toLowerCase().includes(filtro)) ||
+                 (h.usuario && h.usuario.toLowerCase().includes(filtro)) ||
+                 (h.notas && h.notas.toLowerCase().includes(filtro));
+        });
+      }
+
+      const ordenEl = document.getElementById('ordenHistorialSelect');
+      const criterio = ordenEl ? ordenEl.value : 'recientes';
+      list.sort((a, b) => {
+        if (criterio === 'recientes') return (b.timestamp || 0) - (a.timestamp || 0);
+        if (criterio === 'antiguos') return (a.timestamp || 0) - (b.timestamp || 0);
+        if (criterio === 'lote') return (a.nombreCorral || '').localeCompare(b.nombreCorral || '');
+        return 0;
+      });
+
+      if (list.length === 0) {
+        container.innerHTML = `<div class="p-4 text-center text-slate-400 text-sm">No se encontraron movimientos con ese filtro.</div>`;
+        return;
+      }
+
       container.innerHTML = list.map(h => {
         const fecha = h.timestamp ? new Date(h.timestamp).toLocaleString('es-AR', { dateStyle: 'short', timeStyle: 'short' }) : '';
         const esSuma = h.tipo === 'SUMAR';
         const esTraslado = h.tipo === 'TRASLADO';
         
         let signoIcono = esTraslado ? '<i class="fa-solid fa-arrow-right-arrow-left text-xs"></i>' : (esSuma ? '+' : '-');
-        let colorClase = esTraslado ? 'text-blue-600 bg-blue-50' : (esSuma ? 'text-emerald-600 bg-emerald-50' : 'text-rose-600 bg-rose-50');
+        let colorClase = esTraslado ? 'text-blue-700 bg-blue-50' : (esSuma ? 'text-emerald-800 bg-emerald-50' : 'text-rose-700 bg-rose-50');
         let textoCantidad = esTraslado ? h.cantidad : (esSuma ? '+' + h.cantidad : '-' + h.cantidad);
 
         return `
@@ -367,7 +399,7 @@
                 <p class="text-xs text-slate-400">${fecha} ${h.usuario ? '• ' + h.usuario : ''} ${h.notas ? '• ' + h.notas : ''}</p>
               </div>
             </div>
-            <span class="font-bold text-base ${esTraslado ? 'text-blue-600' : (esSuma ? 'text-emerald-600' : 'text-rose-600')}">
+            <span class="font-bold text-base ${esTraslado ? 'text-blue-700' : (esSuma ? 'text-emerald-800' : 'text-rose-700')}">
               ${textoCantidad}
             </span>
           </div>
@@ -390,20 +422,20 @@
         <div class="bg-white p-4 rounded-xl shadow space-y-2 text-sm">
           <div class="flex justify-between items-start">
             <div>
-              <h3 class="font-bold text-base text-slate-800"><i class="fa-solid fa-truck text-blue-600 mr-1"></i> ${f.transportista}</h3>
+              <h3 class="font-bold text-base text-slate-800"><i class="fa-solid fa-truck text-blue-700 mr-1"></i> ${f.transportista}</h3>
               <p class="text-xs text-slate-500">${f.chofer ? 'Chofer: ' + f.chofer : ''}</p>
             </div>
-            <button onclick="eliminarFlete('${f.id}')" class="text-slate-300 hover:text-rose-500 p-1"><i class="fa-solid fa-trash"></i></button>
+            <button onclick="eliminarFlete('${f.id}')" class="text-slate-300 hover:text-rose-600 p-1"><i class="fa-solid fa-trash"></i></button>
           </div>
           <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-lg text-xs">
             <div><span class="text-slate-400">Guía:</span> <strong>${f.guia || 'N/D'}</strong></div>
-            <div><span class="text-slate-400">Cantidad:</span> <strong class="text-emerald-700">${f.cantidad} cab.</strong></div>
+            <div><span class="text-slate-400">Cantidad:</span> <strong class="text-emerald-800">${f.cantidad} cab.</strong></div>
             <div><span class="text-slate-400">Destino:</span> <strong>${f.destino || 'N/D'}</strong></div>
             <div><span class="text-slate-400">Costo:</span> <strong>$${(f.costo || 0).toLocaleString()}</strong></div>
           </div>
           <div class="flex justify-between items-center pt-1">
-            <button onclick="toggleEstadoPagoFlete('${f.id}', '${f.estadoPago}')" class="text-xs text-blue-600 hover:underline font-semibold">Cambiar a ${f.estadoPago === 'Pagado' ? 'Pendiente' : 'Pagado'}</button>
-            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${f.estadoPago === 'Pagado' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}">Pago: ${f.estadoPago}</span>
+            <button onclick="toggleEstadoPagoFlete('${f.id}', '${f.estadoPago}')" class="text-xs text-blue-700 hover:underline font-semibold">Cambiar a ${f.estadoPago === 'Pagado' ? 'Pendiente' : 'Pagado'}</button>
+            <span class="text-[11px] font-bold px-2.5 py-0.5 rounded-full ${f.estadoPago === 'Pagado' ? 'bg-emerald-100 text-emerald-900' : 'bg-amber-100 text-amber-900'}">Pago: ${f.estadoPago}</span>
           </div>
         </div>
       `).join('');
@@ -423,7 +455,7 @@
           archivadasHTML += `
             <div class="bg-slate-50 p-3 rounded-xl border flex justify-between items-start gap-2 text-xs">
               <div><p class="font-bold text-slate-800">${t.titulo}</p><p class="text-slate-600">${t.observaciones || ''}</p></div>
-              <button onclick="restaurarTarea('${id}')" class="px-2 py-1 bg-indigo-100 text-indigo-700 rounded font-bold">Restaurar</button>
+              <button onclick="restaurarTarea('${id}')" class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded font-bold">Restaurar</button>
             </div>
           `;
           return;
@@ -433,14 +465,14 @@
           <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 space-y-2 text-xs">
             <div class="flex justify-between items-start">
               <span class="font-bold text-slate-800 text-sm">${t.titulo}</span>
-              <button onclick="eliminarTarea('${id}')" class="text-slate-300 hover:text-rose-500"><i class="fa-solid fa-xmark"></i></button>
+              <button onclick="eliminarTarea('${id}')" class="text-slate-300 hover:text-rose-600"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div onclick="editarObsTarea('${id}')" class="text-slate-600 bg-slate-50 p-2 rounded cursor-pointer border border-dashed border-slate-200">
               ${t.observaciones || 'Sin detalles (tocá para editar)'}
             </div>
             <div class="flex justify-between items-center pt-1 border-t">
               ${t.estado !== 'tomado' ? `<button onclick="cambiarEstadoTarea('${id}', '${t.estado === 'completado' ? 'en_ejecucion' : 'tomado'}')" class="px-2 py-1 bg-slate-100 rounded text-slate-600"><i class="fa-solid fa-chevron-left"></i></button>` : '<span></span>'}
-              ${t.estado !== 'completado' ? `<button onclick="cambiarEstadoTarea('${id}', '${t.estado === 'tomado' ? 'en_ejecucion' : 'completado'}')" class="px-2.5 py-1 bg-indigo-50 text-indigo-700 font-bold rounded">Avanzar <i class="fa-solid fa-chevron-right ml-1"></i></button>` : '<span class="text-emerald-600 font-bold">¡Listo!</span>'}
+              ${t.estado !== 'completado' ? `<button onclick="cambiarEstadoTarea('${id}', '${t.estado === 'tomado' ? 'en_ejecucion' : 'completado'}')" class="px-2.5 py-1 bg-indigo-50 text-indigo-800 font-bold rounded">Avanzar <i class="fa-solid fa-chevron-right ml-1"></i></button>` : '<span class="text-emerald-800 font-bold">¡Listo!</span>'}
             </div>
           </div>
         `;
@@ -468,7 +500,7 @@
       container.innerHTML = keys.map(id => `
         <div class="bg-amber-50 border border-amber-200 p-2.5 rounded-lg flex justify-between items-start text-xs shadow-sm">
           <p class="text-slate-800 break-words pr-2">${notas[id].texto}</p>
-          <button onclick="eliminarNotaRapida('${id}')" class="text-slate-400 hover:text-rose-500"><i class="fa-solid fa-xmark"></i></button>
+          <button onclick="eliminarNotaRapida('${id}')" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-xmark"></i></button>
         </div>
       `).join('');
     }
@@ -476,37 +508,38 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-20">
 
-  <header class="bg-emerald-700 text-white p-4 shadow-md sticky top-0 z-10">
+  <!-- Encabezado en un solo renglón -->
+  <header class="bg-emerald-900 text-white px-4 py-3 shadow-md sticky top-0 z-10">
     <div class="max-w-3xl mx-auto flex justify-between items-center">
-      <div>
-        <h1 class="text-xl font-bold flex items-center gap-2"><i class="fa-solid fa-cow"></i> Administracion Encargado de Mantenimiento</h1>
-        <p class="text-xs text-emerald-200">programado para Esteban Company</p>
-      </div>
+      <h1 class="text-sm sm:text-base font-bold flex items-center gap-2">
+        <i class="fa-solid fa-cow"></i> Encargado de Mantenimiento
+      </h1>
+      <span class="text-xs text-emerald-200 font-medium">Esteban Company</span>
     </div>
   </header>
 
   <main class="max-w-3xl mx-auto p-4 space-y-6">
     <div class="grid grid-cols-4 bg-white rounded-xl shadow p-1 gap-1 text-center">
-      <button onclick="cambiarTab('corrales')" id="btnTabCorrales" class="py-2 font-bold text-xs rounded-lg bg-emerald-600 text-white transition">Lotes / Stock</button>
+      <button onclick="cambiarTab('corrales')" id="btnTabCorrales" class="py-2 font-bold text-xs rounded-lg bg-emerald-900 text-white transition">Lotes / Stock</button>
       <button onclick="cambiarTab('fletes')" id="btnTabFletes" class="py-2 font-bold text-xs rounded-lg text-slate-600 transition">Fletes</button>
       <button onclick="cambiarTab('tareas')" id="btnTabTareas" class="py-2 font-bold text-xs rounded-lg text-slate-600 transition">Tablero</button>
       <button onclick="cambiarTab('historial')" id="btnTabHistorial" class="py-2 font-bold text-xs rounded-lg text-slate-600 transition">Historial</button>
     </div>
 
     <section class="grid grid-cols-4 gap-2">
-      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-emerald-600">
+      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-emerald-900">
         <p class="text-[9px] font-bold text-slate-400 uppercase">Cabezas</p>
         <p id="statTotalVacas" class="text-xl font-black text-slate-800">0</p>
       </div>
-      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-blue-600">
+      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-blue-700">
         <p class="text-[9px] font-bold text-slate-400 uppercase">Lotes</p>
         <p id="statTotalCorrales" class="text-xl font-black text-slate-800">0</p>
       </div>
-      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-amber-500">
+      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-amber-600">
         <p class="text-[9px] font-bold text-slate-400 uppercase">Fletes</p>
         <p id="statTotalFletes" class="text-xl font-black text-slate-800">0</p>
       </div>
-      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-indigo-500">
+      <div class="bg-white p-2.5 rounded-xl shadow border-l-4 border-indigo-700">
         <p class="text-[9px] font-bold text-slate-400 uppercase">Tareas</p>
         <p id="statTotalTareas" class="text-xl font-black text-slate-800">0</p>
       </div>
@@ -515,16 +548,15 @@
     <!-- Sección Corrales -->
     <div id="seccionCorrales" class="space-y-4">
       <div class="flex justify-between items-center">
-        <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> Operaciones de Hacienda y Lotes</h2>
+        <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> Lotes y Hacienda</h2>
         <div class="flex gap-1">
-          <button onclick="exportarStockCSV()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow flex items-center gap-1" title="Descargar planilla CSV"><i class="fa-solid fa-file-excel"></i> Exportar</button>
-          <button onclick="toggleModal('modalNuevoCorral', true)" class="bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow flex items-center gap-1"><i class="fa-solid fa-plus"></i> Nuevo Lote</button>
+          <button onclick="exportarStockCSV()" class="bg-blue-700 text-white text-xs px-3 py-2 rounded-lg font-bold shadow flex items-center gap-1"><i class="fa-solid fa-file-excel"></i> Exportar</button>
+          <button onclick="toggleModal('modalNuevoCorral', true)" class="bg-emerald-900 text-white text-xs px-3 py-2 rounded-lg font-bold shadow flex items-center gap-1"><i class="fa-solid fa-plus"></i> Nuevo Lote</button>
         </div>
       </div>
 
-      <!-- Barra de Filtros y Ordenamiento -->
       <div class="bg-white p-3 rounded-xl shadow flex flex-col sm:flex-row gap-2">
-        <input type="text" id="buscarCorralInput" oninput="renderCorrales()" placeholder="🔍 Buscar por lote u observación..." class="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+        <input type="text" id="buscarCorralInput" oninput="renderCorrales()" placeholder="🔍 Buscar lote u observación..." class="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-emerald-900">
         <select id="ordenCorralSelect" onchange="renderCorrales()" class="border rounded-lg p-2 text-sm bg-white outline-none">
           <option value="nombre">Ordenar por Nombre</option>
           <option value="mayor_cantidad">Mayor Cantidad de Cabezas</option>
@@ -533,9 +565,9 @@
       </div>
 
       <div class="grid grid-cols-3 gap-2">
-        <button onclick="abrirModal('modalIngresar')" class="bg-emerald-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-plus text-xl"></i><span class="text-xs">INGRESAR</span></button>
-        <button onclick="abrirModal('modalEgresar')" class="bg-rose-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-minus text-xl"></i><span class="text-xs">EGRESAR</span></button>
-        <button onclick="abrirModal('modalTraslado')" class="bg-blue-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-arrow-right-arrow-left text-xl"></i><span class="text-xs">TRASLADAR</span></button>
+        <button onclick="abrirModal('modalIngresar')" class="bg-emerald-900 hover:bg-emerald-800 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-plus text-xl"></i><span class="text-xs">INGRESAR</span></button>
+        <button onclick="abrirModal('modalEgresar')" class="bg-rose-700 hover:bg-rose-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-minus text-xl"></i><span class="text-xs">EGRESAR</span></button>
+        <button onclick="abrirModal('modalTraslado')" class="bg-blue-700 hover:bg-blue-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-arrow-right-arrow-left text-xl"></i><span class="text-xs">TRASLADAR</span></button>
       </div>
       <div id="listaCorrales" class="space-y-3"></div>
     </div>
@@ -544,11 +576,11 @@
     <div id="seccionFletes" class="space-y-4 hidden">
       <div class="flex justify-between items-center">
         <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-truck-moving"></i> Registro de Transportes</h2>
-        <button onclick="toggleModal('modalFlete', true)" class="bg-blue-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow">+ Nuevo Flete</button>
+        <button onclick="toggleModal('modalFlete', true)" class="bg-blue-700 text-white text-xs px-3 py-2 rounded-lg font-bold shadow">+ Nuevo Flete</button>
       </div>
       <div class="bg-blue-50 border border-blue-200 p-3 rounded-xl flex justify-between items-center text-xs">
         <div>Total Gastado: <strong id="fletesTotalGastado" class="text-blue-900">$0</strong></div>
-        <div>Pendiente: <strong id="fletesTotalPendiente" class="text-amber-700">$0</strong></div>
+        <div>Pendiente: <strong id="fletesTotalPendiente" class="text-amber-800">$0</strong></div>
       </div>
       <div id="listaFletes" class="space-y-3"></div>
     </div>
@@ -560,7 +592,7 @@
         <div class="flex gap-1">
           <button onclick="toggleModal('modalArchivadas', true)" class="bg-slate-700 text-white text-xs px-2.5 py-2 rounded-lg font-bold">Archivadas (<span id="countArchivadasBtn">0</span>)</button>
           <button onclick="archivarCompletadas()" class="bg-slate-200 text-slate-700 text-xs px-2.5 py-2 rounded-lg font-bold">Archivar</button>
-          <button onclick="toggleModal('modalNuevaTarea', true)" class="bg-indigo-600 text-white text-xs px-3 py-2 rounded-lg font-bold">+ Nueva</button>
+          <button onclick="toggleModal('modalNuevaTarea', true)" class="bg-indigo-700 text-white text-xs px-3 py-2 rounded-lg font-bold">+ Nueva</button>
         </div>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
@@ -569,19 +601,19 @@
           <div id="colTomado" class="space-y-2 min-h-[120px]"></div>
         </div>
         <div class="bg-amber-50 p-3 rounded-xl space-y-2 border border-amber-200">
-          <div class="flex justify-between font-bold text-xs text-amber-800"><span>En Ejecución</span><span id="countEjecucion" class="bg-amber-200 px-2 py-0.5 rounded-full">0</span></div>
+          <div class="flex justify-between font-bold text-xs text-amber-900"><span>En Ejecución</span><span id="countEjecucion" class="bg-amber-200 px-2 py-0.5 rounded-full">0</span></div>
           <div id="colEjecucion" class="space-y-2 min-h-[120px]"></div>
         </div>
         <div class="bg-emerald-50 p-3 rounded-xl space-y-2 border border-emerald-200">
-          <div class="flex justify-between font-bold text-xs text-emerald-800"><span>Completadas</span><span id="countCompletado" class="bg-emerald-200 px-2 py-0.5 rounded-full">0</span></div>
+          <div class="flex justify-between font-bold text-xs text-emerald-900"><span>Completadas</span><span id="countCompletado" class="bg-emerald-200 px-2 py-0.5 rounded-full">0</span></div>
           <div id="colCompletado" class="space-y-2 min-h-[120px]"></div>
         </div>
       </div>
       <div class="bg-white p-4 rounded-xl shadow space-y-3 mt-6">
-        <h3 class="text-sm font-bold text-slate-700"><i class="fa-solid fa-note-sticky text-amber-500"></i> Notas Rápidas</h3>
+        <h3 class="text-sm font-bold text-slate-700"><i class="fa-solid fa-note-sticky text-amber-600"></i> Notas Rápidas</h3>
         <div class="flex gap-2">
           <input type="text" id="notaRapidaInput" placeholder="Anotación..." class="w-full border rounded-lg p-2 text-sm outline-none">
-          <button onclick="guardarNotaRapida()" class="bg-amber-500 text-white px-4 py-2 rounded-lg text-sm font-bold">Anotar</button>
+          <button onclick="guardarNotaRapida()" class="bg-amber-600 text-white px-4 py-2 rounded-lg text-sm font-bold">Anotar</button>
         </div>
         <div id="listaNotasRapidas" class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2"></div>
       </div>
@@ -590,9 +622,20 @@
     <!-- Sección Historial -->
     <div id="seccionHistorial" class="space-y-4 hidden">
       <div class="flex justify-between items-center">
-        <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Historial</h2>
+        <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left"></i> Historial de Movimientos</h2>
         <button onclick="toggleModal('modalReset', true)" class="bg-rose-100 text-rose-700 text-xs px-3 py-1.5 rounded-lg font-bold"><i class="fa-solid fa-triangle-exclamation"></i> Reiniciar Base</button>
       </div>
+
+      <!-- Barra de Filtros y Ordenamiento para Historial -->
+      <div class="bg-white p-3 rounded-xl shadow flex flex-col sm:flex-row gap-2">
+        <input type="text" id="buscarHistorialInput" oninput="renderHistorial()" placeholder="🔍 Buscar en historial (lote, motivo, usuario...)" class="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-emerald-900">
+        <select id="ordenHistorialSelect" onchange="renderHistorial()" class="border rounded-lg p-2 text-sm bg-white outline-none">
+          <option value="recientes">Más Recientes Primero</option>
+          <option value="antiguos">Más Antiguos Primero</option>
+          <option value="lote">Ordenar por Lote</option>
+        </select>
+      </div>
+
       <div id="listaHistorial" class="bg-white rounded-xl shadow divide-y divide-slate-100 max-h-96 overflow-y-auto"></div>
     </div>
   </main>
@@ -608,7 +651,7 @@
       </select>
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalNuevoCorral', false)" class="px-4 py-2 text-slate-600">Cancelar</button>
-        <button onclick="crearCorral()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg font-bold">Guardar</button>
+        <button onclick="crearCorral()" class="bg-emerald-900 text-white px-5 py-2 rounded-lg font-bold">Guardar</button>
       </div>
     </div>
   </div>
@@ -624,14 +667,14 @@
       </select>
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalEditarCorral', false)" class="px-4 py-2 text-slate-600">Cancelar</button>
-        <button onclick="guardarEdicionCorral()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg font-bold">Actualizar</button>
+        <button onclick="guardarEdicionCorral()" class="bg-emerald-900 text-white px-5 py-2 rounded-lg font-bold">Actualizar</button>
       </div>
     </div>
   </div>
 
   <div id="modalIngresar" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
-      <h3 class="text-lg font-bold text-emerald-700">Ingresar Animales</h3>
+      <h3 class="text-lg font-bold text-emerald-900">Ingresar Animales</h3>
       <select id="ingCorralSelect" class="w-full border rounded-lg p-3 bg-white text-sm"></select>
       <input type="number" id="ingCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-lg p-3 text-sm">
       <select id="ingMotivoSelect" class="w-full border rounded-lg p-3 bg-white text-sm"><option value="Compra">Compra</option><option value="Nacimiento">Nacimiento</option><option value="Ajuste (+)">Ajuste (+)</option></select>
@@ -639,7 +682,7 @@
       <input type="text" id="ingNotasInput" placeholder="Notas" class="w-full border rounded-lg p-3 text-sm">
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalIngresar', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-        <button onclick="ejecutarIngreso()" class="bg-emerald-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar</button>
+        <button onclick="ejecutarIngreso()" class="bg-emerald-900 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar</button>
       </div>
     </div>
   </div>
@@ -654,7 +697,7 @@
       <input type="text" id="egNotasInput" placeholder="Notas" class="w-full border rounded-lg p-3 text-sm">
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalEgresar', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-        <button onclick="ejecutarEgreso()" class="bg-rose-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar</button>
+        <button onclick="ejecutarEgreso()" class="bg-rose-700 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar</button>
       </div>
     </div>
   </div>
@@ -669,7 +712,7 @@
       <input type="text" id="trNotasInput" placeholder="Notas" class="w-full border rounded-lg p-3 text-sm">
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalTraslado', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-        <button onclick="ejecutarTraslado()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar</button>
+        <button onclick="ejecutarTraslado()" class="bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar</button>
       </div>
     </div>
   </div>
@@ -692,7 +735,7 @@
       </div>
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalFlete', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-        <button onclick="guardarFlete()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Guardar</button>
+        <button onclick="guardarFlete()" class="bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-sm">Guardar</button>
       </div>
     </div>
   </div>
@@ -704,7 +747,7 @@
       <input type="text" id="tareaObsInput" placeholder="Observaciones" class="w-full border rounded-lg p-3 text-sm">
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalNuevaTarea', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-        <button onclick="guardarTarea()" class="bg-indigo-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Guardar</button>
+        <button onclick="guardarTarea()" class="bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold text-sm">Guardar</button>
       </div>
     </div>
   </div>
@@ -731,7 +774,7 @@
       <input type="text" id="inputPalabraBorrar" placeholder="Escribí BORRAR" class="w-full border rounded-lg p-2.5 text-sm uppercase">
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalReset', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-        <button onclick="ejecutarReinicioSeguro()" class="bg-rose-600 text-white px-5 py-2 rounded-lg font-bold text-sm">Ejecutar</button>
+        <button onclick="ejecutarReinicioSeguro()" class="bg-rose-700 text-white px-5 py-2 rounded-lg font-bold text-sm">Ejecutar</button>
       </div>
     </div>
   </div>
@@ -743,16 +786,16 @@
       
       if (tab === 'corrales') {
         document.getElementById('seccionCorrales').classList.remove('hidden');
-        document.getElementById('btnTabCorrales').className = "py-2 font-bold text-xs rounded-lg bg-emerald-600 text-white transition";
+        document.getElementById('btnTabCorrales').className = "py-2 font-bold text-xs rounded-lg bg-emerald-900 text-white transition";
       } else if (tab === 'fletes') {
         document.getElementById('seccionFletes').classList.remove('hidden');
-        document.getElementById('btnTabFletes').className = "py-2 font-bold text-xs rounded-lg bg-blue-600 text-white transition";
+        document.getElementById('btnTabFletes').className = "py-2 font-bold text-xs rounded-lg bg-blue-700 text-white transition";
       } else if (tab === 'tareas') {
         document.getElementById('seccionTareas').classList.remove('hidden');
-        document.getElementById('btnTabTareas').className = "py-2 font-bold text-xs rounded-lg bg-indigo-600 text-white transition";
+        document.getElementById('btnTabTareas').className = "py-2 font-bold text-xs rounded-lg bg-indigo-700 text-white transition";
       } else if (tab === 'historial') {
         document.getElementById('seccionHistorial').classList.remove('hidden');
-        document.getElementById('btnTabHistorial').className = "py-2 font-bold text-xs rounded-lg bg-slate-700 text-white transition";
+        document.getElementById('btnTabHistorial').className = "py-2 font-bold text-xs rounded-lg bg-slate-800 text-white transition";
       }
     };
 
