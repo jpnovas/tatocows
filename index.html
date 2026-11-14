@@ -102,7 +102,11 @@
       
       ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect', 'animalCorralSelect', 'moverCorralSelect', 'masivoOrigenSelect', 'masivoDestinoSelect'].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.innerHTML = opciones;
+        if (el) {
+          const valPrevio = el.value;
+          el.innerHTML = opciones;
+          if (valPrevio && corrales[valPrevio]) el.value = valPrevio;
+        }
       });
       
       if (typeof window.actualizarListaCaravanasMasivo === 'function') {
@@ -137,14 +141,19 @@
       document.body.removeChild(a);
     };
 
-    // GESTIÓN DE ANIMALES (CARAVANAS) CON EDICIÓN SEGURA (SIN CAMBIO DE LOTE)
+    // GESTIÓN DE ANIMALES (CARAVANAS) CON DATOS UNIFICADOS DE INGRESO
     window.guardarAnimal = function() {
       const caravana = document.getElementById('animalCaravanaInput').value.trim();
       const raza = document.getElementById('animalRazaInput').value.trim();
       const edad = document.getElementById('animalEdadInput').value.trim();
       const peso = parseFloat(document.getElementById('animalPesoInput').value) || 0;
       const corralId = document.getElementById('animalCorralSelect').value;
-      const obs = document.getElementById('animalObsInput').value.trim();
+      const obsAnimal = document.getElementById('animalObsInput').value.trim();
+      
+      // Campos unificados de movimiento de ingreso
+      const motivo = document.getElementById('animalMotivoSelect').value;
+      const usuario = document.getElementById('animalUsuarioInput').value.trim() || 'Operador';
+      const notasIngreso = document.getElementById('animalNotasIngresoInput').value.trim();
 
       if (!caravana || !corralId) return alert("Completá al menos el número de caravana y el corral.");
       
@@ -152,17 +161,19 @@
 
       const nuevoRef = push(animalesRef);
       set(nuevoRef, {
-        caravana, raza, edad, peso, corralId, observaciones: obs, estado: 'activo', timestamp: Date.now()
+        caravana, raza, edad, peso, corralId, observaciones: obsAnimal, estado: 'activo', timestamp: Date.now()
       }).then(() => {
         const corralNombre = window.corralesData[corralId]?.nombre || 'Lote';
+        const detalleNotas = [`Caravana ${caravana}`, notasIngreso, obsAnimal].filter(Boolean).join(' • ');
+
         set(push(historialRef), {
           corralId,
           nombreCorral: corralNombre,
           tipo: 'SUMAR',
           cantidad: 1,
-          motivo: `Alta Caravana ${caravana}`,
-          notas: obs || 'Ingreso individual con caravana',
-          usuario: 'Operador',
+          motivo: `${motivo} (Caravana ${caravana})`,
+          notas: detalleNotas,
+          usuario,
           timestamp: Date.now()
         });
 
@@ -175,6 +186,7 @@
         document.getElementById('animalRazaInput').value = '';
         document.getElementById('animalPesoInput').value = '';
         document.getElementById('animalObsInput').value = '';
+        document.getElementById('animalNotasIngresoInput').value = '';
       });
     };
 
@@ -204,7 +216,6 @@
 
       if (!id || !caravana) return alert("El número de caravana es obligatorio.");
       toggleModal('modalEditarAnimal', false);
-      // Actualiza únicamente los atributos de la ficha; el corralId queda intacto por seguridad
       update(ref(db, `animales/${id}`), { caravana, raza, edad, peso, observaciones });
     };
 
@@ -402,7 +413,10 @@
       const nuevoGenerico = actualGenerico + cantidad;
       
       update(ref(db, `corrales/${corralId}`), { cantidadGenerica: nuevoGenerico });
-      set(push(historialRef), { corralId, nombreCorral: corral.nombre, tipo: 'SUMAR', cantidad, motivo, notas, usuario, timestamp: Date.now() });
+      set(push(historialRef), { corralId, nombreCorral: corral.nombre, tipo: 'SUMAR', cantidad, motivo, notas, usuario, timestamp: Date.now() }).then(() => {
+        document.getElementById('ingCantidadInput').value = '';
+        document.getElementById('ingNotasInput').value = '';
+      });
     };
 
     window.ejecutarEgreso = function() {
@@ -425,7 +439,10 @@
       const nuevoGenerico = actualGenerico - cantidad;
       
       update(ref(db, `corrales/${corralId}`), { cantidadGenerica: nuevoGenerico });
-      set(push(historialRef), { corralId, nombreCorral: corral.nombre, tipo: 'RESTAR', cantidad, motivo, notas, usuario, timestamp: Date.now() });
+      set(push(historialRef), { corralId, nombreCorral: corral.nombre, tipo: 'RESTAR', cantidad, motivo, notas, usuario, timestamp: Date.now() }).then(() => {
+        document.getElementById('egCantidadInput').value = '';
+        document.getElementById('egNotasInput').value = '';
+      });
     };
 
     window.ejecutarTraslado = function() {
@@ -451,7 +468,10 @@
       update(ref(db, `corrales/${origenId}`), { cantidadGenerica: genOrigen - cantidad });
       update(ref(db, `corrales/${destinoId}`), { cantidadGenerica: genDestino + cantidad });
       
-      set(push(historialRef), { tipo: 'TRASLADO', cantidad, motivo: 'Traslado genérico entre lotes', nombreCorral: `Desde ${corralOrigen.nombre} hacia ${corralDestino.nombre}`, notas, usuario, timestamp: Date.now() });
+      set(push(historialRef), { tipo: 'TRASLADO', cantidad, motivo: 'Traslado genérico entre lotes', nombreCorral: `Desde ${corralOrigen.nombre} hacia ${corralDestino.nombre}`, notas, usuario, timestamp: Date.now() }).then(() => {
+        document.getElementById('trCantidadInput').value = '';
+        document.getElementById('trNotasInput').value = '';
+      });
     };
 
     window.guardarFlete = function() {
@@ -945,7 +965,7 @@
     <div id="seccionCaravanas" class="space-y-4 hidden">
       <div class="flex justify-between items-center">
         <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-fingerprint"></i> Control Individual (Caravanas)</h2>
-        <button onclick="toggleModal('modalNuevoAnimal', true)" class="bg-emerald-900 text-white text-xs px-3 py-2 rounded-lg font-bold shadow flex items-center gap-1"><i class="fa-solid fa-plus"></i> Nueva Caravana</button>
+        <button onclick="abrirModal('modalNuevoAnimal')" class="bg-emerald-900 text-white text-xs px-3 py-2 rounded-lg font-bold shadow flex items-center gap-1"><i class="fa-solid fa-plus"></i> Nueva Caravana</button>
       </div>
 
       <div class="bg-white p-3 rounded-xl shadow flex flex-col sm:flex-row gap-2">
@@ -1029,24 +1049,43 @@
 
   <!-- MODALES -->
   <div id="modalNuevoAnimal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
-    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
-      <h3 class="text-lg font-bold text-emerald-900">Registrar Nueva Caravana</h3>
-      <input type="text" id="animalCaravanaInput" placeholder="Nro de Caravana (Ej: 1001)" class="w-full border rounded-lg p-3 text-sm outline-none">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-2.5 max-h-[92vh] overflow-y-auto">
+      <h3 class="text-lg font-bold text-emerald-900">Ingresar Animal con Caravana</h3>
+      
       <div class="grid grid-cols-2 gap-2">
-        <input type="text" id="animalRazaInput" placeholder="Raza (Ej: Angus)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
-        <input type="text" id="animalEdadInput" placeholder="Edad (Ej: 14 meses)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
-      </div>
-      <div class="grid grid-cols-2 gap-2">
-        <input type="number" id="animalPesoInput" placeholder="Peso (kg)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
+        <input type="text" id="animalCaravanaInput" placeholder="Nro Caravana (Ej: 1001)" class="w-full border rounded-lg p-2.5 text-sm outline-none font-bold">
         <select id="animalCorralSelect" class="w-full border rounded-lg p-2.5 text-sm bg-white outline-none"></select>
       </div>
-      <div class="bg-amber-50 border border-amber-200 p-2 rounded-lg text-[11px] text-amber-900">
-        <i class="fa-solid fa-lock mr-1"></i> <strong>Aviso:</strong> El lote inicial quedará fijado. Para cambiar el animal de potrero a futuro deberás usar la opción <em>Traslado</em> para mantener el historial.
+
+      <div class="grid grid-cols-3 gap-2">
+        <input type="text" id="animalRazaInput" placeholder="Raza (Ej: Angus)" class="w-full border rounded-lg p-2 text-sm outline-none">
+        <input type="text" id="animalEdadInput" placeholder="Edad (Ej: 14m)" class="w-full border rounded-lg p-2 text-sm outline-none">
+        <input type="number" id="animalPesoInput" placeholder="Peso (kg)" class="w-full border rounded-lg p-2 text-sm outline-none">
       </div>
-      <input type="text" id="animalObsInput" placeholder="Observaciones" class="w-full border rounded-lg p-3 text-sm outline-none">
-      <div class="flex justify-end gap-3 pt-2">
+
+      <input type="text" id="animalObsInput" placeholder="Observaciones de la ficha (ej. astada, vaquillona...)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
+
+      <!-- Datos del Movimiento de Ingreso (Unificados con Ingreso General) -->
+      <div class="border-t pt-2.5 space-y-2">
+        <p class="text-[11px] font-bold text-slate-500 uppercase">Datos del Ingreso (Historial)</p>
+        <div class="grid grid-cols-2 gap-2">
+          <select id="animalMotivoSelect" class="w-full border rounded-lg p-2.5 bg-white text-sm outline-none">
+            <option value="Compra">Compra</option>
+            <option value="Nacimiento">Nacimiento</option>
+            <option value="Ajuste (+)">Ajuste (+)</option>
+          </select>
+          <input type="text" id="animalUsuarioInput" placeholder="Registra (Opcional)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
+        </div>
+        <input type="text" id="animalNotasIngresoInput" placeholder="Notas del ingreso (ej. remate, proveedor...)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
+      </div>
+
+      <div class="bg-amber-50 border border-amber-200 p-2 rounded-lg text-[11px] text-amber-900">
+        <i class="fa-solid fa-lock mr-1"></i> El lote inicial quedará fijado. Para moverla luego deberás usar <em>Traslado</em>.
+      </div>
+
+      <div class="flex justify-end gap-3 pt-1">
         <button onclick="toggleModal('modalNuevoAnimal', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-        <button onclick="guardarAnimal()" class="bg-emerald-900 text-white px-5 py-2 rounded-lg font-bold text-sm">Guardar Caravana</button>
+        <button onclick="guardarAnimal()" class="bg-emerald-900 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar Ingreso</button>
       </div>
     </div>
   </div>
