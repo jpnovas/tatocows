@@ -72,6 +72,18 @@
       renderNotas();
     });
 
+    // Funciones globales expuestas a window
+    function populateSelects() {
+      const opciones = Object.keys(window.corralesData || {}).map(id => 
+        `<option value="${id}">${window.corralesData[id].nombre} (${window.corralesData[id].cantidad || 0} cab.)</option>`
+      ).join('');
+      ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = opciones;
+      });
+    }
+    window.populateSelects = populateSelects;
+
     window.crearCorral = function() {
       const nombre = document.getElementById('nombreCorralInput').value.trim();
       const observacion = document.getElementById('obsCorralInput').value.trim();
@@ -264,16 +276,6 @@
           </div>
         `;
       }).join('');
-    }
-
-    function populateSelects() {
-      const opciones = Object.keys(window.corralesData || {}).map(id => 
-        `<option value="${id}">${window.corralesData[id].nombre} (${window.corralesData[id].cantidad || 0} cab.)</option>`
-      ).join('');
-      ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) el.innerHTML = opciones;
-      });
     }
 
     function renderHistorial() {
@@ -681,7 +683,9 @@
     window.toggleModal = function(id, show) {
       const m = document.getElementById(id);
       if (show) {
-        if (id === 'modalIngresar' || id === 'modalEgresar' || id === 'modalTraslado') populateSelects();
+        if (id === 'modalIngresar' || id === 'modalEgresar' || id === 'modalTraslado') {
+          if (typeof window.populateSelects === 'function') window.populateSelects();
+        }
         m.classList.remove('hidden');
       } else {
         m.classList.add('hidden');
@@ -690,7 +694,7 @@
 
     window.abrirModal = function(id) {
       if (Object.keys(window.corralesData || {}).length === 0) {
-        alert("Primero debés crear al menos un lote o corral.");
+        alert("Primero debés crear al menos un lote o corral con el botón '+ Nuevo Lote'.");
         return;
       }
       toggleModal(id, true);
