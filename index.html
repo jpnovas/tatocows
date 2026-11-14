@@ -99,10 +99,14 @@
         ? Object.keys(corrales).map(id => `<option value="${id}">${corrales[id].nombre}</option>`).join('')
         : '<option value="">No hay lotes creados</option>';
       
-      ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect', 'animalCorralSelect', 'editAnimalCorralSelect', 'moverCorralSelect'].forEach(id => {
+      ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect', 'animalCorralSelect', 'editAnimalCorralSelect', 'moverCorralSelect', 'masivoOrigenSelect', 'masivoDestinoSelect'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = opciones;
       });
+      
+      if (typeof window.actualizarListaCaravanasMasivo === 'function') {
+        window.actualizarListaCaravanasMasivo();
+      }
     }
     window.populateSelects = populateSelects;
 
@@ -229,6 +233,109 @@
       }
     };
 
+    // TRASLADO MASIVO (MIXTO: GENÉRICAS + CARAVANAS TILDADAS)
+    window.abrirTrasladoMasivo = function() {
+      if (Object.keys(window.corralesData || {}).length < 2) {
+        alert("Necesitás al menos 2 lotes creados para poder hacer traslados.");
+        return;
+      }
+      document.getElementById('masivoCantidadGenerica').value = '0';
+      toggleModal('modalTrasladoMasivo', true);
+      window.actualizarListaCaravanasMasivo();
+    };
+
+    window.actualizarListaCaravanasMasivo = function() {
+      const origenId = document.getElementById('masivoOrigenSelect').value;
+      const container = document.getElementById('masivoListaCaravanasContainer');
+      const animales = window.animalesData || {};
+      if (!container) return;
+
+      const caravanasEnOrigen = Object.keys(animales).filter(id => animales[id].corralId === origenId && animales[id].estado === 'activo');
+
+      if (caravanasEnOrigen.length === 0) {
+        container.innerHTML = `<p class="text-xs text-slate-400 italic p-2">No hay animales con caravana en este lote.</p>`;
+        return;
+      }
+
+      container.innerHTML = caravanasEnOrigen.map(id => {
+        const a = animales[id];
+        return `
+          <label class="flex items-center gap-2 p-1.5 hover:bg-slate-50 rounded cursor-pointer text-xs border-b border-slate-100">
+            <input type="checkbox" value="${id}" class="chk-caravana-masivo w-4 h-4 text-blue-700 rounded">
+            <span class="font-bold text-slate-800">Caravana: ${a.caravana}</span>
+            <span class="text-slate-500">(${a.raza || 'Sin raza'}, ${a.peso ? a.peso + 'kg' : 'Sin peso'})</span>
+          </label>
+        `;
+      }).join('');
+    };
+
+    window.ejecutarTrasladoMasivo = function() {
+      const origenId = document.getElementById('masivoOrigenSelect').value;
+      const destinoId = document.getElementById('masivoDestinoSelect').value;
+      const cantidadGen = parseInt(document.getElementById('masivoCantidadGenerica').value, 10) || 0;
+      const usuario = document.getElementById('masivoUsuarioInput').value.trim() || 'Operador';
+      const notas = document.getElementById('masivoNotasInput').value.trim();
+
+      if (!origenId || !destinoId || origenId === destinoId) {
+        return alert("Verificá que el lote de origen y destino sean distintos.");
+      }
+
+      const corralOrigen = window.corralesData[origenId];
+      const corralDestino = window.corralesData[destinoId];
+      if (!corralOrigen || !corralDestino) return;
+
+      const genOrigen = corralOrigen.cantidadGenerica !== undefined ? corralOrigen.cantidadGenerica : (corralOrigen.cantidad || 0);
+
+      // Validar stock genérico
+      if (cantidadGen > genOrigen) {
+        return alert(`⚠️ No se pueden trasladar ${cantidadGen} cabezas genéricas. El lote "${corralOrigen.nombre}" solo tiene ${genOrigen} disponibles.`);
+      }
+
+      // Recolectar caravanas tildadas
+      const checkboxes = document.querySelectorAll('.chk-caravana-masivo:checked');
+      const caravanasIdsAMover = Array.from(checkboxes).map(cb => cb.value);
+
+      if (cantidadGen === 0 && caravanasIdsAMover.length === 0) {
+        return alert("Seleccioná al menos algunas cabezas genéricas o tildá alguna caravana para mover.");
+      }
+
+      toggleModal('modalTrasladoMasivo', false);
+
+      // 1. Mover stock genérico si aplica
+      if (cantidadGen > 0) {
+        const genDestino = corralDestino.cantidadGenerica !== undefined ? corralDestino.cantidadGenerica : (corralDestino.cantidad || 0);
+        update(ref(db, `corrales/${origenId}`), { cantidadGenerica: genOrigen - cantidadGen });
+        update(ref(db, `corrales/${destinoId}`), { cantidadGenerica: genDestino + cantidadGen });
+      }
+
+      // 2. Mover caravanas tildadas
+      let detalleCaravanasTxt = '';
+      if (caravanasIdsAMover.length > 0) {
+        const caravanasNombres = [];
+        caravanasIdsAMover.forEach(id => {
+          update(ref(db, `animales/${id}`), { corralId: destinoId });
+          if (window.animalesData[id]) caravanasNombres.push(window.animalesData[id].caravana);
+        });
+        detalleCaravanasTxt = ` + Caravanas: [${caravanasNombres.join(', ')}]`;
+      }
+
+      // 3. Registrar en Historial
+      const totalMovido = cantidadGen + caravanasIdsAMover.length;
+      set(push(historialRef), {
+        tipo: 'TRASLADO',
+        cantidad: totalMovido,
+        motivo: 'Traslado masivo mixto',
+        nombreCorral: `Desde ${corralOrigen.nombre} hacia ${corralDestino.nombre}`,
+        notas: `Genéricas: ${cantidadGen}${detalleCaravanasTxt} ${notas ? '• ' + notas : ''}`,
+        usuario,
+        timestamp: Date.now()
+      }).then(() => {
+        document.getElementById('masivoCantidadGenerica').value = '0';
+        document.getElementById('masivoNotasInput').value = '';
+        document.getElementById('masivoUsuarioInput').value = '';
+      });
+    };
+
     // OPERACIONES DE CORRALES
     window.crearCorral = function() {
       const nombre = document.getElementById('nombreCorralInput').value.trim();
@@ -296,7 +403,6 @@
       
       const actualGenerico = corral.cantidadGenerica !== undefined ? corral.cantidadGenerica : (corral.cantidad || 0);
       
-      // VALIDACIÓN DE SEGURIDAD: No permitir egresar más de lo que hay
       if (cantidad > actualGenerico) {
         return alert(`⚠️ No se puede egresar ${cantidad} cabezas genéricas. El lote "${corral.nombre}" solo tiene ${actualGenerico} disponibles.`);
       }
@@ -321,7 +427,6 @@
       
       const genOrigen = corralOrigen.cantidadGenerica !== undefined ? corralOrigen.cantidadGenerica : (corralOrigen.cantidad || 0);
       
-      // VALIDACIÓN DE SEGURIDAD: No permitir trasladar más genéricas de las disponibles
       if (cantidad > genOrigen) {
         return alert(`⚠️ No se pueden trasladar ${cantidad} cabezas genéricas. El lote de origen "${corralOrigen.nombre}" solo cuenta con ${genOrigen} disponibles.`);
       }
@@ -488,7 +593,7 @@
       }).join('');
     }
 
-    // RENDERIZAR LOTES (Suma mixta: Caravanas activas + Stock genérico)
+    // RENDERIZAR LOTES
     window.renderCorrales = function() {
       const container = document.getElementById('listaCorrales');
       const corrales = window.corralesData || {};
@@ -809,10 +914,12 @@
         </select>
       </div>
 
-      <div class="grid grid-cols-3 gap-2">
-        <button onclick="abrirModal('modalIngresar')" class="bg-emerald-900 hover:bg-emerald-800 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-plus text-xl"></i><span class="text-xs">INGRESAR</span></button>
-        <button onclick="abrirModal('modalEgresar')" class="bg-rose-700 hover:bg-rose-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-minus text-xl"></i><span class="text-xs">EGRESAR</span></button>
-        <button onclick="abrirModal('modalTraslado')" class="bg-blue-700 hover:bg-blue-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-arrow-right-arrow-left text-xl"></i><span class="text-xs">TRASLADAR</span></button>
+      <!-- Botones de Acción Rápida (Incluye Traslado Masivo) -->
+      <div class="grid grid-cols-4 gap-1.5">
+        <button onclick="abrirModal('modalIngresar')" class="bg-emerald-900 hover:bg-emerald-800 text-white font-bold p-2.5 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-plus text-lg"></i><span class="text-[10px]">INGRESAR</span></button>
+        <button onclick="abrirModal('modalEgresar')" class="bg-rose-700 hover:bg-rose-600 text-white font-bold p-2.5 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-minus text-lg"></i><span class="text-[10px]">EGRESAR</span></button>
+        <button onclick="abrirModal('modalTraslado')" class="bg-blue-700 hover:bg-blue-600 text-white font-bold p-2.5 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-arrow-right-arrow-left text-lg"></i><span class="text-[10px]">TROPA</span></button>
+        <button onclick="abrirTrasladoMasivo()" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold p-2.5 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-check-to-slot text-lg"></i><span class="text-[10px]">MASIVO</span></button>
       </div>
       <div id="listaCorrales" class="space-y-3"></div>
     </div>
@@ -954,6 +1061,44 @@
       <div class="flex justify-end gap-3 pt-2">
         <button onclick="toggleModal('modalMoverCaravana', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
         <button onclick="ejecutarMoverCaravana()" class="bg-blue-700 text-white px-5 py-2 rounded-lg font-bold text-sm">Confirmar Traslado</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL TRASLADO MASIVO MIXTO -->
+  <div id="modalTrasladoMasivo" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-lg rounded-2xl p-6 shadow-2xl space-y-4 max-h-[90vh] flex flex-col">
+      <h3 class="text-lg font-bold text-indigo-700 flex items-center gap-2"><i class="fa-solid fa-check-to-slot"></i> Traslado Masivo (Mixto)</h3>
+      
+      <div class="grid grid-cols-2 gap-2">
+        <div>
+          <label class="text-xs font-bold text-slate-600">Origen:</label>
+          <select id="masivoOrigenSelect" onchange="actualizarListaCaravanasMasivo()" class="w-full border rounded-lg p-2.5 bg-white text-sm outline-none mt-1"></select>
+        </div>
+        <div>
+          <label class="text-xs font-bold text-slate-600">Destino:</label>
+          <select id="masivoDestinoSelect" class="w-full border rounded-lg p-2.5 bg-white text-sm outline-none mt-1"></select>
+        </div>
+      </div>
+
+      <div>
+        <label class="text-xs font-bold text-slate-600">Cantidad de cabezas genéricas a mover:</label>
+        <input type="number" id="masivoCantidadGenerica" value="0" min="0" class="w-full border rounded-lg p-2.5 text-sm outline-none mt-1">
+      </div>
+
+      <div class="space-y-1">
+        <label class="text-xs font-bold text-slate-600">O tildá las caravanas específicas que se mueven:</label>
+        <div id="masivoListaCaravanasContainer" class="border rounded-lg p-2 max-h-40 overflow-y-auto bg-slate-50 space-y-1"></div>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2">
+        <input type="text" id="masivoUsuarioInput" placeholder="Registra (Opcional)" class="border rounded-lg p-2.5 text-sm outline-none">
+        <input type="text" id="masivoNotasInput" placeholder="Notas" class="border rounded-lg p-2.5 text-sm outline-none">
+      </div>
+
+      <div class="flex justify-end gap-3 pt-2 border-t">
+        <button onclick="toggleModal('modalTrasladoMasivo', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
+        <button onclick="ejecutarTrasladoMasivo()" class="bg-indigo-700 text-white px-5 py-2 rounded-lg font-bold text-sm">Ejecutar Traslado Masivo</button>
       </div>
     </div>
   </div>
