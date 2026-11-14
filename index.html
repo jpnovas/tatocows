@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Administración Encargado de Mantenimiento</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <!-- React, ReactDOM y Babel para compilar JSX directo en el navegador -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+  <div id="root"></div>
+
+  <!-- Firebase SDKs -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getDatabase, ref, onValue, set, push, remove, update } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAcnfJFlnJKEtX_T1RDarphX2Be2rX8tEg",
+      authDomain: "tatocows.firebaseapp.com",
+      databaseURL: "https://tatocows-default-rtdb.firebaseio.com",
+      projectId: "tatocows",
+      storageBucket: "tatocows.firebasestorage.app",
+      messagingSenderId: "145845925802",
+      appId: "1:145845925802:web:40baed1fdbeb90b4991dd3",
+      measurementId: "G-3M1F1362RN"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Exponemos Firebase de forma limpia para React
+    window.FB = { db, ref, onValue, set, push, remove, update };
+    window.dispatchEvent(new Event('firebase-ready'));
+  </script>
+
+  <!-- Aplicación en React -->
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function App() {
+      const [fbReady, setFbReady] = useState(!!window.FB);
+      const [tab, setTab] = useState('corrales');
+
+      // Datos en tiempo real
+      const [corrales, setCorrales] = useState({});
+      const [historial, setHistorial] = useState([]);
+      const [fletes, setFletes] = useState([]);
+      const [tareas, setTareas] = useState({});
+      const [notas, setNotas] = useState({});
+
+      // Control de Modales
+      const [modal, setModal] = useState(null); // 'nuevoCorral', 'editarCorral', 'ingresar', 'egresar', 'trasladar', 'flete', 'nuevaTarea', 'archivadas', 'reset'
+
+      // Formularios
+      const [corralForm, setCorralForm] = useState({ id: '', nombre: '', observacion: '', color: 'emerald' });
+      const [movForm, setMovForm] = useState({ corralId: '', destinoId: '', cantidad: '', motivo: '', usuario: '', notas: '' });
+      const [fleteForm, setFleteForm] = useState({ transportista: '', chofer: '', guia: '', destino: '', cantidad: '', costo: '', estadoPago: 'Pendiente' });
+      const [tareaForm, setTareaForm] = useState({ titulo: '', observaciones: '' });
+      const [notaInput, setNotaInput] = useState('');
+      const [resetChecks, setResetChecks] = useState({ cabezas: false, corrales: false, fletes: false, historial: false, tareas: false, notas: false });
+      const [palabraBorrar, setPalabraBorrar] = useState('');
+
+      useEffect(() => {
+        if (!fbReady) {
+          const handler = () => setFbReady(true);
+          window.addEventListener('firebase-ready', handler);
+          return () => window.removeEventListener('firebase-ready', handler);
+        }
+
+        const { db, ref, onValue } = window.FB;
+
+        const unsubCorrales = onValue(ref(db, 'corrales'), snap => setCorrales(snap.val() || {}));
+        const unsubHistorial = onValue(ref(db, 'historial'), snap => {
+          const data = snap.val() || {};
+          const arr = Object.keys(data).map(k => ({ id: k, ...data[k] }));
+          arr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+          setHistorial(arr);
+        });
+        const unsubFletes = onValue(ref(db, 'fletes'), snap => {
+          const data = snap.val() || {};
+          const arr = Object.keys(data).map(k => ({ id: k, ...data[k] }));
+          arr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+          setFletes(arr);
+        });
+        const unsubTareas = onValue(ref(db, 'tareas'), snap => setTareas(snap.val() || {}));
+        const unsubNotas = onValue(ref(db, 'notas_rapidas'), snap => setNotas(snap.val() || {}));
+
+        return () => {
+          unsubCorrales(); unsubHistorial(); unsubFletes(); unsubTareas(); unsubNotas();
+        };
+      }, [fbReady]);
+
+      if (!fbReady) {
+        return (
+          <div className="min-h-screen flex items-center justify-center text-emerald-700 font-bold">
+            <i className="fa-solid fa-spinner fa-spin mr-2"></i> Conectando con Firebase...
+          </div>
+        );
+      }
+
+      const { db, ref, set, push, remove, update } = window.FB;
+
+      // Estadísticas
+      const corralKeys = Object.keys(corrales);
+      const totalVacas = corralKeys.reduce((acc, k) => acc + (corrales[k].cantidad || 0), 0);
+      const tareasActivas = Object.keys(tareas).filter(k => !tareas[k].archivada).length;
+      const tareasArchivadasKeys = Object.keys(tareas).filter(k => tareas[k].archivada);
+
+      // --- FUNCIONES LOTES / CORRALES ---
+      const abrirNuevoCorral = () => {
+        setCorralForm({ id: '', nombre: '', observacion: '', color: 'emerald' });
+        setModal('nuevoCorral');
+      };
+
+      const guardarNuevoCorral = () => {
+        if (!corralForm.nombre.trim()) return;
+        push(ref(db, 'corrales'), {
+          nombre: corralForm.nombre.trim(),
+          observacion: corralForm.observacion.trim(),
+          color: corralForm.color,
+          cantidad: 0
+        }).then(() => setModal(null));
+      };
+
+      const abrirEditarCorral = (id) => {
+        const c = corrales[id];
+        setCorralForm({ id, nombre: c.nombre || '', observacion: c.observacion || '', color: c.color || 'emerald' });
+        setModal('editarCorral');
+      };
+
+      const guardarEdicionCorral = () => {
+        if (!corralForm.nombre.trim()) return alert("El nombre no puede estar vacío.");
+        update(ref(db, `corrales/${corralForm.id}`), {
+          nombre: corralForm.nombre.trim(),
+          observacion: corralForm.observacion.trim(),
+          color: corralForm.color
+        }).then(() => setModal(null));
+      };
+
+      const eliminarCorral = (id, nombre) => {
+        if (confirm(`¿Estás seguro de eliminar el lote/corral "${nombre}"?`)) {
+          remove(ref(db, `corrales/${id}`));
+        }
+      };
+
+      // --- MOVIMIENTOS DE HACIENDA ---
+      const abrirModalMovimiento = (tipo) => {
+        if (corralKeys.length === 0) {
+          alert("Primero debés crear al menos un lote o corral con el botón '+ Nuevo Lote'.");
+          return;
+        }
+        const defaultMotivo = tipo === 'ingresar' ? 'Compra' : tipo === 'egresar' ? 'Venta' : '';
+        setMovForm({
+          corralId: corralKeys[0],
+          destinoId: corralKeys[1] || corralKeys[0],
+          cantidad: '',
+          motivo: defaultMotivo,
+          usuario: '',
+          notas: ''
+        });
+        setModal(tipo);
+      };
+
+      const ejecutarIngreso = () => {
+        const cant = parseInt(movForm.cantidad, 10);
+        if (!movForm.corralId || isNaN(cant) || cant <= 0) return alert("Ingresá una cantidad válida mayor a 0");
+        const c = corrales[movForm.corralId];
+        setModal(null);
+
+        set(ref(db, `corrales/${movForm.corralId}/cantidad`), (c.cantidad || 0) + cant);
+        push(ref(db, 'historial'), {
+          corralId: movForm.corralId,
+          nombreCorral: c.nombre,
+          tipo: 'SUMAR',
+          cantidad: cant,
+          motivo: movForm.motivo,
+          notas: movForm.notas.trim(),
+          usuario: movForm.usuario.trim() || 'Operador',
+          timestamp: Date.now()
+        });
+      };
+
+      const ejecutarEgreso = () => {
+        const cant = parseInt(movForm.cantidad, 10);
+        if (!movForm.corralId || isNaN(cant) || cant <= 0) return alert("Ingresá una cantidad válida mayor a 0");
+        const c = corrales[movForm.corralId];
+        if (cant > (c.cantidad || 0) && !confirm(`La cantidad (${cant}) supera los animales en el lote (${c.cantidad || 0}). ¿Continuar?`)) return;
+        setModal(null);
+
+        set(ref(db, `corrales/${movForm.corralId}/cantidad`), Math.max(0, (c.cantidad || 0) - cant));
+        push(ref(db, 'historial'), {
+          corralId: movForm.corralId,
+          nombreCorral: c.nombre,
+          tipo: 'RESTAR',
+          cantidad: cant,
+          motivo: movForm.motivo,
+          notas: movForm.notas.trim(),
+          usuario: movForm.usuario.trim() || 'Operador',
+          timestamp: Date.now()
+        });
+      };
+
+      const ejecutarTraslado = () => {
+        const cant = parseInt(movForm.cantidad, 10);
+        if (!movForm.corralId || !movForm.destinoId || isNaN(cant) || cant <= 0) return alert("Completá todos los campos.");
+        if (movForm.corralId === movForm.destinoId) return alert("El origen y destino no pueden ser el mismo.");
+        const orig = corrales[movForm.corralId];
+        const dest = corrales[movForm.destinoId];
+        if (cant > (orig.cantidad || 0) && !confirm(`Vas a sacar ${cant} cabezas, pero el origen tiene ${orig.cantidad || 0}. ¿Continuar?`)) return;
+        setModal(null);
+
+        set(ref(db, `corrales/${movForm.corralId}/cantidad`), Math.max(0, (orig.cantidad || 0) - cant));
+        set(ref(db, `corrales/${movForm.destinoId}/cantidad`), (dest.cantidad || 0) + cant);
+        push(ref(db, 'historial'), {
+          tipo: 'TRASLADO',
+          cantidad: cant,
+          motivo: 'Traslado entre lotes',
+          nombreCorral: `Desde ${orig.nombre} hacia ${dest.nombre}`,
+          notas: movForm.notas.trim(),
+          usuario: movForm.usuario.trim() || 'Operador',
+          timestamp: Date.now()
+        });
+      };
+
+      // --- FLETES ---
+      const guardarFlete = () => {
+        const cant = parseInt(fleteForm.cantidad, 10);
+        if (!fleteForm.transportista.trim() || isNaN(cant) || cant <= 0) return alert("Completá transportista y cantidad.");
+        push(ref(db, 'fletes'), {
+          ...fleteForm,
+          cantidad: cant,
+          costo: parseFloat(fleteForm.costo) || 0,
+          timestamp: Date.now()
+        }).then(() => {
+          setFleteForm({ transportista: '', chofer: '', guia: '', destino: '', cantidad: '', costo: '', estadoPago: 'Pendiente' });
+          setModal(null);
+        });
+      };
+
+      // --- KANBAN Y NOTAS ---
+      const guardarTarea = () => {
+        if (!tareaForm.titulo.trim()) return alert("Ingresá qué trabajo hay que hacer.");
+        push(ref(db, 'tareas'), {
+          titulo: tareaForm.titulo.trim(),
+          observaciones: tareaForm.observaciones.trim(),
+          estado: 'tomado',
+          archivada: false,
+          timestamp: Date.now()
+        }).then(() => {
+          setTareaForm({ titulo: '', observaciones: '' });
+          setModal(null);
+        });
+      };
+
+      const editarObsTarea = (id) => {
+        const actual = tareas[id]?.observaciones || '';
+        const nueva = prompt("Actualizar observaciones o detalles:", actual);
+        if (nueva !== null) update(ref(db, `tareas/${id}`), { observaciones: nueva.trim() });
+      };
+
+      const archivarCompletadas = () => {
+        let count = 0;
+        Object.keys(tareas).forEach(id => {
+          if (tareas[id].estado === 'completado' && !tareas[id].archivada) {
+            update(ref(db, `tareas/${id}`), { archivada: true, fechaArchivado: Date.now() });
+            count++;
+          }
+        });
+        alert(count > 0 ? `Se archivaron ${count} tareas completadas.` : "No hay tareas completadas nuevas para archivar.");
+      };
+
+      const guardarNota = () => {
+        if (!notaInput.trim()) return;
+        push(ref(db, 'notas_rapidas'), { texto: notaInput.trim(), timestamp: Date.now() }).then(() => setNotaInput(''));
+      };
+
+      // --- REINICIO SEGURO ---
+      const ejecutarReset = () => {
+        if (palabraBorrar.trim() !== 'BORRAR') return alert("Escribí la palabra exacta BORRAR en mayúsculas.");
+        if (resetChecks.corrales) {
+          set(ref(db, 'corrales'), null);
+        } else if (resetChecks.cabezas) {
+          corralKeys.forEach(id => set(ref(db, `corrales/${id}/cantidad`), 0));
+        }
+        if (resetChecks.fletes) set(ref(db, 'fletes'), null);
+        if (resetChecks.historial) set(ref(db, 'historial'), null);
+        if (resetChecks.tareas) set(ref(db, 'tareas'), null);
+        if (resetChecks.notas) set(ref(db, 'notas_rapidas'), null);
+
+        alert("Reinicio aplicado correctamente.");
+        setPalabraBorrar('');
+        setModal(null);
+      };
+
+      const colorMap = {
+        emerald: 'border-l-8 border-emerald-600 bg-emerald-50/20',
+        blue: 'border-l-8 border-blue-600 bg-blue-50/20',
+        amber: 'border-l-8 border-amber-500 bg-amber-50/20',
+        purple: 'border-l-8 border-purple-600 bg-purple-50/20',
+        rose: 'border-l-8 border-rose-600 bg-rose-50/20',
+        slate: 'border-l-8 border-slate-400 bg-white'
+      };
+
+      const totalGastadoFletes = fletes.reduce((acc, f) => acc + (f.costo || 0), 0);
+      const totalPendienteFletes = fletes.filter(f => f.estadoPago === 'Pendiente').reduce((acc, f) => acc + (f.costo || 0), 0);
+
+      return (
+        <div className="pb-20">
+          {/* Header */}
+          <header className="bg-emerald-700 text-white p-4 shadow-md sticky top-0 z-10">
+            <div className="max-w-3xl mx-auto">
+              <h1 className="text-xl font-bold flex items-center gap-2">
+                <i className="fa-solid fa-cow"></i> Administracion Encargado de Mantenimiento
+              </h1>
+              <p className="text-xs text-emerald-200">programado para Esteban Company</p>
+            </div>
+          </header>
+
+          <main className="max-w-3xl mx-auto p-4 space-y-6">
+            {/* Tabs */}
+            <div className="grid grid-cols-4 bg-white rounded-xl shadow p-1 gap-1 text-center">
+              {[
+                { id: 'corrales', label: 'Lotes / Stock', activeBg: 'bg-emerald-600' },
+                { id: 'fletes', label: 'Fletes', activeBg: 'bg-blue-600' },
+                { id: 'tareas', label: 'Tablero', activeBg: 'bg-indigo-600' },
+                { id: 'historial', label: 'Historial', activeBg: 'bg-slate-700' }
+              ].map(t => (
+                <button
+                  key={t.id}
+                  onClick={() => setTab(t.id)}
+                  className={`py-2 font-bold text-xs rounded-lg transition ${tab === t.id ? `${t.activeBg} text-white` : 'text-slate-600'}`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Stats */}
+            <section className="grid grid-cols-4 gap-2">
+              <div className="bg-white p-2.5 rounded-xl shadow border-l-4 border-emerald-600">
+                <p className="text-[9px] font-bold text-slate-400 uppercase">Cabezas</p>
+                <p className="text-xl font-black text-slate-800">{totalVacas}</p>
+              </div>
+              <div className="bg-white p-2.5 rounded-xl shadow border-l-4 border-blue-600">
+                <p className="text-[9px] font-bold text-slate-400 uppercase">Lotes</p>
+                <p className="text-xl font-black text-slate-800">{corralKeys.length}</p>
+              </div>
+              <div className="bg-white p-2.5 rounded-xl shadow border-l-4 border-amber-500">
+                <p className="text-[9px] font-bold text-slate-400 uppercase">Fletes</p>
+                <p className="text-xl font-black text-slate-800">{fletes.length}</p>
+              </div>
+              <div className="bg-white p-2.5 rounded-xl shadow border-l-4 border-indigo-500">
+                <p className="text-[9px] font-bold text-slate-400 uppercase">Tareas</p>
+                <p className="text-xl font-black text-slate-800">{tareasActivas}</p>
+              </div>
+            </section>
+
+            {/* SECCIÓN 1: CORRALES */}
+            {tab === 'corrales' && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-md font-bold text-slate-700 flex items-center gap-2">
+                    <i className="fa-solid fa-layer-group"></i> Operaciones de Hacienda y Lotes
+                  </h2>
+                  <button onClick={abrirNuevoCorral} className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-bold shadow flex items-center gap-1">
+                    <i className="fa-solid fa-plus"></i> Nuevo Lote
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  <button onClick={() => abrirModalMovimiento('ingresar')} className="bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1">
+                    <i className="fa-solid fa-circle-plus text-xl"></i><span className="text-xs">INGRESAR</span>
+                  </button>
+                  <button onClick={() => abrirModalMovimiento('egresar')} className="bg-rose-600 hover:bg-rose-700 active:scale-95 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1">
+                    <i className="fa-solid fa-circle-minus text-xl"></i><span className="text-xs">EGRESAR</span>
+                  </button>
+                  <button onClick={() => abrirModalMovimiento('trasladar')} className="bg-blue-600 hover:bg-blue-700 active:scale-95 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1">
+                    <i className="fa-solid fa-arrow-right-arrow-left text-xl"></i><span className="text-xs">TRASLADAR</span>
+                  </button>
+                </div>
+
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center">
+                    <h3 className="text-sm font-bold text-slate-600">Estado Actual de Lotes / Corrales</h3>
+                    <span className="text-[11px] text-slate-400">Tocá el lápiz para editar</span>
+                  </div>
+                  {corralKeys.length === 0 ? (
+                    <div className="bg-white p-6 rounded-xl text-center text-slate-400 text-sm">No hay lotes registrados. Creá el primero arriba.</div>
+                  ) : (
+                    corralKeys.map(id => {
+                      const c = corrales[id];
+                      return (
+                        <div key={id} className={`bg-white p-4 rounded-xl shadow flex items-center justify-between gap-3 ${colorMap[c.color] || colorMap.emerald}`}>
+                          <div className="min-w-0 flex-1">
+                            <h3 className="font-black text-base text-slate-800 break-words">{c.nombre}</h3>
+                            {c.observacion ? (
+                              <span className="inline-block bg-white/80 text-slate-700 text-xs font-semibold px-2 py-0.5 rounded border border-slate-200 mt-1 max-w-full truncate">{c.observacion}</span>
+                            ) : (
+                              <span className="text-xs text-slate-400 italic block mt-0.5">Sin observación / cultivo</span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 flex-shrink-0">
+                            <div className="text-right mr-1">
+                              <span className="text-xl font-black text-emerald-700">{c.cantidad || 0}</span>
+                              <span className="block text-[10px] text-slate-500 -mt-1">cabezas</span>
+                            </div>
+                            <button onClick={() => abrirEditarCorral(id)} className="text-slate-400 hover:text-blue-600 p-2 bg-white rounded-lg shadow-sm">
+                              <i className="fa-solid fa-pen text-xs"></i>
+                            </button>
+                            <button onClick={() => eliminarCorral(id, c.nombre)} className="text-slate-300 hover:text-rose-500 p-2">
+                              <i className="fa-solid fa-trash text-xs"></i>
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* SECCIÓN 2: FLETES */}
+            {tab === 'fletes' && (
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <h2 className="text-md font-bold text-slate-700 flex items-center gap-2">
+                    <i className="fa-solid fa-truck-moving"></i> Registro de Transportes y DTE
+                  </h2>
+                  <button onClick={() => setModal('flete')} className="bg-blue-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow">+ Nuevo Flete</button>
+                </div>
+                <div className="bg-blue-50 border border-blue-200 p-3 rounded-xl flex justify-between items-center text-xs">
+                  <div>Total Gastado: <strong className="text-blue-900">${totalGastadoFletes.toLocaleString()}</strong></div>
+                  <div>Pendiente: <strong className="text-amber-700">${totalPendienteFletes.toLocaleString()}</strong></div>
+                </div>
+                <div className="space-y-3">
+                  {fletes.length === 0 ? (
+                    <div className="bg-white p-6 rounded-xl text-center text-slate-400 text-sm">No hay fletes registrados.</div>
+                  ) : (
+                    fletes.map(f => (
+                      <div key={f.id} className="bg-white p-4 rounded-xl shadow space-y-2 text-sm">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="font-bold text-base text-slate-800"><i className="fa-solid fa-truck text-blue-600 mr-1"></i> {f.transportista}</h3>
+                            <p className="text-xs text-slate-500">{new Date(f.timestamp).toLocaleDateString('es-AR')} {f.chofer ? `• Chofer: ${f.chofer}` : ''}</p>
+                          </div>
+                          <button onClick={() => { if(confirm("¿Eliminar flete?")) remove(ref(db, `fletes/${f.id}`)); }} className="text-slate-300 hover:text-rose-500 p-1">
+                            <i className="fa-solid fa-trash"></i>
+                          </button>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-lg text-xs">
+                          <div><span className="text-slate-400">Guía DTE:</span> <strong>{f.guia || 'N/D'}</strong></div>
+                          <div><span className="text-slate-400">Cantidad:</span> <strong className="text-emerald-700">{f.cantidad} cab.</strong></div>
+                          <div><span className="text-slate-400">Destino:</span> <strong>{f.destino || 'N/D'}</strong></div>
+                          <div><span className="text-slate-400">Costo:</span> <strong>${(f.costo || 0).toLocaleString()}</strong></div>
+                        </div>
+                        <div className="flex justify-between items-center pt-1">
+                          <button onClick={() => update(ref(db, `fletes/${f.id}`), { estadoPago: f.estadoPago === 'Pagado' ? 'Pendiente' : 'Pagado' })} className="text-xs text-blue-600 hover:underline font-semibold">
+                            <i className="fa-solid fa-rotate mr-1"></i> Cambiar estado
+                          </button>
+                          <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full ${f.estadoPago === 'Pagado' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'}`}>
+                            Pago: {f.estadoPago}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* SECCIÓN 3: KANBAN Y NOTAS */}
+            {tab === 'tareas' && (
+              <div className="space-y-4">
+                <div className="flex flex-wrap justify-between items-center gap-2">
+                  <div>
+                    <h2 className="text-md font-bold text-slate-700 flex items-center gap-2"><i className="fa-solid fa-clipboard-list"></i> Tablero de Labores</h2>
+                    <p className="text-xs text-slate-400">Tocá los detalles para editar</p>
+                  </div>
+                  <div className="flex gap-1.5">
+                    <button onClick={() => setModal('archivadas')} className="bg-slate-700 text-white text-xs px-2.5 py-2 rounded-lg font-bold shadow">
+                      Archivadas ({tareasArchivadasKeys.length})
+                    </button>
+                    <button onClick={archivarCompletadas} className="bg-slate-200 text-slate-700 text-xs px-2.5 py-2 rounded-lg font-bold shadow">
+                      Archivar
+                    </button>
+                    <button onClick={() => setModal('nuevaTarea')} className="bg-indigo-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow">
+                      + Nueva
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  {[
+                    { key: 'tomado', label: 'Tomadas', bg: 'bg-slate-200/70', badge: 'bg-slate-300 text-slate-700' },
+                    { key: 'en_ejecucion', label
