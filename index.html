@@ -72,7 +72,6 @@
       renderNotas();
     });
 
-    // Funciones globales expuestas a window
     function populateSelects() {
       const opciones = Object.keys(window.corralesData || {}).map(id => 
         `<option value="${id}">${window.corralesData[id].nombre} (${window.corralesData[id].cantidad || 0} cab.)</option>`
@@ -83,6 +82,34 @@
       });
     }
     window.populateSelects = populateSelects;
+
+    // EXPORTAR A CSV (EXCEL)
+    window.exportarStockCSV = function() {
+      const corrales = window.corralesData || {};
+      const keys = Object.keys(corrales);
+      if (keys.length === 0) {
+        alert("No hay datos de lotes para exportar.");
+        return;
+      }
+
+      let csvContent = "\uFEFFLote / Corral,Observacion / Cultivo,Cantidad Cabezas\n";
+      keys.forEach(id => {
+        const c = corrales[id];
+        const nombre = `"${(c.nombre || '').replace(/"/g, '""')}"`;
+        const obs = `"${(c.observacion || '').replace(/"/g, '""')}"`;
+        const cantidad = c.cantidad || 0;
+        csvContent += `${nombre},${obs},${cantidad}\n`;
+      });
+
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `stock_hacienda_${new Date().toISOString().slice(0,10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    };
 
     window.crearCorral = function() {
       const nombre = document.getElementById('nombreCorralInput').value.trim();
@@ -229,7 +256,7 @@
       document.getElementById('inputPalabraBorrar').value = '';
     };
 
-    // Funciones de Renderizado Global
+    // FUNCIONES DE RENDERIZADO CON FILTRO Y ORDENAMIENTO
     function renderStats() {
       const corrales = window.corralesData || {};
       const keys = Object.keys(corrales);
@@ -241,14 +268,48 @@
       document.getElementById('statTotalTareas').innerText = tareasActivas;
     }
 
-    function renderCorrales() {
+    window.renderCorrales = function() {
       const container = document.getElementById('listaCorrales');
       const corrales = window.corralesData || {};
-      const keys = Object.keys(corrales);
+      let keys = Object.keys(corrales);
+
       if (keys.length === 0) {
         container.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-slate-400 text-sm">No hay lotes registrados. Creá el primero arriba.</div>`;
         return;
       }
+
+      // Aplicar filtro de búsqueda
+      const buscadorEl = document.getElementById('buscarCorralInput');
+      const filtro = buscadorEl ? buscadorEl.value.toLowerCase().trim() : '';
+      if (filtro) {
+        keys = keys.filter(id => {
+          const c = corrales[id];
+          return (c.nombre && c.nombre.toLowerCase().includes(filtro)) || 
+                 (c.observacion && c.observacion.toLowerCase().includes(filtro));
+        });
+      }
+
+      // Aplicar ordenamiento
+      const ordenEl = document.getElementById('ordenCorralSelect');
+      const criterioOrden = ordenEl ? ordenEl.value : 'nombre';
+      keys.sort((a, b) => {
+        const cA = corrales[a];
+        const cB = corrales[b];
+        if (criterioOrden === 'nombre') {
+          return (cA.nombre || '').localeCompare(cB.nombre || '');
+        } else if (criterioOrden === 'mayor_cantidad') {
+          return (cB.cantidad || 0) - (cA.cantidad || 0);
+        } else if (criterioOrden === 'menor_cantidad') {
+          return (cA.cantidad || 0) - (cB.cantidad || 0);
+        }
+        return 0;
+      });
+
+      if (keys.length === 0) {
+        container.innerHTML = `<div class="bg-white p-6 rounded-xl text-center text-slate-400 text-sm">No se encontraron lotes con ese criterio de búsqueda.</div>`;
+        return;
+      }
+
       const colorMap = {
         emerald: 'border-l-8 border-emerald-600 bg-emerald-50/20',
         blue: 'border-l-8 border-blue-600 bg-blue-50/20',
@@ -257,6 +318,7 @@
         rose: 'border-l-8 border-rose-600 bg-rose-50/20',
         slate: 'border-l-8 border-slate-400 bg-white'
       };
+
       container.innerHTML = keys.map(id => {
         const c = corrales[id];
         return `
@@ -454,8 +516,22 @@
     <div id="seccionCorrales" class="space-y-4">
       <div class="flex justify-between items-center">
         <h2 class="text-md font-bold text-slate-700 flex items-center gap-2"><i class="fa-solid fa-layer-group"></i> Operaciones de Hacienda y Lotes</h2>
-        <button onclick="toggleModal('modalNuevoCorral', true)" class="bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow"><i class="fa-solid fa-plus"></i> Nuevo Lote</button>
+        <div class="flex gap-1">
+          <button onclick="exportarStockCSV()" class="bg-blue-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow flex items-center gap-1" title="Descargar planilla CSV"><i class="fa-solid fa-file-excel"></i> Exportar</button>
+          <button onclick="toggleModal('modalNuevoCorral', true)" class="bg-emerald-600 text-white text-xs px-3 py-2 rounded-lg font-bold shadow flex items-center gap-1"><i class="fa-solid fa-plus"></i> Nuevo Lote</button>
+        </div>
       </div>
+
+      <!-- Barra de Filtros y Ordenamiento -->
+      <div class="bg-white p-3 rounded-xl shadow flex flex-col sm:flex-row gap-2">
+        <input type="text" id="buscarCorralInput" oninput="renderCorrales()" placeholder="🔍 Buscar por lote u observación..." class="w-full border rounded-lg p-2 text-sm outline-none focus:ring-2 focus:ring-emerald-500">
+        <select id="ordenCorralSelect" onchange="renderCorrales()" class="border rounded-lg p-2 text-sm bg-white outline-none">
+          <option value="nombre">Ordenar por Nombre</option>
+          <option value="mayor_cantidad">Mayor Cantidad de Cabezas</option>
+          <option value="menor_cantidad">Menor Cantidad de Cabezas</option>
+        </select>
+      </div>
+
       <div class="grid grid-cols-3 gap-2">
         <button onclick="abrirModal('modalIngresar')" class="bg-emerald-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-plus text-xl"></i><span class="text-xs">INGRESAR</span></button>
         <button onclick="abrirModal('modalEgresar')" class="bg-rose-600 text-white font-bold p-3 rounded-xl shadow flex flex-col items-center justify-center gap-1"><i class="fa-solid fa-circle-minus text-xl"></i><span class="text-xs">EGRESAR</span></button>
