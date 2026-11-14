@@ -7,45 +7,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
-  <!-- Service Worker con caché dinámica total (incluye CDNs y librerías externas) -->
+  <!-- Registro del Service Worker definitivo -->
   <script>
     if ('serviceWorker' in navigator) {
-      const swCode = `
-        const CACHE_NAME = 'tato-mantenimiento-test-v3';
-        self.addEventListener('install', e => {
-          self.skipWaiting();
-        });
-        self.addEventListener('activate', e => {
-          e.waitUntil(clients.claim());
-        });
-        self.addEventListener('fetch', e => {
-          e.respondWith(
-            fetch(e.request)
-              .then(response => {
-                if (response && response.status === 200) {
-                  let responseClone = response.clone();
-                  caches.open(CACHE_NAME).then(cache => {
-                    cache.put(e.request, responseClone);
-                  });
-                }
-                return response;
-              })
-              .catch(() => {
-                return caches.match(e.request).then(cachedResponse => {
-                  if (cachedResponse) {
-                    return cachedResponse;
-                  }
-                  if (e.request.mode === 'navigate') {
-                    return caches.match('./');
-                  }
-                });
-              })
-          );
-        });
-      `;
-      const blob = new Blob([swCode], { type: 'text/javascript' });
-      const swUrl = URL.createObjectURL(blob);
-      navigator.serviceWorker.register(swUrl).catch(err => console.log('SW error:', err));
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js')
+          .then(reg => console.log('SW registrado correctamente:', reg.scope))
+          .catch(err => console.log('SW error:', err));
+      });
     }
   </script>
 
