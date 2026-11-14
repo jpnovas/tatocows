@@ -62,8 +62,9 @@
     onValue(animalesRef, (snapshot) => {
       window.animalesData = snapshot.val() || {};
       renderAnimales();
-      renderCorrales(); // Actualiza conteo de lotes basado en caravanas
+      renderCorrales(); 
       renderStats();
+      populateSelects();
     });
 
     onValue(historialRef, (snapshot) => {
@@ -94,11 +95,11 @@
 
     function populateSelects() {
       const corrales = window.corralesData || {};
-      const opciones = Object.keys(corrales).map(id => 
-        `<option value="${id}">${corrales[id].nombre}</option>`
-      ).join('');
+      const opciones = Object.keys(corrales).length > 0 
+        ? Object.keys(corrales).map(id => `<option value="${id}">${corrales[id].nombre}</option>`).join('')
+        : '<option value="">No hay lotes creados</option>';
       
-      ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect', 'animalCorralSelect', 'editAnimalCorralSelect'].forEach(id => {
+      ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect', 'animalCorralSelect', 'editAnimalCorralSelect', 'moverCorralSelect'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = opciones;
       });
@@ -112,12 +113,13 @@
       const keys = Object.keys(corrales);
       if (keys.length === 0) return alert("No hay datos de lotes para exportar.");
 
-      let csvContent = "\uFEFFLote / Corral,Observacion / Cultivo,Cantidad Cabezas\n";
+      let csvContent = "\uFEFFLote / Corral,Observacion / Cultivo,Con Caravana,Genericas,Total Cabezas\n";
       keys.forEach(id => {
         const c = corrales[id];
-        // Cuenta caravanas activas en este corral
-        const cabezas = Object.values(animales).filter(a => a.corralId === id && a.estado === 'activo').length || c.cantidad || 0;
-        csvContent += `"${(c.nombre || '').replace(/"/g, '""')}","${(c.observacion || '').replace(/"/g, '""')}",${cabezas}\n`;
+        const caravanasEnLote = Object.values(animales).filter(a => a.corralId === id && a.estado === 'activo').length;
+        const baseGenerica = c.cantidadGenerica !== undefined ? c.cantidadGenerica : (c.cantidad || 0);
+        const totalCabezas = caravanasEnLote + baseGenerica;
+        csvContent += `"${(c.nombre || '').replace(/"/g, '""')}","${(c.observacion || '').replace(/"/g, '""')}",${caravanasEnLote},${baseGenerica},${totalCabezas}\n`;
       });
 
       const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -130,7 +132,7 @@
       document.body.removeChild(a);
     };
 
-    // GESTIÓN DE ANIMALES (CARAVANAS) CON SECUENCIA AUTOMÁTICA
+    // GESTIÓN DE ANIMALES (CARAVANAS) CON EDICIÓN Y SECUENCIA
     window.guardarAnimal = function() {
       const caravana = document.getElementById('animalCaravanaInput').value.trim();
       const raza = document.getElementById('animalRazaInput').value.trim();
@@ -147,7 +149,6 @@
       set(nuevoRef, {
         caravana, raza, edad, peso, corralId, observaciones: obs, estado: 'activo', timestamp: Date.now()
       }).then(() => {
-        // Autoincrementa la siguiente caravana si es numérica para facilitar la carga en manga
         const inputCaravana = document.getElementById('animalCaravanaInput');
         if (!isNaN(caravana)) {
           inputCaravana.value = parseInt(caravana, 10) + 1;
@@ -160,13 +161,40 @@
       });
     };
 
+    window.abrirEditarAnimal = function(id) {
+      const animal = window.animalesData[id];
+      if (!animal) return;
+      document.getElementById('editAnimalId').value = id;
+      document.getElementById('editAnimalCaravanaInput').value = animal.caravana || '';
+      document.getElementById('editAnimalRazaInput').value = animal.raza || '';
+      document.getElementById('editAnimalEdadInput').value = animal.edad || '';
+      document.getElementById('editAnimalPesoInput').value = animal.peso || '';
+      populateSelects();
+      document.getElementById('editAnimalCorralSelect').value = animal.corralId || '';
+      document.getElementById('editAnimalObsInput').value = animal.observaciones || '';
+      toggleModal('modalEditarAnimal', true);
+    };
+
+    window.guardarEdicionAnimal = function() {
+      const id = document.getElementById('editAnimalId').value;
+      const caravana = document.getElementById('editAnimalCaravanaInput').value.trim();
+      const raza = document.getElementById('editAnimalRazaInput').value.trim();
+      const edad = document.getElementById('editAnimalEdadInput').value.trim();
+      const peso = parseFloat(document.getElementById('editAnimalPesoInput').value) || 0;
+      const corralId = document.getElementById('editAnimalCorralSelect').value;
+      const observaciones = document.getElementById('editAnimalObsInput').value.trim();
+
+      if (!id || !caravana || !corralId) return alert("Completá los campos obligatorios.");
+      toggleModal('modalEditarAnimal', false);
+      update(ref(db, `animales/${id}`), { caravana, raza, edad, peso, corralId, observaciones });
+    };
+
     window.abrirMoverCaravana = function(id) {
       const animal = window.animalesData[id];
       if (!animal) return;
       document.getElementById('moverAnimalId').value = id;
       document.getElementById('moverCaravanaTxt').innerText = animal.caravana;
       populateSelects();
-      // Selecciona por defecto el corral actual del animal
       document.getElementById('moverCorralSelect').value = animal.corralId || '';
       toggleModal('modalMoverCaravana', true);
     };
@@ -174,10 +202,25 @@
     window.ejecutarMoverCaravana = function() {
       const id = document.getElementById('moverAnimalId').value;
       const nuevoCorralId = document.getElementById('moverCorralSelect').value;
-      if (!id || !nuevoCorralId) return;
+      const animal = window.animalesData[id];
+      if (!id || !nuevoCorralId || !animal) return;
 
+      const corralOrigenId = animal.corralId;
       toggleModal('modalMoverCaravana', false);
-      update(ref(db, `animales/${id}`), { corralId: nuevoCorralId });
+
+      update(ref(db, `animales/${id}`), { corralId: nuevoCorralId }).then(() => {
+        const origenNombre = window.corralesData[corralOrigenId]?.nombre || 'Origen';
+        const destinoNombre = window.corralesData[nuevoCorralId]?.nombre || 'Destino';
+        set(push(historialRef), {
+          tipo: 'TRASLADO',
+          cantidad: 1,
+          motivo: `Traslado individual Caravana ${animal.caravana}`,
+          nombreCorral: `Desde ${origenNombre} hacia ${destinoNombre}`,
+          notas: `Cambio de lote individual`,
+          usuario: 'Operador',
+          timestamp: Date.now()
+        });
+      });
     };
 
     window.eliminarAnimal = function(id, caravana) {
@@ -193,7 +236,7 @@
       const color = document.getElementById('colorCorralInput').value;
       if (!nombre) return;
       toggleModal('modalNuevoCorral', false);
-      set(push(corralesRef), { nombre, observacion, color, cantidad: 0 }).then(() => {
+      set(push(corralesRef), { nombre, observacion, color, cantidadGenerica: 0 }).then(() => {
         document.getElementById('nombreCorralInput').value = '';
         document.getElementById('obsCorralInput').value = '';
       });
@@ -234,8 +277,10 @@
       if (!corral) return;
       
       toggleModal('modalIngresar', false);
-      const stockActual = (corral.cantidad || 0) + cantidad;
-      set(ref(db, `corrales/${corralId}/cantidad`), stockActual);
+      const actualGenerico = corral.cantidadGenerica !== undefined ? corral.cantidadGenerica : (corral.cantidad || 0);
+      const nuevoGenerico = actualGenerico + cantidad;
+      
+      update(ref(db, `corrales/${corralId}`), { cantidadGenerica: nuevoGenerico });
       set(push(historialRef), { corralId, nombreCorral: corral.nombre, tipo: 'SUMAR', cantidad, motivo, notas, usuario, timestamp: Date.now() });
     };
 
@@ -249,9 +294,17 @@
       const corral = window.corralesData[corralId];
       if (!corral) return;
       
+      const actualGenerico = corral.cantidadGenerica !== undefined ? corral.cantidadGenerica : (corral.cantidad || 0);
+      
+      // VALIDACIÓN DE SEGURIDAD: No permitir egresar más de lo que hay
+      if (cantidad > actualGenerico) {
+        return alert(`⚠️ No se puede egresar ${cantidad} cabezas genéricas. El lote "${corral.nombre}" solo tiene ${actualGenerico} disponibles.`);
+      }
+
       toggleModal('modalEgresar', false);
-      const stockActual = Math.max(0, (corral.cantidad || 0) - cantidad);
-      set(ref(db, `corrales/${corralId}/cantidad`), stockActual);
+      const nuevoGenerico = actualGenerico - cantidad;
+      
+      update(ref(db, `corrales/${corralId}`), { cantidadGenerica: nuevoGenerico });
       set(push(historialRef), { corralId, nombreCorral: corral.nombre, tipo: 'RESTAR', cantidad, motivo, notas, usuario, timestamp: Date.now() });
     };
 
@@ -266,10 +319,20 @@
       const corralDestino = window.corralesData[destinoId];
       if (!corralOrigen || !corralDestino) return;
       
+      const genOrigen = corralOrigen.cantidadGenerica !== undefined ? corralOrigen.cantidadGenerica : (corralOrigen.cantidad || 0);
+      
+      // VALIDACIÓN DE SEGURIDAD: No permitir trasladar más genéricas de las disponibles
+      if (cantidad > genOrigen) {
+        return alert(`⚠️ No se pueden trasladar ${cantidad} cabezas genéricas. El lote de origen "${corralOrigen.nombre}" solo cuenta con ${genOrigen} disponibles.`);
+      }
+
       toggleModal('modalTraslado', false);
-      set(ref(db, `corrales/${origenId}/cantidad`), Math.max(0, (corralOrigen.cantidad || 0) - cantidad));
-      set(ref(db, `corrales/${destinoId}/cantidad`), (corralDestino.cantidad || 0) + cantidad);
-      set(push(historialRef), { tipo: 'TRASLADO', cantidad, motivo: 'Traslado entre lotes', nombreCorral: `Desde ${corralOrigen.nombre} hacia ${corralDestino.nombre}`, notas, usuario, timestamp: Date.now() });
+      const genDestino = corralDestino.cantidadGenerica !== undefined ? corralDestino.cantidadGenerica : (corralDestino.cantidad || 0);
+
+      update(ref(db, `corrales/${origenId}`), { cantidadGenerica: genOrigen - cantidad });
+      update(ref(db, `corrales/${destinoId}`), { cantidadGenerica: genDestino + cantidad });
+      
+      set(push(historialRef), { tipo: 'TRASLADO', cantidad, motivo: 'Traslado genérico entre lotes', nombreCorral: `Desde ${corralOrigen.nombre} hacia ${corralDestino.nombre}`, notas, usuario, timestamp: Date.now() });
     };
 
     window.guardarFlete = function() {
@@ -329,7 +392,9 @@
     window.ejecutarReinicioSeguro = function() {
       if (document.getElementById('inputPalabraBorrar').value.trim() !== "BORRAR") return alert("Escribí BORRAR en mayúsculas.");
       if (document.getElementById('chkCorrales').checked) set(corralesRef, null);
-      else if (document.getElementById('chkCabezas').checked) Object.keys(window.corralesData).forEach(id => set(ref(db, `corrales/${id}/cantidad`), 0));
+      else if (document.getElementById('chkCabezas').checked) {
+        Object.keys(window.corralesData).forEach(id => update(ref(db, `corrales/${id}`), { cantidadGenerica: 0 }));
+      }
       if (document.getElementById('chkFletes').checked) set(fletesRef, null);
       if (document.getElementById('chkHistorial').checked) set(historialRef, null);
       if (document.getElementById('chkTareas').checked) set(tareasRef, null);
@@ -345,10 +410,9 @@
       const animales = window.animalesData || {};
       const keys = Object.keys(corrales);
       
-      // Total de cabezas (prioriza contar caravanas activas, sino suma stock genérico)
       let totalCaravanas = Object.values(animales).filter(a => a.estado === 'activo').length;
-      let totalGenerico = keys.reduce((acc, k) => acc + (corrales[k].cantidad || 0), 0);
-      let total = totalCaravanas > 0 ? totalCaravanas : totalGenerico;
+      let totalGenerico = keys.reduce((acc, k) => acc + (corrales[k].cantidadGenerica !== undefined ? corrales[k].cantidadGenerica : (corrales[k].cantidad || 0)), 0);
+      let total = totalCaravanas + totalGenerico;
 
       let tareasActivas = Object.values(window.tareasData || {}).filter(t => !t.archivada).length;
       document.getElementById('statTotalVacas').innerText = total;
@@ -408,8 +472,9 @@
                 <p class="text-xs text-slate-500">Lote actual: <strong class="text-emerald-900">${corralNombre}</strong></p>
               </div>
               <div class="flex items-center gap-1">
-                <button onclick="abrirMoverCaravana('${id}')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-2.5 py-1.5 rounded-lg text-xs font-bold"><i class="fa-solid fa-arrow-right-arrow-left mr-1"></i> Mover</button>
-                <button onclick="eliminarAnimal('${id}', '${a.caravana}')" class="text-slate-300 hover:text-rose-600 p-1.5"><i class="fa-solid fa-trash"></i></button>
+                <button onclick="abrirMoverCaravana('${id}')" class="bg-blue-50 text-blue-700 hover:bg-blue-100 px-2 py-1.5 rounded-lg text-xs font-bold" title="Mover de Lote"><i class="fa-solid fa-arrow-right-arrow-left"></i></button>
+                <button onclick="abrirEditarAnimal('${id}')" class="bg-amber-50 text-amber-700 hover:bg-amber-100 px-2 py-1.5 rounded-lg text-xs font-bold" title="Editar Ficha"><i class="fa-solid fa-pen"></i></button>
+                <button onclick="eliminarAnimal('${id}', '${a.caravana}')" class="text-slate-300 hover:text-rose-600 p-1.5" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
               </div>
             </div>
             <div class="grid grid-cols-3 gap-2 bg-slate-50 p-2.5 rounded-lg text-xs">
@@ -423,7 +488,7 @@
       }).join('');
     }
 
-    // RENDERIZAR LOTES (Contando automáticamente las caravanas que tienen adentro)
+    // RENDERIZAR LOTES (Suma mixta: Caravanas activas + Stock genérico)
     window.renderCorrales = function() {
       const container = document.getElementById('listaCorrales');
       const corrales = window.corralesData || {};
@@ -452,12 +517,17 @@
       keys.sort((a, b) => {
         const cA = corrales[a];
         const cB = corrales[b];
-        const cantA = Object.values(animales).filter(anim => anim.corralId === a && anim.estado === 'activo').length || cA.cantidad || 0;
-        const cantB = Object.values(animales).filter(anim => anim.corralId === b && anim.estado === 'activo').length || cB.cantidad || 0;
+        const carA = Object.values(animales).filter(anim => anim.corralId === a && anim.estado === 'activo').length;
+        const genA = cA.cantidadGenerica !== undefined ? cA.cantidadGenerica : (cA.cantidad || 0);
+        const carB = Object.values(animales).filter(anim => anim.corralId === b && anim.estado === 'activo').length;
+        const genB = cB.cantidadGenerica !== undefined ? cB.cantidadGenerica : (cB.cantidad || 0);
+
+        const totalA = carA + genA;
+        const totalB = carB + genB;
 
         if (criterioOrden === 'nombre') return (cA.nombre || '').localeCompare(cB.nombre || '');
-        if (criterioOrden === 'mayor_cantidad') return cantB - cantA;
-        if (criterioOrden === 'menor_cantidad') return cantA - cantB;
+        if (criterioOrden === 'mayor_cantidad') return totalB - totalA;
+        if (criterioOrden === 'menor_cantidad') return totalA - totalB;
         return 0;
       });
 
@@ -477,18 +547,20 @@
 
       container.innerHTML = keys.map(id => {
         const c = corrales[id];
-        // Conteo automático de cabezas por caravanas activas en este corral
-        const cantidadCabezas = Object.values(animales).filter(anim => anim.corralId === id && anim.estado === 'activo').length || c.cantidad || 0;
+        const caravanasLote = Object.values(animales).filter(anim => anim.corralId === id && anim.estado === 'activo').length;
+        const genericoLote = c.cantidadGenerica !== undefined ? c.cantidadGenerica : (c.cantidad || 0);
+        const totalCabezas = caravanasLote + genericoLote;
 
         return `
           <div class="bg-white p-4 rounded-xl shadow flex items-center justify-between gap-3 ${colorMap[c.color] || colorMap.emerald}">
             <div class="min-w-0 flex-1">
               <h3 class="font-black text-base text-slate-800">${c.nombre}</h3>
               <p class="text-xs text-slate-600 mt-0.5">${c.observacion || '<span class="italic text-slate-400">Sin observación</span>'}</p>
+              <p class="text-[10px] text-emerald-900 mt-1 font-semibold">${caravanasLote} con caravana • ${genericoLote} genéricas</p>
             </div>
             <div class="flex items-center gap-2">
               <div class="text-right mr-1">
-                <span class="text-xl font-black text-emerald-900">${cantidadCabezas}</span>
+                <span class="text-xl font-black text-emerald-900">${totalCabezas}</span>
                 <span class="block text-[10px] text-slate-500">cabezas</span>
               </div>
               <button onclick="abrirEditarCorral('${id}')" class="text-slate-400 hover:text-blue-700 p-2 bg-white rounded-lg shadow-sm"><i class="fa-solid fa-pen text-xs"></i></button>
@@ -852,6 +924,27 @@
     </div>
   </div>
 
+  <div id="modalEditarAnimal" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-3">
+      <h3 class="text-lg font-bold text-amber-700">Editar Ficha de Caravana</h3>
+      <input type="hidden" id="editAnimalId">
+      <input type="text" id="editAnimalCaravanaInput" placeholder="Nro de Caravana" class="w-full border rounded-lg p-3 text-sm outline-none">
+      <div class="grid grid-cols-2 gap-2">
+        <input type="text" id="editAnimalRazaInput" placeholder="Raza" class="w-full border rounded-lg p-2.5 text-sm outline-none">
+        <input type="text" id="editAnimalEdadInput" placeholder="Edad" class="w-full border rounded-lg p-2.5 text-sm outline-none">
+      </div>
+      <div class="grid grid-cols-2 gap-2">
+        <input type="number" id="editAnimalPesoInput" placeholder="Peso (kg)" class="w-full border rounded-lg p-2.5 text-sm outline-none">
+        <select id="editAnimalCorralSelect" class="w-full border rounded-lg p-2.5 text-sm bg-white outline-none"></select>
+      </div>
+      <input type="text" id="editAnimalObsInput" placeholder="Observaciones" class="w-full border rounded-lg p-3 text-sm outline-none">
+      <div class="flex justify-end gap-3 pt-2">
+        <button onclick="toggleModal('modalEditarAnimal', false)" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
+        <button onclick="guardarEdicionAnimal()" class="bg-amber-700 text-white px-5 py-2 rounded-lg font-bold text-sm">Actualizar Ficha</button>
+      </div>
+    </div>
+  </div>
+
   <div id="modalMoverCaravana" class="fixed inset-0 bg-black/50 hidden flex items-center justify-center p-4 z-50">
     <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
       <h3 class="text-lg font-bold text-blue-700">Mover Caravana: <span id="moverCaravanaTxt"></span></h3>
@@ -988,7 +1081,7 @@
     <div class="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl space-y-4">
       <h3 class="text-lg font-bold text-rose-700">Reinicio de Base</h3>
       <div class="space-y-2 bg-slate-50 p-3 rounded-xl text-sm">
-        <label class="flex items-center gap-2"><input type="checkbox" id="chkCabezas" class="w-4 h-4 text-rose-600"><span>Cabezas en 0</span></label>
+        <label class="flex items-center gap-2"><input type="checkbox" id="chkCabezas" class="w-4 h-4 text-rose-600"><span>Cabezas en 0 (Genéricas)</span></label>
         <label class="flex items-center gap-2"><input type="checkbox" id="chkCorrales" class="w-4 h-4 text-rose-600"><span>Borrar todos los lotes</span></label>
         <label class="flex items-center gap-2"><input type="checkbox" id="chkFletes" class="w-4 h-4 text-rose-600"><span>Borrar Fletes</span></label>
         <label class="flex items-center gap-2"><input type="checkbox" id="chkHistorial" class="w-4 h-4 text-rose-600"><span>Borrar Historial</span></label>
@@ -1035,9 +1128,7 @@
     window.toggleModal = function(id, show) {
       const m = document.getElementById(id);
       if (show) {
-        if (id === 'modalIngresar' || id === 'modalEgresar' || id === 'modalTraslado' || id === 'modalNuevoAnimal') {
-          if (typeof window.populateSelects === 'function') window.populateSelects();
-        }
+        if (typeof window.populateSelects === 'function') window.populateSelects();
         m.classList.remove('hidden');
       } else {
         m.classList.add('hidden');
