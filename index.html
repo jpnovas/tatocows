@@ -3,11 +3,36 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Encargado de Mantenimiento</title>
+  <title>Encargado de Mantenimiento - PRUEBAS</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 
-  <!-- Firebase App & Realtime Database SDKs -->
+  <!-- Registro de Service Worker para funcionamiento OFF-LINE total -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      const swCode = `
+        self.addEventListener('install', e => {
+          e.waitUntil(
+            caches.open('tato-mantenimiento-test-v1').then(cache => {
+              return cache.addAll(['./']);
+            })
+          );
+        });
+        self.addEventListener('fetch', e => {
+          e.respondWith(
+            caches.match(e.request).then(response => {
+              return response || fetch(e.request).catch(() => caches.match('./'));
+            })
+          );
+        });
+      `;
+      const blob = new Blob([swCode], { type: 'text/javascript' });
+      const swUrl = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(swUrl).catch(err => console.log('SW error:', err));
+    }
+  </script>
+
+  <!-- Firebase App & Realtime Database SDKs con Credenciales de PRUEBA -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getDatabase, ref, onValue, set, push, remove, update } 
@@ -15,14 +40,14 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyC-7MMAHQ2Ib7TFjQynWP2mMBTeBE8U7xU",
-  authDomain: "tatocowspruebas.firebaseapp.com",
-  databaseURL: "https://tatocowspruebas-default-rtdb.firebaseio.com",
-  projectId: "tatocowspruebas",
-  storageBucket: "tatocowspruebas.firebasestorage.app",
-  messagingSenderId: "702960739873",
-  appId: "1:702960739873:web:63c72f142e755914f36560",
-  measurementId: "G-YQPTQR35VQ"
-};
+      authDomain: "tatocowspruebas.firebaseapp.com",
+      databaseURL: "https://tatocowspruebas-default-rtdb.firebaseio.com",
+      projectId: "tatocowspruebas",
+      storageBucket: "tatocowspruebas.firebasestorage.app",
+      messagingSenderId: "702960739873",
+      appId: "1:702960739873:web:63c72f142e755914f36560",
+      measurementId: "G-YQPTQR35VQ"
+    };
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
@@ -32,7 +57,7 @@
     const fletesRef = ref(db, 'fletes');
     const tareasRef = ref(db, 'tareas');
     const notasRef = ref(db, 'notas_rapidas');
-    const animalesRef = ref(db, 'animales'); // Nodo independiente para control individual
+    const animalesRef = ref(db, 'animales');
 
     window.corralesData = {};
     window.historialData = [];
@@ -86,7 +111,7 @@
         `<option value="${id}">${corrales[id].nombre} (${corrales[id].cantidad || 0} cab.)</option>`
       ).join('');
       
-      ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect', 'animalCorralSelect', 'editAnimalCorralSelect'].forEach(id => {
+      ['ingCorralSelect', 'egCorralSelect', 'trOrigenSelect', 'trDestinoSelect', 'animalCorralSelect'].forEach(id => {
         const el = document.getElementById(id);
         if (el) el.innerHTML = opciones;
       });
@@ -109,7 +134,7 @@
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `stock_hacienda_${new Date().toISOString().slice(0,10)}.csv`;
+      a.download = `stock_hacienda_prueba_${new Date().toISOString().slice(0,10)}.csv`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -298,7 +323,7 @@
       document.getElementById('inputPalabraBorrar').value = '';
     };
 
-    // RENDERIZADO GENERAL DE ESTADÍSTICAS
+    // ESTADÍSTICAS
     function renderStats() {
       const corrales = window.corralesData || {};
       const keys = Object.keys(corrales);
@@ -310,13 +335,12 @@
       document.getElementById('statTotalTareas').innerText = tareasActivas;
     }
 
-    // RENDERIZADO DE ANIMALES (CARAVANAS)
+    // RENDERIZAR ANIMALES
     window.renderAnimales = function() {
       const container = document.getElementById('listaAnimales');
       const animales = window.animalesData || {};
       const corrales = window.corralesData || {};
       let keys = Object.keys(animales);
-
       if (!container) return;
 
       if (keys.length === 0) {
@@ -374,12 +398,11 @@
       }).join('');
     }
 
-    // RENDERIZADO DE LOTES
+    // RENDERIZAR LOTES
     window.renderCorrales = function() {
       const container = document.getElementById('listaCorrales');
       const corrales = window.corralesData || {};
       let keys = Object.keys(corrales);
-
       if (!container) return;
 
       if (keys.length === 0) {
@@ -443,7 +466,7 @@
       }).join('');
     }
 
-    // RENDERIZADO DE HISTORIAL
+    // RENDERIZAR HISTORIAL
     window.renderHistorial = function() {
       const container = document.getElementById('listaHistorial');
       let list = window.historialData || [];
@@ -616,7 +639,12 @@
     }
   </script>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-20">
+<body class="bg-emerald-100 text-slate-800 font-sans min-h-screen pb-20">
+
+  <!-- Aviso visual de Modo Prueba -->
+  <div class="bg-amber-500 text-white text-center py-1 text-xs font-bold tracking-wide shadow-sm">
+    ⚠️ ENTORNO DE PRUEBA (Base de datos: tatocowspruebas)
+  </div>
 
   <!-- Encabezado en un solo renglón -->
   <header class="bg-emerald-900 text-white px-4 py-3 shadow-md sticky top-0 z-10">
