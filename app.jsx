@@ -119,23 +119,23 @@ refrescarBadgeWa();
 
 window.abrirConfigWhatsApp = function() {
   const cfg = window.getWaConfig();
-  document.getElementById('waPhoneInput').value = cfg.phone || '';
-  document.getElementById('waApiKeyInput').value = cfg.apiKey || '';
-  document.getElementById('waChkTraslados').checked = cfg.traslados !== false;
-  document.getElementById('waChkEgresos').checked = cfg.egresos !== false;
-  document.getElementById('waChkFletes').checked = cfg.fletes !== false;
-  document.getElementById('waChkStock').checked = cfg.stock !== false;
+  const p = document.getElementById('waPhoneInput'); if(p) p.value = cfg.phone || '';
+  const a = document.getElementById('waApiKeyInput'); if(a) a.value = cfg.apiKey || '';
+  const t = document.getElementById('waChkTraslados'); if(t) t.checked = cfg.traslados !== false;
+  const e = document.getElementById('waChkEgresos'); if(e) e.checked = cfg.egresos !== false;
+  const f = document.getElementById('waChkFletes'); if(f) f.checked = cfg.fletes !== false;
+  const s = document.getElementById('waChkStock'); if(s) s.checked = cfg.stock !== false;
   abrirModal('modalWhatsApp');
 };
 
 window.guardarConfigWhatsApp = function() {
   const cfg = {
-    phone: document.getElementById('waPhoneInput').value.trim().replace(/\D/g, ''),
-    apiKey: document.getElementById('waApiKeyInput').value.trim(),
-    traslados: document.getElementById('waChkTraslados').checked,
-    egresos: document.getElementById('waChkEgresos').checked,
-    fletes: document.getElementById('waChkFletes').checked,
-    stock: document.getElementById('waChkStock').checked
+    phone: document.getElementById('waPhoneInput')?.value.trim().replace(/\D/g, '') || '',
+    apiKey: document.getElementById('waApiKeyInput')?.value.trim() || '',
+    traslados: document.getElementById('waChkTraslados')?.checked ?? true,
+    egresos: document.getElementById('waChkEgresos')?.checked ?? true,
+    fletes: document.getElementById('waChkFletes')?.checked ?? true,
+    stock: document.getElementById('waChkStock')?.checked ?? true
   };
   localStorage.setItem('tc_whatsapp_cfg', JSON.stringify(cfg));
   refrescarBadgeWa();
@@ -259,10 +259,10 @@ function renderStats() {
   const mesActual = new Date().toISOString().slice(0, 7);
   const mmMes = (window.lluviasData || []).filter(l => (l.fecha||'').startsWith(mesActual)).reduce((a,b) => a + (parseFloat(b.mm)||0), 0);
 
-  document.getElementById('statTotalVacas').innerText = totalCar + totalGen;
-  document.getElementById('statTotalHectareas').innerText = Number.isInteger(totalHa) ? totalHa : totalHa.toFixed(1);
-  document.getElementById('statInsumosBajos').innerText = bajos;
-  document.getElementById('statLluviaMes').innerText = `${mmMes} mm`;
+  const el1 = document.getElementById('statTotalVacas'); if(el1) el1.innerText = totalCar + totalGen;
+  const el2 = document.getElementById('statTotalHectareas'); if(el2) el2.innerText = Number.isInteger(totalHa) ? totalHa : totalHa.toFixed(1);
+  const el3 = document.getElementById('statInsumosBajos'); if(el3) el3.innerText = bajos;
+  const el4 = document.getElementById('statLluviaMes'); if(el4) el4.innerText = `${mmMes} mm`;
 }
 
 /* ---------- 1. LOTES MIXTOS ---------- */
@@ -318,7 +318,6 @@ window.renderCorrales = function() {
             <span class="chip ${estadoBadge[est] || 'badge-verde'}">${est}</span>
           </div>
           
-          <!-- OBSERVACIÓN GRANDE EN EL MEDIO -->
           ${c.observacion ? `<p class="text-xs text-slate-700 font-medium bg-emerald-50/40 px-3 py-2 rounded-xl border border-emerald-900/10">${c.observacion}</p>` : ''}
 
           <div class="flex items-center gap-3 flex-wrap text-xs text-slate-600">
@@ -346,43 +345,43 @@ window.renderCorrales = function() {
 };
 
 window.crearCorral = function() {
-  const nombre = document.getElementById('nombreCorralInput').value.trim();
-  const hectareas = parseFloat(document.getElementById('haCorralInput').value) || 0;
-  const color = document.getElementById('colorCorralInput').value;
-  const estadoCampana = document.getElementById('estadoCampanaCorralInput').value;
-  const cultivo = document.getElementById('cultivoCorralInput').value.trim();
-  const obs = document.getElementById('obsCorralInput').value.trim();
+  const nombre = document.getElementById('nombreCorralInput')?.value.trim();
+  const hectareas = parseFloat(document.getElementById('haCorralInput')?.value) || 0;
+  const color = document.getElementById('colorCorralInput')?.value || 'emerald';
+  const estadoCampana = document.getElementById('estadoCampanaCorralInput')?.value || 'Ganadero / Pastura';
+  const cultivo = document.getElementById('cultivoCorralInput')?.value.trim() || '';
+  const obs = document.getElementById('obsCorralInput')?.value.trim() || '';
   if (!nombre) return alert("Ingresá un nombre para el lote.");
 
   cerrarModal('modalNuevoCorral');
   set(push(corralesRef), { nombre, hectareas, color, estadoCampana, cultivo, observacion: obs, cantidadGenerica: 0, rinde: 0, costoCampana: 0 })
-    .then(() => ['nombreCorralInput','haCorralInput','cultivoCorralInput','obsCorralInput'].forEach(id => document.getElementById(id).value = ''));
+    .then(() => ['nombreCorralInput','haCorralInput','cultivoCorralInput','obsCorralInput'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; }));
 };
 
 window.abrirEditarCorral = function(id) {
   const c = window.corralesData[id]; if (!c) return;
-  document.getElementById('editCorralIdInput').value = id;
-  document.getElementById('editNombreCorralInput').value = c.nombre || '';
-  document.getElementById('editHaCorralInput').value = c.hectareas || '';
-  document.getElementById('editColorCorralInput').value = c.color || 'emerald';
-  document.getElementById('editEstadoCampanaCorralInput').value = c.estadoCampana || 'Ganadero / Pastura';
-  document.getElementById('editCultivoCorralInput').value = c.cultivo || '';
-  document.getElementById('editRindeCorralInput').value = c.rinde || '';
-  document.getElementById('editCostoCampanaInput').value = c.costoCampana || 0;
-  document.getElementById('editObsCorralInput').value = c.observacion || '';
+  const e1 = document.getElementById('editCorralIdInput'); if(e1) e1.value = id;
+  const e2 = document.getElementById('editNombreCorralInput'); if(e2) e2.value = c.nombre || '';
+  const e3 = document.getElementById('editHaCorralInput'); if(e3) e3.value = c.hectareas || '';
+  const e4 = document.getElementById('editColorCorralInput'); if(e4) e4.value = c.color || 'emerald';
+  const e5 = document.getElementById('editEstadoCampanaCorralInput'); if(e5) e5.value = c.estadoCampana || 'Ganadero / Pastura';
+  const e6 = document.getElementById('editCultivoCorralInput'); if(e6) e6.value = c.cultivo || '';
+  const e7 = document.getElementById('editRindeCorralInput'); if(e7) e7.value = c.rinde || '';
+  const e8 = document.getElementById('editCostoCampanaInput'); if(e8) e8.value = c.costoCampana || 0;
+  const e9 = document.getElementById('editObsCorralInput'); if(e9) e9.value = c.observacion || '';
   abrirModal('modalEditarCorral');
 };
 
 window.guardarEdicionCorral = function() {
-  const id = document.getElementById('editCorralIdInput').value;
-  const nombre = document.getElementById('editNombreCorralInput').value.trim();
-  const hectareas = parseFloat(document.getElementById('editHaCorralInput').value) || 0;
-  const color = document.getElementById('editColorCorralInput').value;
-  const estadoCampana = document.getElementById('editEstadoCampanaCorralInput').value;
-  const cultivo = document.getElementById('editCultivoCorralInput').value.trim();
-  const rinde = parseFloat(document.getElementById('editRindeCorralInput').value) || 0;
-  const costoCampana = parseFloat(document.getElementById('editCostoCampanaInput').value) || 0;
-  const obs = document.getElementById('editObsCorralInput').value.trim();
+  const id = document.getElementById('editCorralIdInput')?.value;
+  const nombre = document.getElementById('editNombreCorralInput')?.value.trim();
+  const hectareas = parseFloat(document.getElementById('editHaCorralInput')?.value) || 0;
+  const color = document.getElementById('editColorCorralInput')?.value || 'emerald';
+  const estadoCampana = document.getElementById('editEstadoCampanaCorralInput')?.value || 'Ganadero';
+  const cultivo = document.getElementById('editCultivoCorralInput')?.value.trim() || '';
+  const rinde = parseFloat(document.getElementById('editRindeCorralInput')?.value) || 0;
+  const costoCampana = parseFloat(document.getElementById('editCostoCampanaInput')?.value) || 0;
+  const obs = document.getElementById('editObsCorralInput')?.value.trim() || '';
   if (!id || !nombre) return alert("Nombre obligatorio.");
 
   const c = window.corralesData[id];
@@ -451,17 +450,17 @@ window.renderAnimales = function() {
 };
 
 window.guardarAnimal = function() {
-  const caravana = document.getElementById('animalCaravanaInput').value.trim();
-  const raza = document.getElementById('animalRazaInput').value.trim();
-  const edad = document.getElementById('animalEdadInput').value.trim();
-  const peso = parseFloat(document.getElementById('animalPesoInput').value) || 0;
-  const corralId = document.getElementById('animalCorralSelect').value;
-  const obs = document.getElementById('animalObsInput').value.trim();
-  const motivo = document.getElementById('animalMotivoSelect').value;
-  const tipoFiscal = document.getElementById('animalTipoFiscalSelect').value;
-  const comprobante = document.getElementById('animalComprobanteInput').value.trim();
-  const usuario = document.getElementById('animalUsuarioInput').value.trim() || 'Operador';
-  const notasIng = document.getElementById('animalNotasIngresoInput').value.trim();
+  const caravana = document.getElementById('animalCaravanaInput')?.value.trim();
+  const raza = document.getElementById('animalRazaInput')?.value.trim() || '';
+  const edad = document.getElementById('animalEdadInput')?.value.trim() || '';
+  const peso = parseFloat(document.getElementById('animalPesoInput')?.value) || 0;
+  const corralId = document.getElementById('animalCorralSelect')?.value;
+  const obs = document.getElementById('animalObsInput')?.value.trim() || '';
+  const motivo = document.getElementById('animalMotivoSelect')?.value || 'Compra';
+  const tipoFiscal = document.getElementById('animalTipoFiscalSelect')?.value || 'Interno';
+  const comprobante = document.getElementById('animalComprobanteInput')?.value.trim() || '';
+  const usuario = document.getElementById('animalUsuarioInput')?.value.trim() || 'Operador';
+  const notasIng = document.getElementById('animalNotasIngresoInput')?.value.trim() || '';
   if (!caravana || !corralId) return alert("Completá caravana y corral.");
 
   cerrarModal('modalNuevoAnimal');
@@ -473,49 +472,49 @@ window.guardarAnimal = function() {
       notas:[`Caravana ${caravana}`, notasIng, obs].filter(Boolean).join(' • '), usuario, timestamp:Date.now()
     });
     const input = document.getElementById('animalCaravanaInput');
-    if (!isNaN(caravana)) input.value = parseInt(caravana,10)+1; else input.value='';
-    ['animalRazaInput','animalPesoInput','animalObsInput','animalNotasIngresoInput','animalComprobanteInput'].forEach(id => document.getElementById(id).value='');
+    if (input) { if (!isNaN(caravana)) input.value = parseInt(caravana,10)+1; else input.value=''; }
+    ['animalRazaInput','animalPesoInput','animalObsInput','animalNotasIngresoInput','animalComprobanteInput'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
   });
 };
 
 window.abrirEditarAnimal = function(id) {
   const a = window.animalesData[id]; if (!a) return;
-  document.getElementById('editAnimalId').value = id;
-  document.getElementById('editAnimalCaravanaInput').value = a.caravana||'';
-  document.getElementById('editAnimalRazaInput').value = a.raza||'';
-  document.getElementById('editAnimalEdadInput').value = a.edad||'';
-  document.getElementById('editAnimalPesoInput').value = a.peso||'';
-  document.getElementById('editAnimalCorralBloqueado').value = window.corralesData[a.corralId]?.nombre || 'Sin asignar';
-  document.getElementById('editAnimalObsInput').value = a.observaciones||'';
+  const e1 = document.getElementById('editAnimalId'); if(e1) e1.value = id;
+  const e2 = document.getElementById('editAnimalCaravanaInput'); if(e2) e2.value = a.caravana||'';
+  const e3 = document.getElementById('editAnimalRazaInput'); if(e3) e3.value = a.raza||'';
+  const e4 = document.getElementById('editAnimalEdadInput'); if(e4) e4.value = a.edad||'';
+  const e5 = document.getElementById('editAnimalPesoInput'); if(e5) e5.value = a.peso||'';
+  const e6 = document.getElementById('editAnimalCorralBloqueado'); if(e6) e6.value = window.corralesData[a.corralId]?.nombre || 'Sin asignar';
+  const e7 = document.getElementById('editAnimalObsInput'); if(e7) e7.value = a.observaciones||'';
   abrirModal('modalEditarAnimal');
 };
 
 window.guardarEdicionAnimal = function() {
-  const id = document.getElementById('editAnimalId').value;
-  const caravana = document.getElementById('editAnimalCaravanaInput').value.trim();
+  const id = document.getElementById('editAnimalId')?.value;
+  const caravana = document.getElementById('editAnimalCaravanaInput')?.value.trim();
   if (!id || !caravana) return alert("Caravana obligatoria.");
   cerrarModal('modalEditarAnimal');
   update(ref(db,`animales/${id}`), {
     caravana,
-    raza: document.getElementById('editAnimalRazaInput').value.trim(),
-    edad: document.getElementById('editAnimalEdadInput').value.trim(),
-    peso: parseFloat(document.getElementById('editAnimalPesoInput').value)||0,
-    observaciones: document.getElementById('editAnimalObsInput').value.trim()
+    raza: document.getElementById('editAnimalRazaInput')?.value.trim() || '',
+    edad: document.getElementById('editAnimalEdadInput')?.value.trim() || '',
+    peso: parseFloat(document.getElementById('editAnimalPesoInput')?.value)||0,
+    observaciones: document.getElementById('editAnimalObsInput')?.value.trim() || ''
   });
 };
 
 window.abrirMoverCaravana = function(id) {
   const a = window.animalesData[id]; if (!a) return;
-  document.getElementById('moverAnimalId').value = id;
-  document.getElementById('moverCaravanaTxt').innerText = a.caravana;
+  const m1 = document.getElementById('moverAnimalId'); if(m1) m1.value = id;
+  const m2 = document.getElementById('moverCaravanaTxt'); if(m2) m2.innerText = a.caravana;
   populateSelects();
-  document.getElementById('moverCorralSelect').value = a.corralId||'';
+  const m3 = document.getElementById('moverCorralSelect'); if(m3) m3.value = a.corralId||'';
   abrirModal('modalMoverCaravana');
 };
 
 window.ejecutarMoverCaravana = function() {
-  const id = document.getElementById('moverAnimalId').value;
-  const nuevo = document.getElementById('moverCorralSelect').value;
+  const id = document.getElementById('moverAnimalId')?.value;
+  const nuevo = document.getElementById('moverCorralSelect')?.value;
   const a = window.animalesData[id];
   if (!id || !nuevo || !a) return;
   if (a.corralId === nuevo) return alert("Ya está en ese lote.");
@@ -532,7 +531,7 @@ window.eliminarAnimal = function(id, caravana) { if (confirm(`¿Eliminar caravan
 
 window.abrirTrasladoMasivo = function() {
   if (Object.keys(window.corralesData||{}).length < 2) return alert("Necesitás al menos 2 lotes.");
-  document.getElementById('masivoCantidadGenerica').value = '0';
+  const mg = document.getElementById('masivoCantidadGenerica'); if(mg) mg.value = '0';
   abrirModal('modalTrasladoMasivo');
   actualizarListaCaravanasMasivo();
 };
@@ -549,11 +548,11 @@ window.actualizarListaCaravanasMasivo = function() {
 };
 
 window.ejecutarTrasladoMasivo = function() {
-  const origen = document.getElementById('masivoOrigenSelect').value;
-  const destino = document.getElementById('masivoDestinoSelect').value;
-  const gen = parseInt(document.getElementById('masivoCantidadGenerica').value,10)||0;
-  const usuario = document.getElementById('masivoUsuarioInput').value.trim()||'Operador';
-  const notas = document.getElementById('masivoNotasInput').value.trim();
+  const origen = document.getElementById('masivoOrigenSelect')?.value;
+  const destino = document.getElementById('masivoDestinoSelect')?.value;
+  const gen = parseInt(document.getElementById('masivoCantidadGenerica')?.value,10)||0;
+  const usuario = document.getElementById('masivoUsuarioInput')?.value.trim()||'Operador';
+  const notas = document.getElementById('masivoNotasInput')?.value.trim()||'';
   if (!origen || !destino || origen === destino) return alert("Verificá origen y destino.");
   const cO = window.corralesData[origen], cD = window.corralesData[destino];
   const genO = cO.cantidadGenerica ?? cO.cantidad ?? 0;
@@ -578,26 +577,26 @@ window.ejecutarTrasladoMasivo = function() {
 };
 
 window.ejecutarIngreso = function() {
-  const id = document.getElementById('ingCorralSelect').value;
-  const cant = parseInt(document.getElementById('ingCantidadInput').value,10);
+  const id = document.getElementById('ingCorralSelect')?.value;
+  const cant = parseInt(document.getElementById('ingCantidadInput')?.value,10);
   if (!id || isNaN(cant) || cant<=0) return alert("Cantidad inválida.");
   const c = window.corralesData[id];
   cerrarModal('modalIngresar');
   update(ref(db,`corrales/${id}`), { cantidadGenerica:(c.cantidadGenerica ?? c.cantidad ?? 0)+cant });
   set(push(historialRef), {
     corralId:id, nombreCorral:c.nombre, tipo:'SUMAR', cantidad:cant,
-    motivo: document.getElementById('ingMotivoSelect').value,
-    tipoFiscal: document.getElementById('ingTipoFiscalSelect').value,
-    comprobante: document.getElementById('ingComprobanteInput').value.trim(),
-    notas: document.getElementById('ingNotasInput').value.trim(),
-    usuario: document.getElementById('ingUsuarioInput').value.trim()||'Operador', timestamp:Date.now()
+    motivo: document.getElementById('ingMotivoSelect')?.value || 'Compra',
+    tipoFiscal: document.getElementById('ingTipoFiscalSelect')?.value || 'Interno',
+    comprobante: document.getElementById('ingComprobanteInput')?.value.trim() || '',
+    notas: document.getElementById('ingNotasInput')?.value.trim() || '',
+    usuario: document.getElementById('ingUsuarioInput')?.value.trim()||'Operador', timestamp:Date.now()
   });
-  ['ingCantidadInput','ingComprobanteInput','ingNotasInput'].forEach(k => document.getElementById(k).value = '');
+  ['ingCantidadInput','ingComprobanteInput','ingNotasInput'].forEach(k => { const el = document.getElementById(k); if(el) el.value = ''; });
 };
 
 window.abrirEgreso = function() {
   if (Object.keys(window.corralesData||{}).length === 0) return alert("Primero creá un lote.");
-  document.getElementById('egCantidadInput').value = '0';
+  const eg = document.getElementById('egCantidadInput'); if(eg) eg.value = '0';
   abrirModal('modalEgresar');
   actualizarListaCaravanasEgreso();
 };
@@ -614,13 +613,13 @@ window.actualizarListaCaravanasEgreso = function() {
 };
 
 window.ejecutarEgreso = function() {
-  const id = document.getElementById('egCorralSelect').value;
-  const cantGen = parseInt(document.getElementById('egCantidadInput').value, 10) || 0;
-  const motivo = document.getElementById('egMotivoSelect').value;
-  const tipoFiscal = document.getElementById('egTipoFiscalSelect').value;
-  const comprobante = document.getElementById('egComprobanteInput').value.trim();
-  const usuario = document.getElementById('egUsuarioInput').value.trim() || 'Operador';
-  const notas = document.getElementById('egNotasInput').value.trim();
+  const id = document.getElementById('egCorralSelect')?.value;
+  const cantGen = parseInt(document.getElementById('egCantidadInput')?.value, 10) || 0;
+  const motivo = document.getElementById('egMotivoSelect')?.value || 'Venta';
+  const tipoFiscal = document.getElementById('egTipoFiscalSelect')?.value || 'Fiscal / DTE';
+  const comprobante = document.getElementById('egComprobanteInput')?.value.trim() || '';
+  const usuario = document.getElementById('egUsuarioInput')?.value.trim() || 'Operador';
+  const notas = document.getElementById('egNotasInput')?.value.trim() || '';
 
   const c = window.corralesData[id]; if (!c) return;
   const actGen = c.cantidadGenerica ?? c.cantidad ?? 0;
@@ -645,9 +644,9 @@ window.ejecutarEgreso = function() {
 };
 
 window.ejecutarTraslado = function() {
-  const origen = document.getElementById('trOrigenSelect').value;
-  const destino = document.getElementById('trDestinoSelect').value;
-  const cant = parseInt(document.getElementById('trCantidadInput').value,10);
+  const origen = document.getElementById('trOrigenSelect')?.value;
+  const destino = document.getElementById('trDestinoSelect')?.value;
+  const cant = parseInt(document.getElementById('trCantidadInput')?.value,10);
   if (!origen || !destino || origen===destino || isNaN(cant) || cant<=0) return alert("Verificá los datos.");
   const cO = window.corralesData[origen], cD = window.corralesData[destino];
   const genO = cO.cantidadGenerica ?? cO.cantidad ?? 0;
@@ -656,7 +655,7 @@ window.ejecutarTraslado = function() {
   cerrarModal('modalTraslado');
   update(ref(db,`corrales/${origen}`), { cantidadGenerica:genO-cant });
   update(ref(db,`corrales/${destino}`), { cantidadGenerica:(cD.cantidadGenerica ?? cD.cantidad ?? 0)+cant });
-  set(push(historialRef), { tipo:'TRASLADO', cantidad:cant, motivo:'Traslado tropa', nombreCorral:`Desde ${cO.nombre} hacia ${cD.nombre}`, notas:document.getElementById('trNotasInput').value.trim(), usuario:document.getElementById('trUsuarioInput').value.trim()||'Operador', timestamp:Date.now() });
+  set(push(historialRef), { tipo:'TRASLADO', cantidad:cant, motivo:'Traslado tropa', nombreCorral:`Desde ${cO.nombre} hacia ${cD.nombre}`, notas:document.getElementById('trNotasInput')?.value.trim()||'', usuario:document.getElementById('trUsuarioInput')?.value.trim()||'Operador', timestamp:Date.now() });
   window.enviarAlertaWhatsApp('traslados', `Traslado tropa (${cant} cab.): ${cO.nombre} ➔ ${cD.nombre}`);
 };
 
@@ -670,8 +669,8 @@ window.renderAgricola = function() {
   if (filtroLote) list = list.filter(l => l.loteId === filtroLote);
 
   const costoTotal = list.reduce((acc, l) => acc + (parseFloat(l.costoTotal)||0), 0);
-  document.getElementById('agriCostoTotal').innerText = '$' + costoTotal.toLocaleString('es-AR');
-  document.getElementById('agriTotalLabores').innerText = list.length;
+  const el1 = document.getElementById('agriCostoTotal'); if(el1) el1.innerText = '$' + costoTotal.toLocaleString('es-AR');
+  const el2 = document.getElementById('agriTotalLabores'); if(el2) el2.innerText = list.length;
 
   if (list.length === 0) {
     container.innerHTML = `<div class="tarjeta p-6 text-center text-slate-400 text-sm">No hay labores agrícolas registradas.</div>`;
@@ -699,21 +698,21 @@ window.renderAgricola = function() {
 
 window.abrirModalLabor = function() {
   if (Object.keys(window.corralesData||{}).length === 0) return alert("Primero creá un lote.");
-  document.getElementById('laborFechaInput').value = new Date().toISOString().slice(0, 10);
-  document.getElementById('laborCostoInput').value = '';
-  document.getElementById('laborInsumoCantInput').value = '';
+  const lf = document.getElementById('laborFechaInput'); if(lf) lf.value = new Date().toISOString().slice(0, 10);
+  const lc = document.getElementById('laborCostoInput'); if(lc) lc.value = '';
+  const lic = document.getElementById('laborInsumoCantInput'); if(lic) lic.value = '';
   abrirModal('modalNuevaLabor');
 };
 
 window.guardarLabor = function() {
-  const loteId = document.getElementById('laborLoteSelect').value;
-  const fecha = document.getElementById('laborFechaInput').value || new Date().toISOString().slice(0, 10);
-  const tipo = document.getElementById('laborTipoSelect').value;
-  const costoLabor = parseFloat(document.getElementById('laborCostoInput').value) || 0;
-  const contratista = document.getElementById('laborContratistaInput').value.trim();
-  const insumoId = document.getElementById('laborInsumoSelect').value;
-  const insumoCant = parseFloat(document.getElementById('laborInsumoCantInput').value) || 0;
-  const notas = document.getElementById('laborNotasInput').value.trim();
+  const loteId = document.getElementById('laborLoteSelect')?.value;
+  const fecha = document.getElementById('laborFechaInput')?.value || new Date().toISOString().slice(0, 10);
+  const tipo = document.getElementById('laborTipoSelect')?.value || 'Pulverización';
+  const costoLabor = parseFloat(document.getElementById('laborCostoInput')?.value) || 0;
+  const contratista = document.getElementById('laborContratistaInput')?.value.trim() || '';
+  const insumoId = document.getElementById('laborInsumoSelect')?.value;
+  const insumoCant = parseFloat(document.getElementById('laborInsumoCantInput')?.value) || 0;
+  const notas = document.getElementById('laborNotasInput')?.value.trim() || '';
   if (!loteId) return alert("Seleccioná un lote.");
   const lote = window.corralesData[loteId];
 
@@ -742,7 +741,7 @@ window.eliminarLabor = function(id) { if (confirm("¿Eliminar labor?")) remove(r
 
 window.abrirModalCosecha = function() {
   if (Object.keys(window.corralesData||{}).length === 0) return alert("Primero creá un lote.");
-  document.getElementById('cosechaTotalInput').value = '';
+  const ct = document.getElementById('cosechaTotalInput'); if(ct) ct.value = '';
   abrirModal('modalCosecha');
   recalcularRindePreview();
 };
@@ -760,9 +759,9 @@ window.recalcularRindePreview = function() {
 };
 
 window.ejecutarCierreCosecha = function() {
-  const loteId = document.getElementById('cosechaLoteSelect').value;
-  const unidad = document.getElementById('cosechaUnidadSelect').value;
-  const total = parseFloat(document.getElementById('cosechaTotalInput').value) || 0;
+  const loteId = document.getElementById('cosechaLoteSelect')?.value;
+  const unidad = document.getElementById('cosechaUnidadSelect')?.value || 'qq';
+  const total = parseFloat(document.getElementById('cosechaTotalInput')?.value) || 0;
   const lote = window.corralesData[loteId];
   if (!lote || total <= 0) return alert("Verificá lote y cantidad.");
   const ha = parseFloat(lote.hectareas) || 0;
@@ -784,8 +783,8 @@ window.renderInsumos = function() {
 
   const valorTotal = keys.reduce((acc, id) => acc + ((parseFloat(insumos[id].stock)||0) * (parseFloat(insumos[id].costoUnitario)||0)), 0);
   const bajos = keys.filter(id => (parseFloat(insumos[id].minimo)||0) > 0 && (parseFloat(insumos[id].stock)||0) <= (parseFloat(insumos[id].minimo)||0)).length;
-  document.getElementById('insumosValorTotal').innerText = '$' + Math.round(valorTotal).toLocaleString('es-AR');
-  document.getElementById('insumosAlertaCount').innerText = bajos;
+  const ivt = document.getElementById('insumosValorTotal'); if(ivt) ivt.innerText = '$' + Math.round(valorTotal).toLocaleString('es-AR');
+  const iac = document.getElementById('insumosAlertaCount'); if(iac) iac.innerText = bajos;
 
   if (keys.length === 0) {
     container.innerHTML = `<div class="tarjeta p-6 text-center text-slate-400 text-sm">Galpón vacío. Agregá el primer insumo arriba.</div>`;
@@ -826,42 +825,45 @@ window.renderInsumos = function() {
 };
 
 window.guardarNuevoInsumo = function() {
-  const nombre = document.getElementById('insumoNombreInput').value.trim();
+  const nombre = document.getElementById('insumoNombreInput')?.value.trim();
   if (!nombre) return alert("Ingresá el nombre del insumo.");
   cerrarModal('modalNuevoInsumo');
   set(push(insumosRef), {
     nombre,
-    unidad: document.getElementById('insumoUnidadSelect').value,
-    stock: parseFloat(document.getElementById('insumoStockInput').value) || 0,
-    minimo: parseFloat(document.getElementById('insumoMinimoInput').value) || 0,
-    costoUnitario: parseFloat(document.getElementById('insumoCostoUnitInput').value) || 0,
+    unidad: document.getElementById('insumoUnidadSelect')?.value || 'Litros',
+    stock: parseFloat(document.getElementById('insumoStockInput')?.value) || 0,
+    minimo: parseFloat(document.getElementById('insumoMinimoInput')?.value) || 0,
+    costoUnitario: parseFloat(document.getElementById('insumoCostoUnitInput')?.value) || 0,
     timestamp: Date.now()
-  }).then(() => { ['insumoNombreInput','insumoMinimoInput','insumoCostoUnitInput'].forEach(id => document.getElementById(id).value = ''); document.getElementById('insumoStockInput').value = '0'; });
+  }).then(() => {
+    ['insumoNombreInput','insumoMinimoInput','insumoCostoUnitInput'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    const s = document.getElementById('insumoStockInput'); if(s) s.value = '0';
+  });
 };
 
 window.abrirMovInsumo = function(id, tipo) {
   const ins = window.insumosData[id]; if (!ins) return;
-  document.getElementById('movInsumoId').value = id;
-  document.getElementById('movInsumoTipo').value = tipo;
-  document.getElementById('movInsumoTitulo').innerText = tipo === 'COMPRA' ? 'Ingreso / Compra Stock' : 'Consumo Directo';
-  document.getElementById('movInsumoSubtitulo').innerText = `${ins.nombre} · Actual: ${ins.stock} ${ins.unidad}`;
-  document.getElementById('movInsumoCantInput').value = '';
-  document.getElementById('movInsumoCostoInput').value = ins.costoUnitario || '';
-  document.getElementById('movInsumoCompInput').value = '';
-  document.getElementById('movInsumoNotasInput').value = '';
-  document.getElementById('movInsumoCostoWrap').style.display = tipo === 'COMPRA' ? 'block' : 'none';
-  document.getElementById('movInsumoFiscalWrap').style.display = tipo === 'COMPRA' ? 'grid' : 'none';
+  const m1 = document.getElementById('movInsumoId'); if(m1) m1.value = id;
+  const m2 = document.getElementById('movInsumoTipo'); if(m2) m2.value = tipo;
+  const m3 = document.getElementById('movInsumoTitulo'); if(m3) m3.innerText = tipo === 'COMPRA' ? 'Ingreso / Compra Stock' : 'Consumo Directo';
+  const m4 = document.getElementById('movInsumoSubtitulo'); if(m4) m4.innerText = `${ins.nombre} · Actual: ${ins.stock} ${ins.unidad}`;
+  const m5 = document.getElementById('movInsumoCantInput'); if(m5) m5.value = '';
+  const m6 = document.getElementById('movInsumoCostoInput'); if(m6) m6.value = ins.costoUnitario || '';
+  const m7 = document.getElementById('movInsumoCompInput'); if(m7) m7.value = '';
+  const m8 = document.getElementById('movInsumoNotasInput'); if(m8) m8.value = '';
+  const cw = document.getElementById('movInsumoCostoWrap'); if(cw) cw.style.display = tipo === 'COMPRA' ? 'block' : 'none';
+  const fw = document.getElementById('movInsumoFiscalWrap'); if(fw) fw.style.display = tipo === 'COMPRA' ? 'grid' : 'none';
   abrirModal('modalMovInsumo');
 };
 
 window.ejecutarMovInsumo = function() {
-  const id = document.getElementById('movInsumoId').value;
-  const tipo = document.getElementById('movInsumoTipo').value;
-  const cant = parseFloat(document.getElementById('movInsumoCantInput').value) || 0;
-  const nuevoCosto = parseFloat(document.getElementById('movInsumoCostoInput').value);
-  const tipoFiscal = document.getElementById('movInsumoFiscalSelect').value;
-  const comprobante = document.getElementById('movInsumoCompInput').value.trim();
-  const notas = document.getElementById('movInsumoNotasInput').value.trim();
+  const id = document.getElementById('movInsumoId')?.value;
+  const tipo = document.getElementById('movInsumoTipo')?.value;
+  const cant = parseFloat(document.getElementById('movInsumoCantInput')?.value) || 0;
+  const nuevoCosto = parseFloat(document.getElementById('movInsumoCostoInput')?.value);
+  const tipoFiscal = document.getElementById('movInsumoFiscalSelect')?.value || 'Fiscal / DTE';
+  const comprobante = document.getElementById('movInsumoCompInput')?.value.trim() || '';
+  const notas = document.getElementById('movInsumoNotasInput')?.value.trim() || '';
   const ins = window.insumosData[id];
   if (!ins || cant <= 0) return alert("Cantidad inválida.");
   const stockAct = parseFloat(ins.stock) || 0;
@@ -892,8 +894,8 @@ window.renderLluvias = function() {
   const hoyStr = new Date().toISOString();
   const mmMes = list.filter(l => (l.fecha||'').startsWith(hoyStr.slice(0, 7))).reduce((a,b) => a + (parseFloat(b.mm)||0), 0);
   const mmAnio = list.filter(l => (l.fecha||'').startsWith(hoyStr.slice(0, 4))).reduce((a,b) => a + (parseFloat(b.mm)||0), 0);
-  document.getElementById('lluviaAcumMesCard').innerText = `${mmMes} mm`;
-  document.getElementById('lluviaAcumAnioCard').innerText = `${mmAnio} mm`;
+  const lam = document.getElementById('lluviaAcumMesCard'); if(lam) lam.innerText = `${mmMes} mm`;
+  const laa = document.getElementById('lluviaAcumAnioCard'); if(laa) laa.innerText = `${mmAnio} mm`;
 
   if (list.length === 0) {
     container.innerHTML = `<div class="tarjeta p-6 text-center text-slate-400 text-sm">No hay registros de lluvia todavía.</div>`;
@@ -920,21 +922,21 @@ window.renderLluvias = function() {
 };
 
 window.abrirModalLluvia = function() {
-  document.getElementById('lluviaFechaInput').value = new Date().toISOString().slice(0, 10);
-  document.getElementById('lluviaMmInput').value = '';
-  document.getElementById('lluviaGranizoChk').checked = false;
-  document.getElementById('lluviaHeladaChk').checked = false;
-  document.getElementById('lluviaNotasInput').value = '';
+  const lf = document.getElementById('lluviaFechaInput'); if(lf) lf.value = new Date().toISOString().slice(0, 10);
+  const lm = document.getElementById('lluviaMmInput'); if(lm) lm.value = '';
+  const lg = document.getElementById('lluviaGranizoChk'); if(lg) lg.checked = false;
+  const lh = document.getElementById('lluviaHeladaChk'); if(lh) lh.checked = false;
+  const ln = document.getElementById('lluviaNotasInput'); if(ln) ln.value = '';
   abrirModal('modalNuevaLluvia');
 };
 
 window.guardarLluvia = function() {
-  const fecha = document.getElementById('lluviaFechaInput').value;
-  const mm = parseFloat(document.getElementById('lluviaMmInput').value) || 0;
-  const ubicacion = document.getElementById('lluviaUbicacionSelect').value;
-  const granizo = document.getElementById('lluviaGranizoChk').checked;
-  const helada = document.getElementById('lluviaHeladaChk').checked;
-  const notas = document.getElementById('lluviaNotasInput').value.trim();
+  const fecha = document.getElementById('lluviaFechaInput')?.value || new Date().toISOString().slice(0, 10);
+  const mm = parseFloat(document.getElementById('lluviaMmInput')?.value) || 0;
+  const ubicacion = document.getElementById('lluviaUbicacionSelect')?.value || 'Casco';
+  const granizo = document.getElementById('lluviaGranizoChk')?.checked || false;
+  const helada = document.getElementById('lluviaHeladaChk')?.checked || false;
+  const notas = document.getElementById('lluviaNotasInput')?.value.trim() || '';
   if (!fecha || (mm <= 0 && !granizo && !helada)) return alert("Ingresá milímetros o marcá un evento.");
   cerrarModal('modalNuevaLluvia');
   set(push(lluviasRef), { fecha, mm, ubicacion, granizo, helada, notas, timestamp: Date.now() });
@@ -947,8 +949,8 @@ window.renderFletes = function() {
   const container = document.getElementById('listaFletes');
   if (!container) return;
   const list = window.fletesData || [];
-  document.getElementById('fletesTotalGastado').innerText = '$' + list.reduce((a,b) => a+(b.costo||0), 0).toLocaleString('es-AR');
-  document.getElementById('fletesTotalPendiente').innerText = '$' + list.filter(f => f.estadoPago === 'Pendiente').reduce((a,b) => a+(b.costo||0), 0).toLocaleString('es-AR');
+  const ftg = document.getElementById('fletesTotalGastado'); if(ftg) ftg.innerText = '$' + list.reduce((a,b) => a+(b.costo||0), 0).toLocaleString('es-AR');
+  const ftp = document.getElementById('fletesTotalPendiente'); if(ftp) ftp.innerText = '$' + list.filter(f => f.estadoPago === 'Pendiente').reduce((a,b) => a+(b.costo||0), 0).toLocaleString('es-AR');
   if (list.length === 0) { container.innerHTML = `<div class="tarjeta p-6 text-center text-slate-400 text-sm">No hay fletes registrados.</div>`; return; }
   container.innerHTML = list.map(f => `
     <div class="tarjeta tarjeta-hover p-4 space-y-2.5">
@@ -976,15 +978,15 @@ window.renderFletes = function() {
 };
 
 window.guardarFlete = function() {
-  const transportista = document.getElementById('fleteTransportista').value.trim();
-  const cant = parseInt(document.getElementById('fleteCantidad').value,10);
+  const transportista = document.getElementById('fleteTransportista')?.value.trim();
+  const cant = parseInt(document.getElementById('fleteCantidad')?.value,10);
   if (!transportista || isNaN(cant) || cant<=0) return alert("Completá transportista y cantidad.");
-  const costo = parseFloat(document.getElementById('fleteCosto').value)||0;
-  const destino = document.getElementById('fleteDestino').value.trim();
+  const costo = parseFloat(document.getElementById('fleteCosto')?.value)||0;
+  const destino = document.getElementById('fleteDestino')?.value.trim() || '';
   cerrarModal('modalFlete');
   set(push(fletesRef), {
-    transportista, chofer:document.getElementById('fleteChofer').value.trim(), guia:document.getElementById('fleteGuia').value.trim(),
-    destino, cantidad:cant, costo, tipoFiscal:document.getElementById('fleteTipoFiscal').value, estadoPago:document.getElementById('fleteEstadoPago').value, timestamp:Date.now()
+    transportista, chofer:document.getElementById('fleteChofer')?.value.trim()||'', guia:document.getElementById('fleteGuia')?.value.trim()||'',
+    destino, cantidad:cant, costo, tipoFiscal:document.getElementById('fleteTipoFiscal')?.value||'Fiscal / DTE', estadoPago:document.getElementById('fleteEstadoPago')?.value||'Pendiente', timestamp:Date.now()
   });
   window.enviarAlertaWhatsApp('fletes', `Nuevo flete: ${transportista} (${cant} cab.) ➔ ${destino || 'Sin destino'} · $${costo.toLocaleString('es-AR')}`);
 };
@@ -1003,23 +1005,23 @@ window.renderKanban = function() {
       return;
     }
     counts[t.estado]++;
-    cols[t.estado] += `<div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 space-y-2"><div class="flex justify-between items-start gap-1"><span class="font-bold text-slate-800 text-sm flex-1">${t.titulo}</span><button onclick="eliminarTarea('${id}')" class="text-slate-300 hover:text-rose-600"><i class="fa-solid fa-xmark text-xs"></i></button></div><div onclick="editarObsTarea('${id}')" class="text-slate-600 bg-slate-50 p-2 rounded-lg text-xs cursor-pointer border border-dashed border-slate-200">${t.observaciones || 'Tocá para editar'}</div><div class="flex justify-between items-center pt-1 border-t border-slate-100">${t.estado!=='tomado' ? `<button onclick="cambiarEstadoTarea('${id}','${t.estado==='completado'?'en_ejecucion':'tomado'}')" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-chevron-left text-xs"></i></button>` : '<span></span>'}${t.estado!=='completado' ? `<button onclick="cambiarEstadoTarea('${id}','${t.estado==='tomado'?'en_ejecucion':'completadoлица'}')" class="px-2.5 py-1.5 bg-indigo-50 text-indigo-800 font-bold rounded-lg text-xs">Avanzar ›</button>` : '<span class="text-emerald-700 font-bold text-xs">✓ Listo</span>'}</div></div>`;
+    cols[t.estado] += `<div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 space-y-2"><div class="flex justify-between items-start gap-1"><span class="font-bold text-slate-800 text-sm flex-1">${t.titulo}</span><button onclick="eliminarTarea('${id}')" class="text-slate-300 hover:text-rose-600"><i class="fa-solid fa-xmark text-xs"></i></button></div><div onclick="editarObsTarea('${id}')" class="text-slate-600 bg-slate-50 p-2 rounded-lg text-xs cursor-pointer border border-dashed border-slate-200">${t.observaciones || 'Tocá para editar'}</div><div class="flex justify-between items-center pt-1 border-t border-slate-100">${t.estado!=='tomado' ? `<button onclick="cambiarEstadoTarea('${id}','${t.estado==='completado'?'en_ejecucion':'tomado'}')" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-chevron-left text-xs"></i></button>` : '<span></span>'}${t.estado!=='completado' ? `<button onclick="cambiarEstadoTarea('${id}','${t.estado==='tomado'?'en_ejecucion':'completado'}')" class="px-2.5 py-1.5 bg-indigo-50 text-indigo-800 font-bold rounded-lg text-xs">Avanzar ›</button>` : '<span class="text-emerald-700 font-bold text-xs">✓ Listo</span>'}</div></div>`;
   });
-  document.getElementById('colTomado').innerHTML = cols.tomado || '<p class="text-xs text-slate-400 text-center py-4">Sin tareas</p>';
-  document.getElementById('colEjecucion').innerHTML = cols.en_ejecucion || '<p class="text-xs text-slate-400 text-center py-4">Sin tareas</p>';
-  document.getElementById('colCompletado').innerHTML = cols.completado || '<p class="text-xs text-slate-400 text-center py-4">Sin tareas</p>';
-  document.getElementById('countTomado').innerText = counts.tomado;
-  document.getElementById('countEjecucion').innerText = counts.en_ejecucion;
-  document.getElementById('countCompletado').innerText = counts.completado;
-  document.getElementById('countArchivadasBtn').innerText = cArch;
-  document.getElementById('listaTareasArchivadas').innerHTML = archHTML || '<p class="text-xs text-slate-400 text-center py-6">No hay archivadas.</p>';
+  const cTomado = document.getElementById('colTomado'); if(cTomado) cTomado.innerHTML = cols.tomado || '<p class="text-xs text-slate-400 text-center py-4">Sin tareas</p>';
+  const cEjec = document.getElementById('colEjecucion'); if(cEjec) cEjec.innerHTML = cols.en_ejecucion || '<p class="text-xs text-slate-400 text-center py-4">Sin tareas</p>';
+  const cComp = document.getElementById('colCompletado'); if(cComp) cComp.innerHTML = cols.completado || '<p class="text-xs text-slate-400 text-center py-4">Sin tareas</p>';
+  const cntTomado = document.getElementById('countTomado'); if(cntTomado) cntTomado.innerText = counts.tomado;
+  const cntEjec = document.getElementById('countEjecucion'); if(cntEjec) cntEjec.innerText = counts.en_ejecucion;
+  const cntComp = document.getElementById('countCompletado'); if(cntComp) cntComp.innerText = counts.completado;
+  const cntArch = document.getElementById('countArchivadasBtn'); if(cntArch) cntArch.innerText = cArch;
+  const lstArch = document.getElementById('listaTareasArchivadas'); if(lstArch) lstArch.innerHTML = archHTML || '<p class="text-xs text-slate-400 text-center py-6">No hay archivadas.</p>';
 };
 
 window.guardarTarea = function() {
-  const titulo = document.getElementById('tareaTituloInput').value.trim();
+  const titulo = document.getElementById('tareaTituloInput')?.value.trim();
   if (!titulo) return alert("Ingresá la tarea.");
   cerrarModal('modalNuevaTarea');
-  set(push(tareasRef), { titulo, observaciones:document.getElementById('tareaObsInput').value.trim(), estado:'tomado', archivada:false, timestamp:Date.now() });
+  set(push(tareasRef), { titulo, observaciones:document.getElementById('tareaObsInput')?.value.trim()||'', estado:'tomado', archivada:false, timestamp:Date.now() });
 };
 window.cambiarEstadoTarea = (id, estado) => update(ref(db,`tareas/${id}`), { estado });
 window.editarObsTarea = id => { const n = prompt("Observaciones:", window.tareasData[id]?.observaciones||""); if (n !== null) update(ref(db,`tareas/${id}`), { observaciones:n.trim() }); };
@@ -1033,7 +1035,7 @@ window.renderNotas = function() {
   c.innerHTML = keys.length === 0 ? `<p class="text-xs text-slate-400 text-center py-2 col-span-2">No hay notas.</p>` :
     keys.map(id => `<div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl flex justify-between items-start gap-2 text-xs"><p class="text-slate-800 break-words flex-1">${notas[id].texto}</p><button onclick="eliminarNotaRapida('${id}')" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-xmark text-xs"></i></button></div>`).join('');
 };
-window.guardarNotaRapida = () => { const t = document.getElementById('notaRapidaInput').value.trim(); if (t) set(push(notasRef), { texto:t, timestamp:Date.now() }).then(() => document.getElementById('notaRapidaInput').value=''); };
+window.guardarNotaRapida = () => { const t = document.getElementById('notaRapidaInput')?.value.trim(); if (t) set(push(notasRef), { texto:t, timestamp:Date.now() }).then(() => { const el = document.getElementById('notaRapidaInput'); if(el) el.value=''; }); };
 window.eliminarNotaRapida = id => remove(ref(db,`notas_rapidas/${id}`));
 
 window.renderHistorial = function() {
@@ -1065,7 +1067,7 @@ window.exportarStockCSV = function() {
 };
 
 window.exportarReporteContador = function() {
-  const mes = document.getElementById('contadorMesInput').value;
+  const mes = document.getElementById('contadorMesInput')?.value;
   if (!mes) return alert("Seleccioná un mes.");
   let csv = `\uFEFFREPORTE CONTABLE CAMPO - PERIODO ${mes}\n\n1. EXISTENCIA ACTUAL DE HACIENDA\nLote,Con Caravana,Genericas,Total\n`;
   const corrales = window.corralesData || {}, animales = window.animalesData || {};
@@ -1098,18 +1100,19 @@ function descargarCSV(contenido, filename) {
 }
 
 window.ejecutarReinicioSeguro = function() {
-  if (document.getElementById('inputPalabraBorrar').value.trim() !== "BORRAR") return alert("Escribí BORRAR.");
-  if (document.getElementById('chkCorrales').checked) set(corralesRef, null);
-  else if (document.getElementById('chkCabezas').checked) Object.keys(window.corralesData).forEach(id => update(ref(db,`corrales/${id}`), { cantidadGenerica:0 }));
-  if (document.getElementById('chkCaravanas').checked) set(animalesRef, null);
-  if (document.getElementById('chkLabores').checked) set(laboresRef, null);
-  if (document.getElementById('chkInsumos').checked) set(insumosRef, null);
-  if (document.getElementById('chkLluvias').checked) set(lluviasRef, null);
-  if (document.getElementById('chkFletes').checked) set(fletesRef, null);
-  if (document.getElementById('chkHistorial').checked) set(historialRef, null);
-  if (document.getElementById('chkTareas').checked) set(tareasRef, null);
-  if (document.getElementById('chkNotas').checked) set(notasRef, null);
-  alert("Limpieza ejecutada."); cerrarModal('modalReset'); document.getElementById('inputPalabraBorrar').value = '';
+  const inputBorrar = document.getElementById('inputPalabraBorrar');
+  if (inputBorrar && inputBorrar.value.trim() !== "BORRAR") return alert("Escribí BORRAR.");
+  if (document.getElementById('chkCorrales')?.checked) set(corralesRef, null);
+  else if (document.getElementById('chkCabezas')?.checked) Object.keys(window.corralesData).forEach(id => update(ref(db,`corrales/${id}`), { cantidadGenerica:0 }));
+  if (document.getElementById('chkCaravanas')?.checked) set(animalesRef, null);
+  if (document.getElementById('chkLabores')?.checked) set(laboresRef, null);
+  if (document.getElementById('chkInsumos')?.checked) set(insumosRef, null);
+  if (document.getElementById('chkLluvias')?.checked) set(lluviasRef, null);
+  if (document.getElementById('chkFletes')?.checked) set(fletesRef, null);
+  if (document.getElementById('chkHistorial')?.checked) set(historialRef, null);
+  if (document.getElementById('chkTareas')?.checked) set(tareasRef, null);
+  if (document.getElementById('chkNotas')?.checked) set(notasRef, null);
+  alert("Limpieza ejecutada."); cerrarModal('modalReset'); if(inputBorrar) inputBorrar.value = '';
 };
 
 renderAll();
