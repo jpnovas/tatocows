@@ -265,7 +265,7 @@ function renderStats() {
   const el4 = document.getElementById('statLluviaMes'); if(el4) el4.innerText = `${mmMes} mm`;
 }
 
-/* ---------- 1. LOTES MIXTOS ---------- */
+/* ---------- 1. LOTES MIXTOS (OBSERVACIÓN Y CHIPS AMPLIADOS) ---------- */
 window.renderCorrales = function() {
   const container = document.getElementById('listaCorrales');
   if (!container) return;
@@ -311,33 +311,34 @@ window.renderCorrales = function() {
 
     return `
       <div class="tarjeta tarjeta-hover lote-item p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3" style="border-left-color:${colorMap[c.color]||colorMap.emerald}">
-        <div class="min-w-0 flex-1 space-y-2">
+        <div class="min-w-0 flex-1 space-y-2.5">
           <div class="flex items-center gap-2.5 flex-wrap">
-            <h3 class="font-display font-extrabold text-base text-emerald-950 leading-tight">${c.nombre}</h3>
-            ${ha > 0 ? `<span class="chip badge-gris">${ha} ha</span>` : ''}
-            <span class="chip ${estadoBadge[est] || 'badge-verde'}">${est}</span>
+            <h3 class="font-display font-extrabold text-base sm:text-lg text-emerald-950 leading-tight">${c.nombre}</h3>
+            ${ha > 0 ? `<span class="chip badge-gris text-xs px-2.5 py-1">${ha} ha</span>` : ''}
+            <span class="chip ${estadoBadge[est] || 'badge-verde'} text-xs px-2.5 py-1">${est}</span>
           </div>
           
-          ${c.observacion ? `<p class="text-xs text-slate-700 font-medium bg-emerald-50/40 px-3 py-2 rounded-xl border border-emerald-900/10">${c.observacion}</p>` : ''}
+          ${c.observacion ? `<p class="text-sm sm:text-base text-slate-800 font-medium bg-emerald-50/60 px-3.5 py-2.5 rounded-xl border border-emerald-900/10">${c.observacion}</p>` : ''}
 
-          <div class="flex items-center gap-3 flex-wrap text-xs text-slate-600">
+          <div class="flex items-center gap-3 flex-wrap text-xs sm:text-sm text-slate-700">
             ${c.cultivo ? `<span>🌱 <strong>${c.cultivo}</strong></span>` : ''}
             ${rinde > 0 ? `<span class="text-orange-700 font-bold">· Rinde: ${rinde} qq/ha</span>` : ''}
             ${costoCamp > 0 ? `<span class="text-emerald-800 font-semibold">· Costo dir: $${costoCamp.toLocaleString('es-AR')}</span>` : ''}
             <div class="flex items-center gap-2">
-              <span class="chip badge-verde"><i class="fa-solid fa-fingerprint text-[9px]"></i>${carLote} carav.</span>
-              <span class="chip badge-naranja"><i class="fa-solid fa-hashtag text-[9px]"></i>${genLote} gen.</span>
+              <span class="chip badge-verde text-xs px-2.5 py-1 font-bold"><i class="fa-solid fa-fingerprint text-[11px] mr-1"></i>${carLote} caravanas</span>
+              <span class="chip badge-naranja text-xs px-2.5 py-1 font-bold"><i class="fa-solid fa-hashtag text-[11px] mr-1"></i>${genLote} genérico${genLote !== 1 ? 's' : ''}</span>
             </div>
           </div>
         </div>
 
-        <div class="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex-shrink-0 gap-2">
+        <div class="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto pt-2 sm:pt-0 border-t sm:border-t-0 border-slate-100 flex-shrink-0 gap-1">
           <div class="text-left sm:text-right">
-            <p class="font-display text-3xl font-extrabold text-emerald-950 leading-none">${totalCab}</p>
+            <p class="font-display text-3xl sm:text-4xl font-extrabold text-emerald-950 leading-none">${totalCab}</p>
+            <p class="text-[10px] uppercase font-bold text-slate-400 mt-1">Total Cabezas</p>
           </div>
-          <div class="flex gap-1.5">
-            <button onclick="abrirEditarCorral('${id}')" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-600 hover:bg-blue-100 hover:text-blue-700 flex items-center justify-center"><i class="fa-solid fa-pen text-xs"></i></button>
-            <button onclick="eliminarCorral('${id}','${(c.nombre||'').replace(/'/g,"\\'")}')" class="w-8 h-8 rounded-xl bg-slate-100 text-slate-400 hover:bg-rose-100 hover:text-rose-700 flex items-center justify-center"><i class="fa-solid fa-trash text-xs"></i></button>
+          <div class="flex gap-1.5 mt-1">
+            <button onclick="abrirEditarCorral('${id}')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-600 hover:bg-blue-100 hover:text-blue-700 flex items-center justify-center"><i class="fa-solid fa-pen text-sm"></i></button>
+            <button onclick="eliminarCorral('${id}','${(c.nombre||'').replace(/'/g,"\\'")}')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-400 hover:bg-rose-100 hover:text-rose-700 flex items-center justify-center"><i class="fa-solid fa-trash text-sm"></i></button>
           </div>
         </div>
       </div>`;
