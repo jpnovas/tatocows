@@ -1,4 +1,4 @@
-const CACHE_NAME = 'tato-mantenimiento-v7';
+const CACHE_NAME = 'tato-mantenimiento-v8';
 const urlsToCache = [
   './',
   './index.html',
@@ -15,7 +15,6 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  // Limpiamos cachés anteriores para asegurar que tome los nuevos archivos divididos
   event.waitUntil(
     caches.keys().then(cacheNames => {
       return Promise.all(
