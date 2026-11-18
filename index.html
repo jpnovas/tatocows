@@ -1,774 +1,744 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="h-full">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Administración — Campo Argentino</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="./styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Administración Campo Esteban Company</title>
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#1B3A2B">
+  <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css">
 </head>
-<body class="pb-24">
+<body class="bg-[#f3f6f4] text-slate-900 font-sans antialiased min-h-full flex flex-col selection:bg-emerald-800 selection:text-white">
 
-<div class="banner-prueba text-white text-center py-1 text-[11px] font-bold tracking-widest shadow-sm relative z-20">
-  ⚠️ ENTORNO DE PRUEBA · tatocowspruebas
-</div>
-
-<!-- HERO -->
-<header class="hero-campo relative">
-  <div class="relative max-w-4xl mx-auto px-4 pt-4 pb-7">
-    <div class="flex items-center justify-between gap-2">
-      <div class="flex items-center gap-2.5">
-        <div class="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center border border-white/20 flex-shrink-0">
-          <i class="fa-solid fa-cow text-orange-400 text-lg"></i>
+  <!-- HEADER INSTITUCIONAL -->
+  <header class="bg-gradient-to-r from-[#1B3A2B] via-[#244E39] to-[#1B3A2B] text-white shadow-lg sticky top-0 z-40 border-b border-emerald-900/30">
+    <div class="max-w-7xl mx-auto px-4 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <div class="flex items-center gap-3">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-600 to-[#1B3A2B] border border-emerald-400/30 flex items-center justify-center shadow-md">
+          <i class="fa-solid fa-cow text-emerald-200 text-lg"></i>
         </div>
         <div>
-          <h1 class="font-display text-white text-base sm:text-lg font-extrabold leading-tight">Encargado de Mantenimiento</h1>
-          <p class="text-[11px] text-emerald-200/80 font-medium tracking-wide">ESTEBAN COMPANY · CAMPO MIXTO</p>
+          <h1 class="font-display font-extrabold text-lg sm:text-xl tracking-tight text-white leading-tight">Esteban Company</h1>
+          <p class="text-xs text-emerald-300 font-medium">Gestión Integral de Establecimiento · Hacienda y Agricultura</p>
         </div>
       </div>
-
-      <div class="flex items-center gap-2">
-        <button onclick="abrirModal('modalContador')" class="bg-white/15 hover:bg-white/25 backdrop-blur border border-white/20 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
-          <i class="fa-solid fa-file-invoice-dollar text-amber-300"></i>
-          <span class="hidden sm:inline">Contador</span>
-        </button>
-
-        <button onclick="abrirConfigWhatsApp()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur border border-white/20 text-white flex items-center justify-center relative" title="Alertas WhatsApp">
-          <i class="fa-solid fa-gear text-sm"></i>
-          <span id="waBadgeActivo" class="hidden absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 border border-emerald-950"></span>
-        </button>
-
-        <div class="text-right pl-1">
-          <div id="semaforoRedBadge" class="flex items-center gap-1.5 justify-end">
-            <span class="pulse-dot-online"></span>
-            <span class="text-[11px] text-emerald-100 font-bold">EN VIVO</span>
-          </div>
-          <p id="heroFecha" class="text-[11px] text-emerald-200/75 font-medium mt-0.5"></p>
+      
+      <div class="flex items-center gap-2 flex-wrap justify-center">
+        <div id="semaforoRedBadge" class="flex items-center gap-1.5 bg-black/20 px-3 py-1.5 rounded-full border border-white/10 backdrop-blur-md">
+          <span class="dot-offline"></span><span class="text-[11px] text-orange-300 font-bold">SIN SEÑAL</span>
         </div>
+        <button onclick="abrirConfigWhatsApp()" class="btn-icon bg-emerald-800/60 hover:bg-emerald-700 text-emerald-200" title="Configurar Alertas WhatsApp"><i class="fa-brands fa-whatsapp"></i></button>
+        <button onclick="abrirModal('modalReset')" class="btn-icon bg-rose-950/60 hover:bg-rose-900 text-rose-300" title="Centro de Operaciones / Limpieza"><i class="fa-solid fa-triangle-exclamation"></i></button>
       </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<main class="max-w-4xl mx-auto px-3 -mt-4 relative z-10 space-y-3.5">
-
-  <!-- TABS -->
-  <nav class="tarjeta p-1.5 grid grid-cols-4 sm:grid-cols-8 gap-1">
-    <button onclick="cambiarTab('corrales')" id="btnTabCorrales" class="tab-btn activo"><i class="fa-solid fa-layer-group"></i><span>Lotes</span></button>
-    <button onclick="cambiarTab('caravanas')" id="btnTabCaravanas" class="tab-btn"><i class="fa-solid fa-fingerprint"></i><span>Caravanas</span></button>
-    <button onclick="cambiarTab('agricola')" id="btnTabAgricola" class="tab-btn"><i class="fa-solid fa-tractor"></i><span>Agrícola</span></button>
-    <button onclick="cambiarTab('insumos')" id="btnTabInsumos" class="tab-btn relative">
-      <i class="fa-solid fa-warehouse"></i><span>Galpón</span>
-      <span id="dotAlertaStock" class="hidden absolute top-1 right-2 w-2.5 h-2.5 rounded-full bg-orange-500"></span>
-    </button>
-    <button onclick="cambiarTab('lluvias')" id="btnTabLluvias" class="tab-btn"><i class="fa-solid fa-cloud-rain"></i><span>Lluvias</span></button>
-    <button onclick="cambiarTab('fletes')" id="btnTabFletes" class="tab-btn"><i class="fa-solid fa-truck-moving"></i><span>Fletes</span></button>
-    <button onclick="cambiarTab('tareas')" id="btnTabTareas" class="tab-btn"><i class="fa-solid fa-clipboard-list"></i><span>Tablero</span></button>
-    <button onclick="cambiarTab('historial')" id="btnTabHistorial" class="tab-btn"><i class="fa-solid fa-clock-rotate-left"></i><span>Historial</span></button>
+  <!-- BARRA DE NAVEGACIÓN (TABS PRINCIPALES) -->
+  <nav class="bg-white border-b border-slate-200 shadow-xs sticky top-[69px] z-30 overflow-x-auto scrollbar-none">
+    <div class="max-w-7xl mx-auto px-4 flex gap-1 py-2 min-w-max">
+      <button onclick="cambiarTab('corrales')" id="btnTabCorrales" class="tab-btn activo"><i class="fa-solid fa-map text-xs"></i> Lotes & Campañas</button>
+      <button onclick="cambiarTab('caravanas')" id="btnTabCaravanas" class="tab-btn"><i class="fa-solid fa-fingerprint text-xs"></i> Caravanas</button>
+      <button onclick="cambiarTab('agricola')" id="btnTabAgricola" class="tab-btn"><i class="fa-solid fa-tractor text-xs"></i> Agrícola</button>
+      <button onclick="cambiarTab('insumos')" id="btnTabInsumos" class="tab-btn"><i class="fa-solid fa-warehouse text-xs"></i> Galpón / Insumos</button>
+      <button onclick="cambiarTab('lluvias')" id="btnTabLluvias" class="tab-btn"><i class="fa-solid fa-cloud-rain text-xs"></i> Pluviómetro</button>
+      <button onclick="cambiarTab('fletes')" id="btnTabFletes" class="tab-btn"><i class="fa-solid fa-truck text-xs"></i> Fletes</button>
+      <button onclick="cambiarTab('tareas')" id="btnTabTareas" class="tab-btn"><i class="fa-solid fa-list-check text-xs"></i> Tablero</button>
+      <button onclick="cambiarTab('historial')" id="btnTabHistorial" class="tab-btn"><i class="fa-solid fa-clock-rotate-left text-xs"></i> Historial</button>
+    </div>
   </nav>
 
-  <!-- STATS -->
-  <section class="grid grid-cols-4 gap-2">
-    <div class="stat-card"><p id="statTotalVacas" class="stat-num">0</p><p class="stat-lbl">Cabezas</p></div>
-    <div class="stat-card s2"><p id="statTotalHectareas" class="stat-num">0</p><p class="stat-lbl">Hectáreas</p></div>
-    <div class="stat-card s3"><p id="statInsumosBajos" class="stat-num">0</p><p class="stat-lbl">Stock Bajo</p></div>
-    <div class="stat-card s4"><p id="statLluviaMes" class="stat-num">0 mm</p><p class="stat-lbl">Lluvia Mes</p></div>
-  </section>
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full space-y-6">
 
-  <!-- 1. LOTES MIXTOS -->
-  <section id="seccionCorrales" class="section-anim space-y-3">
-    <div class="flex items-center justify-between">
+    <!-- SECCIÓN: LOTES Y CAMPAÑAS (MIXTO) -->
+    <section id="seccionCorrales" class="space-y-6">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <div class="tarjeta p-4 border-l-4 border-emerald-700 bg-white">
+          <p class="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Total Hacienda</p>
+          <p class="font-display text-2xl sm:text-3xl font-extrabold text-emerald-950 mt-1" id="statTotalVacas">0</p>
+        </div>
+        <div class="tarjeta p-4 border-l-4 border-blue-700 bg-white">
+          <p class="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Superficie Total</p>
+          <p class="font-display text-2xl sm:text-3xl font-extrabold text-emerald-950 mt-1"><span id="statTotalHectareas">0</span> ha</p>
+        </div>
+        <div class="tarjeta p-4 border-l-4 border-orange-500 bg-white">
+          <p class="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Alertas Insumos</p>
+          <div class="flex items-center gap-2 mt-1">
+            <p class="font-display text-2xl sm:text-3xl font-extrabold text-orange-600" id="statInsumosBajos">0</p>
+            <span id="dotAlertaStock" class="w-3 h-3 rounded-full bg-orange-500 animate-pulse hidden"></span>
+          </div>
+        </div>
+        <div class="tarjeta p-4 border-l-4 border-sky-500 bg-white">
+          <p class="text-[10px] uppercase font-extrabold text-slate-400 tracking-wider">Lluvia del Mes</p>
+          <p class="font-display text-2xl sm:text-3xl font-extrabold text-sky-800 mt-1" id="statLluviaMes">0 mm</p>
+        </div>
+      </div>
+
+      <!-- BOTONERA DE ACCIÓN RÁPIDA (LOTES & HACIENDA) -->
+      <div class="tarjeta p-4 bg-white flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2 flex-wrap flex-1">
+          <button onclick="abrirModal('modalNuevoCorral')" class="btn-primary"><i class="fa-solid fa-plus text-xs"></i> Nuevo Lote</button>
+          <button onclick="abrirModal('modalIngresar')" class="btn-success"><i class="fa-solid fa-arrow-down text-xs"></i> Ingreso / Compra</button>
+          <button onclick="abrirEgreso()" class="btn-danger"><i class="fa-solid fa-arrow-up text-xs"></i> Egreso / Venta</button>
+          <button onclick="abrirModal('modalTraslado')" class="btn-secondary"><i class="fa-solid fa-arrow-right-arrow-left text-xs"></i> Traslado Tropa</button>
+          <button onclick="abrirTrasladoMasivo()" class="btn-secondary"><i class="fa-solid fa-people-arrows text-xs"></i> Traslado Masivo</button>
+        </div>
+        <button onclick="exportarStockCSV()" class="btn-secondary text-slate-700"><i class="fa-solid fa-file-excel text-emerald-700"></i> Exportar CSV</button>
+      </div>
+
+      <!-- FILTROS Y BUSCADOR DE LOTES -->
+      <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
+        <div class="relative w-full sm:w-80">
+          <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="buscarCorralInput" oninput="renderCorrales()" placeholder="Buscar por lote, cultivo u observación..." class="input-base pl-9 text-xs">
+        </div>
+        <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+          <span class="text-xs font-bold text-slate-500">Ordenar:</span>
+          <select id="ordenCorralSelect" onchange="renderCorrales()" class="input-base text-xs py-1.5 w-auto">
+            <option value="nombre">Por Nombre (A-Z)</option>
+            <option value="mayor_cantidad">Mayor Cantidad de Cabezas</option>
+            <option value="mayor_ha">Mayor Superficie (ha)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- LISTADO DE LOTES -->
+      <div id="listaCorrales" class="space-y-3"></div>
+    </section>
+
+    <!-- SECCIÓN: CARAVANAS -->
+    <section id="seccionCaravanas" class="space-y-6 hidden">
+      <div class="tarjeta p-4 bg-white flex flex-wrap items-center justify-between gap-3">
+        <button onclick="abrirModal('modalNuevoAnimal')" class="btn-primary"><i class="fa-solid fa-tag text-xs"></i> Registrar Caravana Individual</button>
+        <div class="flex items-center gap-2 flex-1 max-w-md">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="buscarAnimalInput" oninput="renderAnimales()" placeholder="Buscar caravana, raza u obs..." class="input-base pl-9 text-xs">
+          </div>
+          <select id="ordenAnimalSelect" onchange="renderAnimales()" class="input-base text-xs py-1.5 w-36">
+            <option value="caravana">Caravana</option>
+            <option value="mayor_peso">Mayor Peso</option>
+            <option value="menor_peso">Menor Peso</option>
+          </select>
+        </div>
+      </div>
+      <div id="listaAnimales" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    </section>
+
+    <!-- SECCIÓN: AGRÍCOLA -->
+    <section id="seccionAgricola" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="tarjeta p-5 border-l-4 border-emerald-800 bg-white flex items-center justify-between">
+          <div>
+            <p class="text-[10px] uppercase font-extrabold text-slate-400">Costo Total Campaña / Labores</p>
+            <p class="font-display text-3xl font-extrabold text-emerald-950 mt-1" id="agriCostoTotal">$0</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-900 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-sack-dollar"></i></div>
+        </div>
+        <div class="tarjeta p-5 border-l-4 border-amber-600 bg-white flex items-center justify-between">
+          <div>
+            <p class="text-[10px] uppercase font-extrabold text-slate-400">Labores Registradas</p>
+            <p class="font-display text-3xl font-extrabold text-amber-900 mt-1" id="agriTotalLabores">0</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-900 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-tractor"></i></div>
+        </div>
+      </div>
+
+      <div class="tarjeta p-4 bg-white flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="abrirModalLabor()" class="btn-primary"><i class="fa-solid fa-plus text-xs"></i> Nueva Labor</button>
+          <button onclick="abrirModalCosecha()" class="btn-success"><i class="fa-solid fa-wheat-awn text-xs"></i> Cerrar Cosecha</button>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold text-slate-500">Filtrar Lote:</span>
+          <select id="filtroLoteAgricola" onchange="renderAgricola()" class="input-base text-xs py-1.5 w-48">
+            <option value="">Todos los lotes</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="listaLabores" class="space-y-3"></div>
+    </section>
+
+    <!-- SECCIÓN: GALPÓN / INSUMOS -->
+    <section id="seccionInsumos" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="tarjeta p-5 border-l-4 border-emerald-800 bg-white flex items-center justify-between">
+          <div>
+            <p class="text-[10px] uppercase font-extrabold text-slate-400">Valor Estimado del Galpón</p>
+            <p class="font-display text-3xl font-extrabold text-emerald-950 mt-1" id="insumosValorTotal">$0</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-900 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-warehouse"></i></div>
+        </div>
+        <div class="tarjeta p-5 border-l-4 border-orange-500 bg-white flex items-center justify-between">
+          <div>
+            <p class="text-[10px] uppercase font-extrabold text-slate-400">Insumos con Stock Bajo</p>
+            <p class="font-display text-3xl font-extrabold text-orange-600 mt-1" id="insumosAlertaCount">0</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-800 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        </div>
+      </div>
+
+      <div class="tarjeta p-4 bg-white flex flex-wrap items-center justify-between gap-3">
+        <button onclick="abrirModal('modalNuevoInsumo')" class="btn-primary"><i class="fa-solid fa-plus text-xs"></i> Agregar Insumo</button>
+        <div class="relative w-full sm:w-80">
+          <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <input type="text" id="buscarInsumoInput" oninput="renderInsumos()" placeholder="Buscar insumo..." class="input-base pl-9 text-xs">
+        </div>
+      </div>
+
+      <div id="listaInsumos" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    </section>
+
+    <!-- SECCIÓN: PLUVIÓMETRO -->
+    <section id="seccionLluvias" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="tarjeta p-5 border-l-4 border-sky-600 bg-white flex items-center justify-between">
+          <div>
+            <p class="text-[10px] uppercase font-extrabold text-slate-400">Acumulado Mes Actual</p>
+            <p class="font-display text-3xl font-extrabold text-sky-900 mt-1" id="lluviaAcumMesCard">0 mm</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-800 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-cloud-rain"></i></div>
+        </div>
+        <div class="tarjeta p-5 border-l-4 border-indigo-600 bg-white flex items-center justify-between">
+          <div>
+            <p class="text-[10px] uppercase font-extrabold text-slate-400">Acumulado Año</p>
+            <p class="font-display text-3xl font-extrabold text-indigo-900 mt-1" id="lluviaAcumAnioCard">0 mm</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-indigo-100 text-indigo-800 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-calendar-days"></i></div>
+        </div>
+      </div>
+
+      <div class="tarjeta p-4 bg-white">
+        <button onclick="abrirModalLluvia()" class="btn-primary"><i class="fa-solid fa-cloud-rain text-xs"></i> Registrar Lluvia</button>
+      </div>
+
+      <div id="listaLluvias" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    </section>
+
+    <!-- SECCIÓN: FLETES -->
+    <section id="seccionFletes" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="tarjeta p-5 border-l-4 border-orange-600 bg-white flex items-center justify-between">
+          <div>
+            <p class="text-[10px] uppercase font-extrabold text-slate-400">Gasto Total en Fletes</p>
+            <p class="font-display text-3xl font-extrabold text-slate-900 mt-1" id="fletesTotalGastado">$0</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-orange-100 text-orange-800 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-truck"></i></div>
+        </div>
+        <div class="tarjeta p-5 border-l-4 border-rose-600 bg-white flex items-center justify-between">
+          <div>
+            <p class="text-[10px] uppercase font-extrabold text-slate-400">Fletes Pendientes de Pago</p>
+            <p class="font-display text-3xl font-extrabold text-rose-700 mt-1" id="fletesTotalPendiente">$0</p>
+          </div>
+          <div class="w-12 h-12 rounded-2xl bg-rose-100 text-rose-800 flex items-center justify-center font-bold text-lg"><i class="fa-solid fa-clock"></i></div>
+        </div>
+      </div>
+
+      <div class="tarjeta p-4 bg-white">
+        <button onclick="abrirModal('modalFlete')" class="btn-primary"><i class="fa-solid fa-plus text-xs"></i> Registrar Nuevo Flete</button>
+      </div>
+
+      <div id="listaFletes" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"></div>
+    </section>
+
+    <!-- SECCIÓN: TABLERO KANBAN Y NOTAS -->
+    <section id="seccionTareas" class="space-y-6 hidden">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <!-- Columna 1 -->
+        <div class="tarjeta p-4 bg-slate-100/80 space-y-3">
+          <div class="flex justify-between items-center"><h3 class="font-display font-extrabold text-sm text-slate-700">📋 Para Hacer</h3><span id="countTomado" class="chip badge-gris">0</span></div>
+          <div id="colTomado" class="space-y-2 min-h-[200px]"></div>
+        </div>
+        <!-- Columna 2 -->
+        <div class="tarjeta p-4 bg-amber-50/60 space-y-3">
+          <div class="flex justify-between items-center"><h3 class="font-display font-extrabold text-sm text-amber-900">⏳ En Ejecución</h3><span id="countEjecucion" class="chip badge-ambar">0</span></div>
+          <div id="colEjecucion" class="space-y-2 min-h-[200px]"></div>
+        </div>
+        <!-- Columna 3 -->
+        <div class="tarjeta p-4 bg-emerald-50/60 space-y-3">
+          <div class="flex justify-between items-center"><h3 class="font-display font-extrabold text-sm text-emerald-900">✅ Completadas</h3><span id="countCompletado" class="chip badge-verde">0</span></div>
+          <div id="colCompletado" class="space-y-2 min-h-[200px]"></div>
+        </div>
+      </div>
+
+      <div class="tarjeta p-4 bg-white flex flex-wrap gap-2 items-center justify-between">
+        <button onclick="abrirModal('modalNuevaTarea')" class="btn-primary"><i class="fa-solid fa-plus text-xs"></i> Nueva Tarea</button>
+        <button onclick="archivarCompletadas()" class="btn-secondary text-xs"><i class="fa-solid fa-box-archive text-emerald-800"></i> Archivar Completadas</button>
+      </div>
+
+      <!-- Notas Rápidas -->
+      <div class="tarjeta p-4 bg-white space-y-3">
+        <h3 class="font-display font-extrabold text-sm text-slate-800">📝 Notas Rápidas en el Campo</h3>
+        <div class="flex gap-2">
+          <input type="text" id="notaRapidaInput" placeholder="Anotar algo rápido..." class="input-base text-xs flex-1">
+          <button onclick="guardarNotaRapida()" class="btn-primary px-4">Anotar</button>
+        </div>
+        <div id="listaNotasRapidas" class="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2"></div>
+      </div>
+    </section>
+
+    <!-- SECCIÓN: HISTORIAL Y CONTADOR -->
+    <section id="seccionHistorial" class="space-y-6 hidden">
+      <div class="tarjeta p-4 bg-white flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-2 flex-1 max-w-md">
+          <div class="relative flex-1">
+            <i class="fa-solid fa-search absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input type="text" id="buscarHistorialInput" oninput="renderHistorial()" placeholder="Buscar en historial o comprobantes..." class="input-base pl-9 text-xs">
+          </div>
+          <select id="ordenHistorialSelect" onchange="renderHistorial()" class="input-base text-xs py-1.5 w-36">
+            <option value="recientes">Más recientes</option>
+            <option value="antiguos">Más antiguos</option>
+          </select>
+        </div>
+        <button onclick="abrirModal('modalContador')" class="btn-primary"><i class="fa-solid fa-file-invoice-dollar text-xs"></i> Reporte para Contador</button>
+      </div>
+
+      <div class="tarjeta bg-white divide-y divide-slate-100 overflow-hidden" id="listaHistorial"></div>
+    </section>
+
+  </main>
+
+  <!-- MODALES Y FORMULARIOS FLOTANTES -->
+  <!-- 1. Nuevo Lote -->
+  <div id="modalNuevoCorral" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Crear Nuevo Lote / Potrero</h3>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Nombre del Lote</label><input type="text" id="nombreCorralInput" placeholder="Ej: Lote A1 Ganadero" class="input-base mt-1"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Superficie (ha)</label><input type="number" id="haCorralInput" placeholder="0" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Color Identificatorio</label><select id="colorCorralInput" class="input-base mt-1"><option value="emerald">Verde Campo</option><option value="blue">Azul</option><option value="amber">Ámbar</option><option value="orange">Naranja</option><option value="purple">Púrpura</option></select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Estado de Campaña</label><select id="estadoCampanaCorralInput" class="input-base mt-1"><option value="Ganadero / Pastura">Ganadero / Pastura</option><option value="En preparación">En preparación</option><option value="Sembrado">Sembrado</option><option value="Cosechado">Cosechado</option></select></div>
+          <div><label class="font-bold text-slate-700">Cultivo</label><input type="text" id="cultivoCorralInput" placeholder="Ej: Maíz / Alfalfa" class="input-base mt-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Observación / Notas del Lote</label><textarea id="obsCorralInput" rows="2" placeholder="Detalle importante del lote..." class="input-base mt-1"></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalNuevoCorral')" class="btn-secondary">Cancelar</button>
+        <button onclick="crearCorral()" class="btn-primary">Guardar Lote</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. Editar Lote -->
+  <div id="modalEditarCorral" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Editar Lote</h3>
+      <input type="hidden" id="editCorralIdInput">
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Nombre del Lote</label><input type="text" id="editNombreCorralInput" class="input-base mt-1"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Superficie (ha)</label><input type="number" id="editHaCorralInput" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Color</label><select id="editColorCorralInput" class="input-base mt-1"><option value="emerald">Verde Campo</option><option value="blue">Azul</option><option value="amber">Ámbar</option><option value="orange">Naranja</option><option value="purple">Púrpura</option></select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Estado</label><select id="editEstadoCampanaCorralInput" class="input-base mt-1"><option value="Ganadero / Pastura">Ganadero / Pastura</option><option value="En preparación">En preparación</option><option value="Sembrado">Sembrado</option><option value="Cosechado">Cosechado</option></select></div>
+          <div><label class="font-bold text-slate-700">Cultivo</label><input type="text" id="editCultivoCorralInput" class="input-base mt-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Rinde (qq/ha)</label><input type="number" step="0.1" id="editRindeCorralInput" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Costo Campaña ($)</label><input type="number" id="editCostoCampanaInput" class="input-base mt-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Observación</label><textarea id="editObsCorralInput" rows="2" class="input-base mt-1"></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalEditarCorral')" class="btn-secondary">Cancelar</button>
+        <button onclick="guardarEdicionCorral()" class="btn-primary">Actualizar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. Ingreso / Compra Hacienda -->
+  <div id="modalIngresar" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Ingreso / Compra de Hacienda (Genérica)</h3>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Lote Destino</label><select id="ingCorralSelect" class="input-base mt-1"></select></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Cantidad de Cabezas</label><input type="number" id="ingCantidadInput" placeholder="Ej: 50" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Motivo</label><select id="ingMotivoSelect" class="input-base mt-1"><option value="Compra">Compra</option><option value="Nacimiento">Nacimiento</option><option value="Ingreso por pastaje">Ingreso por pastaje</option><option value="Otro ingreso">Otro ingreso</option></select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Tipo Fiscal</label><select id="ingTipoFiscalSelect" class="input-base mt-1"><option value="Fiscal / DTE">Fiscal / DTE</option><option value="Interno">Interno</option></select></div>
+          <div><label class="font-bold text-slate-700">N° Comprobante / DTE</label><input type="text" id="ingComprobanteInput" placeholder="Ej: DTE 123456" class="input-base mt-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Usuario / Responsable</label><input type="text" id="ingUsuarioInput" value="Operador" class="input-base mt-1"></div>
+        <div><label class="font-bold text-slate-700">Notas / Observaciones</label><input type="text" id="ingNotasInput" placeholder="Detalles..." class="input-base mt-1"></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalIngresar')" class="btn-secondary">Cancelar</button>
+        <button onclick="ejecutarIngreso()" class="btn-success">Confirmar Ingreso</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. Egreso / Venta Hacienda -->
+  <div id="modalEgresar" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <h3 class="font-display font-extrabold text-lg text-rose-900">Egreso / Venta de Hacienda</h3>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Lote Origen</label><select id="egCorralSelect" onchange="actualizarListaCaravanasEgreso()" class="input-base mt-1"></select></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Cabezas Genéricas</label><input type="number" id="egCantidadInput" value="0" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Motivo</label><select id="egMotivoSelect" class="input-base mt-1"><option value="Venta">Venta</option><option value="Fallecimiento">Fallecimiento</option><option value="Consumo campo">Consumo campo</option><option value="Otro egreso">Otro egreso</option></select></div>
+        </div>
+        <div>
+          <label class="font-bold text-slate-700">O tildar Caravanas Individuales a Egresar:</label>
+          <div id="egListaCaravanasContainer" class="mt-1 max-h-40 overflow-y-auto border border-slate-200 rounded-xl p-2 bg-slate-50 space-y-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Tipo Fiscal</label><select id="egTipoFiscalSelect" class="input-base mt-1"><option value="Fiscal / DTE">Fiscal / DTE</option><option value="Interno">Interno</option></select></div>
+          <div><label class="font-bold text-slate-700">N° Comprobante / DTE</label><input type="text" id="egComprobanteInput" placeholder="Ej: DTE 987654" class="input-base mt-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Usuario / Responsable</label><input type="text" id="egUsuarioInput" value="Operador" class="input-base mt-1"></div>
+        <div><label class="font-bold text-slate-700">Notas</label><input type="text" id="egNotasInput" placeholder="Destino, comprador..." class="input-base mt-1"></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalEgresar')" class="btn-secondary">Cancelar</button>
+        <button onclick="ejecutarEgreso()" class="btn-danger">Confirmar Egreso</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. Traslado Tropa -->
+  <div id="modalTraslado" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Traslado de Tropa (Entre Lotes)</h3>
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Lote Origen</label><select id="trOrigenSelect" class="input-base mt-1"></select></div>
+          <div><label class="font-bold text-slate-700">Lote Destino</label><select id="trDestinoSelect" class="input-base mt-1"></select></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Cantidad de Cabezas</label><input type="number" id="trCantidadInput" placeholder="0" class="input-base mt-1"></div>
+        <div><label class="font-bold text-slate-700">Usuario / Responsable</label><input type="text" id="trUsuarioInput" value="Operador" class="input-base mt-1"></div>
+        <div><label class="font-bold text-slate-700">Notas</label><input type="text" id="trNotasInput" placeholder="Motivo del traslado..." class="input-base mt-1"></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalTraslado')" class="btn-secondary">Cancelar</button>
+        <button onclick="ejecutarTraslado()" class="btn-primary">Confirmar Traslado</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. Traslado Masivo Mixto -->
+  <div id="modalTrasladoMasivo" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Traslado Masivo (Caravanas + Genéricas)</h3>
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Origen</label><select id="masivoOrigenSelect" onchange="actualizarListaCaravanasMasivo()" class="input-base mt-1"></select></div>
+          <div><label class="font-bold text-slate-700">Destino</label><select id="masivoDestinoSelect" class="input-base mt-1"></select></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Cabezas Genéricas a mover</label><input type="number" id="masivoCantidadGenerica" value="0" class="input-base mt-1"></div>
+        <div>
+          <label class="font-bold text-slate-700">Seleccionar Caravanas Individuales:</label>
+          <div id="masivoListaCaravanasContainer" class="mt-1 max-h-40 overflow-y-auto border border-slate-200 rounded-xl p-2 bg-slate-50 space-y-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Usuario</label><input type="text" id="masivoUsuarioInput" value="Operador" class="input-base mt-1"></div>
+        <div><label class="font-bold text-slate-700">Notas</label><input type="text" id="masivoNotasInput" placeholder="Detalles..." class="input-base mt-1"></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalTrasladoMasivo')" class="btn-secondary">Cancelar</button>
+        <button onclick="ejecutarTrasladoMasivo()" class="btn-primary">Ejecutar Traslado Masivo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. Registrar Caravana Individual -->
+  <div id="modalNuevoAnimal" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Registrar Caravana Individual</h3>
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">N° de Caravana</label><input type="text" id="animalCaravanaInput" placeholder="Ej: 1001" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Lote Inicial</label><select id="animalCorralSelect" class="input-base mt-1"></select></div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div><label class="font-bold text-slate-700">Raza</label><input type="text" id="animalRazaInput" placeholder="Ej: Angus" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Edad / Cat.</label><input type="text" id="animalEdadInput" placeholder="Ej: Ternero" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Peso (kg)</label><input type="number" id="animalPesoInput" placeholder="0" class="input-base mt-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Motivo Ingreso</label><select id="animalMotivoSelect" class="input-base mt-1"><option value="Compra">Compra</option><option value="Nacimiento">Nacimiento</option><option value="Otro">Otro</option></select></div>
+          <div><label class="font-bold text-slate-700">Tipo Fiscal</label><select id="animalTipoFiscalSelect" class="input-base mt-1"><option value="Interno">Interno</option><option value="Fiscal / DTE">Fiscal / DTE</option></select></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Comprobante</label><input type="text" id="animalComprobanteInput" placeholder="DTE / Factura" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Usuario</label><input type="text" id="animalUsuarioInput" value="Operador" class="input-base mt-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Notas de Ingreso</label><input type="text" id="animalNotasIngresoInput" placeholder="Notas..." class="input-base mt-1"></div>
+        <div><label class="font-bold text-slate-700">Observaciones del Animal</label><textarea id="animalObsInput" rows="2" placeholder="Detalle..." class="input-base mt-1"></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalNuevoAnimal')" class="btn-secondary">Cancelar</button>
+        <button onclick="guardarAnimal()" class="btn-primary">Guardar Caravana</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 8. Editar Caravana -->
+  <div id="modalEditarAnimal" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Editar Caravana</h3>
+      <input type="hidden" id="editAnimalId">
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Caravana</label><input type="text" id="editAnimalCaravanaInput" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Lote Actual</label><input type="text" id="editAnimalCorralBloqueado" disabled class="input-base mt-1 bg-slate-100 text-slate-500"></div>
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div><label class="font-bold text-slate-700">Raza</label><input type="text" id="editAnimalRazaInput" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Edad</label><input type="text" id="editAnimalEdadInput" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Peso (kg)</label><input type="number" id="editAnimalPesoInput" class="input-base mt-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Observaciones</label><textarea id="editAnimalObsInput" rows="2" class="input-base mt-1"></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalEditarAnimal')" class="btn-secondary">Cancelar</button>
+        <button onclick="guardarEdicionAnimal()" class="btn-primary">Actualizar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 9. Nueva Labor Agrícola -->
+  <div id="modalNuevaLabor" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl max-h-[90vh] overflow-y-auto">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Registrar Labor Agrícola</h3>
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Lote</label><select id="laborLoteSelect" class="input-base mt-1"></select></div>
+          <div><label class="font-bold text-slate-700">Fecha</label><input type="date" id="laborFechaInput" class="input-base mt-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Tipo de Labor</label><select id="laborTipoSelect" class="input-base mt-1"><option value="Pulverización">Pulverización</option><option value="Labranza / Disco">Labranza / Disco</option><option value="Siembra">Siembra</option><option value="Fertilización">Fertilización</option><option value="Cosecha">Cosecha</option><option value="Otra labor">Otra labor</option></select></div>
+          <div><label class="font-bold text-slate-700">Contratista / Operario</label><input type="text" id="laborContratistaInput" placeholder="Nombre..." class="input-base mt-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Costo de la Labor ($)</label><input type="number" id="laborCostoInput" placeholder="0" class="input-base mt-1"></div>
+        <div class="border-t border-slate-200 pt-2 space-y-2">
+          <p class="font-extrabold text-emerald-900">Descontar Insumo del Galpón (Opcional):</p>
+          <div><label class="font-bold text-slate-700">Insumo a aplicar</label><select id="laborInsumoSelect" class="input-base mt-1"></select></div>
+          <div><label class="font-bold text-slate-700">Cantidad a descontar</label><input type="number" step="0.1" id="laborInsumoCantInput" placeholder="Ej: 20" class="input-base mt-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Notas / Observaciones</label><textarea id="laborNotasInput" rows="2" placeholder="Detalle..." class="input-base mt-1"></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalNuevaLabor')" class="btn-secondary">Cancelar</button>
+        <button onclick="guardarLabor()" class="btn-primary">Guardar Labor</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 10. Cerrar Cosecha -->
+  <div id="modalCosecha" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Cierre de Cosecha</h3>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Lote Cosechado</label><select id="cosechaLoteSelect" onchange="recalcularRindePreview()" class="input-base mt-1"></select></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Cantidad Total</label><input type="number" id="cosechaTotalInput" oninput="recalcularRindePreview()" placeholder="0" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Unidad</label><select id="cosechaUnidadSelect" onchange="recalcularRindePreview()" class="input-base mt-1"><option value="qq">Quintales (qq)</option><option value="kg">Kilogramos (kg)</option></select></div>
+        </div>
+        <div class="bg-emerald-50 p-3 rounded-xl border border-emerald-200 flex justify-between items-center">
+          <span class="font-bold text-emerald-900">Rinde Calculado:</span>
+          <span id="cosechaRindePreview" class="font-display font-extrabold text-lg text-emerald-800">0 qq/ha</span>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalCosecha')" class="btn-secondary">Cancelar</button>
+        <button onclick="ejecutarCierreCosecha()" class="btn-success">Confirmar Cosecha</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 11. Nuevo Insumo (Galpón) -->
+  <div id="modalNuevoInsumo" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Agregar Insumo al Galpón</h3>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Nombre del Insumo</label><input type="text" id="insumoNombreInput" placeholder="Ej: Glifosato 48%" class="input-base mt-1"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Unidad de Medida</label><select id="insumoUnidadSelect" class="input-base mt-1"><option value="Litros">Litros</option><option value="Kilos">Kilos</option><option value="Bolsas">Bolsas</option><option value="Dosis">Dosis</option><option value="Unidades">Unidades</option></select></div>
+          <div><label class="font-bold text-slate-700">Stock Inicial</label><input type="number" step="0.1" id="insumoStockInput" value="0" class="input-base mt-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Stock Mínimo (Alerta)</label><input type="number" step="0.1" id="insumoMinimoInput" placeholder="Ej: 50" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Costo Referencia ($)</label><input type="number" id="insumoCostoUnitInput" placeholder="0" class="input-base mt-1"></div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalNuevoInsumo')" class="btn-secondary">Cancelar</button>
+        <button onclick="guardarNuevoInsumo()" class="btn-primary">Guardar Insumo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 12. Movimiento Insumo (+ Stock / - Consumo) -->
+  <div id="modalMovInsumo" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 id="movInsumoTitulo" class="font-display font-extrabold text-lg text-emerald-950">Movimiento de Insumo</h3>
+      <p id="movInsumoSubtitulo" class="text-xs text-slate-500 font-medium"></p>
+      <input type="hidden" id="movInsumoId">
+      <input type="hidden" id="movInsumoTipo">
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Cantidad</label><input type="number" step="0.1" id="movInsumoCantInput" placeholder="0" class="input-base mt-1"></div>
+        <div id="movInsumoCostoWrap"><label class="font-bold text-slate-700">Nuevo Costo Unitario ($)</label><input type="number" id="movInsumoCostoInput" class="input-base mt-1"></div>
+        <div id="movInsumoFiscalWrap" class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Tipo Fiscal</label><select id="movInsumoFiscalSelect" class="input-base mt-1"><option value="Fiscal / DTE">Fiscal / DTE</option><option value="Interno">Interno</option></select></div>
+          <div><label class="font-bold text-slate-700">Comprobante</label><input type="text" id="movInsumoCompInput" placeholder="Nro factura" class="input-base mt-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Notas</label><input type="text" id="movInsumoNotasInput" placeholder="Detalles..." class="input-base mt-1"></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalMovInsumo')" class="btn-secondary">Cancelar</button>
+        <button onclick="ejecutarMovInsumo()" class="btn-primary">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 13. Registrar Lluvia -->
+  <div id="modalNuevaLluvia" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Registrar Pluviómetro</h3>
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Fecha</label><input type="date" id="lluviaFechaInput" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Milímetros (mm)</label><input type="number" step="0.5" id="lluviaMmInput" placeholder="Ej: 35" class="input-base mt-1"></div>
+        </div>
+        <div><label class="font-bold text-slate-700">Ubicación / Lote</label><select id="lluviaUbicacionSelect" class="input-base mt-1"><option value="Casco">Casco Principal</option><option value="Lote 1">Lote 1</option><option value="Lote 2">Lote 2</option><option value="Retiro">Retiro</option></select></div>
+        <div class="flex gap-4 pt-1">
+          <label class="flex items-center gap-2 cursor-pointer font-bold text-slate-700"><input type="checkbox" id="lluviaGranizoChk" class="w-4 h-4 accent-amber-600"> Granizo</label>
+          <label class="flex items-center gap-2 cursor-pointer font-bold text-slate-700"><input type="checkbox" id="lluviaHeladaChk" class="w-4 h-4 accent-sky-600"> Helada</label>
+        </div>
+        <div><label class="font-bold text-slate-700">Notas</label><input type="text" id="lluviaNotasInput" placeholder="Tormenta con viento..." class="input-base mt-1"></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalNuevaLluvia')" class="btn-secondary">Cancelar</button>
+        <button onclick="guardarLluvia()" class="btn-primary">Guardar Lluvia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 14. Registrar Flete -->
+  <div id="modalFlete" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Registrar Nuevo Flete</h3>
+      <div class="space-y-3 text-xs">
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Transportista</label><input type="text" id="fleteTransportista" placeholder="Empresa / Chofer" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Chofer</label><input type="text" id="fleteChofer" placeholder="Nombre" class="input-base mt-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">N° Guía / DTE</label><input type="text" id="fleteGuia" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Cabezas Transportadas</label><input type="number" id="fleteCantidad" placeholder="0" class="input-base mt-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Destino</label><input type="text" id="fleteDestino" placeholder="Frigorífico / Destino" class="input-base mt-1"></div>
+          <div><label class="font-bold text-slate-700">Costo Total ($)</label><input type="number" id="fleteCosto" placeholder="0" class="input-base mt-1"></div>
+        </div>
+        <div class="grid grid-cols-2 gap-2">
+          <div><label class="font-bold text-slate-700">Tipo Fiscal</label><select id="fleteTipoFiscal" class="input-base mt-1"><option value="Fiscal / DTE">Fiscal / DTE</option><option value="Interno">Interno</option></select></div>
+          <div><label class="font-bold text-slate-700">Estado de Pago</label><select id="fleteEstadoPago" class="input-base mt-1"><option value="Pendiente">Pendiente</option><option value="Pagado">Pagado</option></select></div>
+        </div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalFlete')" class="btn-secondary">Cancelar</button>
+        <button onclick="guardarFlete()" class="btn-primary">Guardar Flete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 15. Nueva Tarea -->
+  <div id="modalNuevaTarea" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Nueva Tarea en el Tablero</h3>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Título de la Tarea</label><input type="text" id="tareaTituloInput" placeholder="Ej: Reparar alambre potrero 4" class="input-base mt-1"></div>
+        <div><label class="font-bold text-slate-700">Observaciones</label><textarea id="tareaObsInput" rows="2" class="input-base mt-1"></textarea></div>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalNuevaTarea')" class="btn-secondary">Cancelar</button>
+        <button onclick="guardarTarea()" class="btn-primary">Agregar Tarea</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 16. Configurar WhatsApp -->
+  <div id="modalWhatsApp" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Configurar Alertas WhatsApp (CallMeBot)</h3>
+      <p class="text-xs text-slate-500">Recibí avisos automáticos en tu celular ante traslados, egresos, fletes o stock bajo.</p>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Tu Celular (con código de país, ej: 549...)</label><input type="text" id="waPhoneInput" placeholder="549..." class="input-base mt-1"></div>
+        <div><label class="font-bold text-slate-700">API Key de CallMeBot</label><input type="text" id="waApiKeyInput" placeholder="Tu API Key" class="input-base mt-1"></div>
+        <div class="space-y-1.5 pt-2 border-t border-slate-200">
+          <p class="font-extrabold text-slate-800">Alertas a enviar:</p>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="waChkTraslados" class="w-4 h-4 accent-emerald-800"> Traslados de hacienda</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="waChkEgresos" class="w-4 h-4 accent-emerald-800"> Egresos / Ventas</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="waChkFletes" class="w-4 h-4 accent-emerald-800"> Fletes nuevos</label>
+          <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="waChkStock" class="w-4 h-4 accent-emerald-800"> Alertas de stock bajo en Galpón</label>
+        </div>
+      </div>
+      <div class="flex justify-between items-center pt-2">
+        <button onclick="probarAlertaWhatsApp()" class="btn-secondary text-xs">Probar Mensaje</button>
+        <div class="flex gap-2">
+          <button onclick="cerrarModal('modalWhatsApp')" class="btn-secondary">Cancelar</button>
+          <button onclick="guardarConfigWhatsApp()" class="btn-primary">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 17. Reporte para Contador -->
+  <div id="modalContador" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl">
+      <h3 class="font-display font-extrabold text-lg text-emerald-950">Generar Reporte para el Contador</h3>
+      <div class="space-y-3 text-xs">
+        <div><label class="font-bold text-slate-700">Seleccionar Mes</label><input type="month" id="contadorMesInput" class="input-base mt-1"></div>
+        <p class="text-xs text-slate-500">Se descargará un archivo CSV estructurado con la existencia actual de hacienda, todos los movimientos fiscales/DTE y los fletes del período seleccionado.</p>
+      </div>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalContador')" class="btn-secondary">Cancelar</button>
+        <button onclick="exportarReporteContador()" class="btn-primary">Descargar Reporte</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 18. Centro de Operaciones / Limpieza (Reset) -->
+  <div id="modalReset" class="modal-bg hidden fixed inset-0 z-50 items-center justify-center p-4 bg-black/50 backdrop-blur-xs">
+    <div class="tarjeta bg-white p-6 w-full max-w-md space-y-4 shadow-2xl border-2 border-rose-200">
+      <h3 class="font-display font-extrabold text-lg text-rose-800"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Centro de Operaciones / Limpieza</h3>
+      <p class="text-xs text-slate-600">Seleccioná los módulos que querés vaciar o reiniciar por completo de la base de datos:</p>
+      <div class="space-y-2 text-xs border border-slate-200 p-3 rounded-xl bg-slate-50 max-h-48 overflow-y-auto">
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chkCorrales" class="w-4 h-4 accent-rose-700"> Borrar todos los Lotes</label>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chkCabezas" class="w-4 h-4 accent-rose-700"> Resetear cabezas genéricas a 0</label>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chkCaravanas" class="w-4 h-4 accent-rose-700"> Borrar todas las Caravanas</label>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chkLabores" class="w-4 h-4 accent-rose-700"> Borrar Labores Agrícolas</label>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chkInsumos" class="w-4 h-4 accent-rose-700"> Borrar Galpón / Insumos</label>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chkLluvias" class="w-4 h-4 accent-rose-700"> Borrar Registros de Lluvia</label>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chkFletes" class="w-4 h-4 accent-rose-700"> Borrar Fletes</label>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chkHistorial" class="w-4 h-4 accent-rose-700"> Borrar Historial de Movimientos</label>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chkTareas" class="w-4 h-4 accent-rose-700"> Borrar Tablero de Tareas</label>
+        <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" id="chkNotas" class="w-4 h-4 accent-rose-700"> Borrar Notas Rápidas</label>
+      </div>
       <div>
-        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Lotes Mixtos</h2>
-        <p class="text-xs text-emerald-800/70 font-medium">Hacienda, campaña agrícola y rindes</p>
+        <label class="font-bold text-xs text-rose-900">Escribí "BORRAR" para confirmar:</label>
+        <input type="text" id="inputPalabraBorrar" placeholder="BORRAR" class="input-base mt-1 text-xs uppercase">
       </div>
-      <div class="flex gap-1.5">
-        <button onclick="exportarStockCSV()" class="btn-naranja text-xs px-3 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-file-excel"></i><span class="hidden sm:inline">Stock CSV</span></button>
-        <button onclick="abrirModal('modalNuevoCorral')" class="btn-verde text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Lote</button>
-      </div>
-    </div>
-
-    <div class="tarjeta p-3 flex flex-col sm:flex-row gap-2">
-      <div class="relative flex-1">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="buscarCorralInput" oninput="renderCorrales()" placeholder="Buscar lote, cultivo, estado..." class="w-full border rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none">
-      </div>
-      <select id="ordenCorralSelect" onchange="renderCorrales()" class="border rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
-        <option value="nombre">A → Z</option>
-        <option value="mayor_cantidad">Más cabezas</option>
-        <option value="mayor_ha">Más hectáreas</option>
-      </select>
-    </div>
-
-    <div class="grid grid-cols-4 gap-2">
-      <button onclick="abrirModal('modalIngresar')" class="btn-verde rounded-2xl py-3 flex flex-col items-center gap-1 shadow"><i class="fa-solid fa-circle-plus text-base"></i><span class="text-[11px] font-bold">INGRESAR</span></button>
-      <button onclick="abrirEgreso()" class="btn-rojo rounded-2xl py-3 flex flex-col items-center gap-1 shadow"><i class="fa-solid fa-circle-minus text-base"></i><span class="text-[11px] font-bold">EGRESAR</span></button>
-      <button onclick="abrirModal('modalTraslado')" class="btn-azul rounded-2xl py-3 flex flex-col items-center gap-1 shadow"><i class="fa-solid fa-arrow-right-arrow-left text-base"></i><span class="text-[11px] font-bold">TROPA</span></button>
-      <button onclick="abrirTrasladoMasivo()" class="btn-naranja rounded-2xl py-3 flex flex-col items-center gap-1 shadow"><i class="fa-solid fa-check-to-slot text-base"></i><span class="text-[11px] font-bold">MASIVO</span></button>
-    </div>
-
-    <div id="listaCorrales" class="space-y-3"></div>
-  </section>
-
-  <!-- 2. CARAVANAS -->
-  <section id="seccionCaravanas" class="section-anim space-y-3 hidden">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Control Individual</h2>
-        <p class="text-xs text-emerald-800/70 font-medium">Seguimiento por caravana</p>
-      </div>
-      <button onclick="abrirModal('modalNuevoAnimal')" class="btn-verde text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nueva</button>
-    </div>
-    <div class="tarjeta p-3 flex flex-col sm:flex-row gap-2">
-      <div class="relative flex-1">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="buscarAnimalInput" oninput="renderAnimales()" placeholder="Buscar por caravana, lote, raza..." class="w-full border rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none">
-      </div>
-      <select id="ordenAnimalSelect" onchange="renderAnimales()" class="border rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
-        <option value="caravana">Caravana</option>
-        <option value="mayor_peso">Mayor peso</option>
-        <option value="menor_peso">Menor peso</option>
-      </select>
-    </div>
-    <div id="listaAnimales" class="space-y-3"></div>
-  </section>
-
-  <!-- 3. AGRÍCOLA -->
-  <section id="seccionAgricola" class="section-anim space-y-3 hidden">
-    <div class="flex items-center justify-between flex-wrap gap-2">
-      <div>
-        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Campaña Agrícola</h2>
-        <p class="text-xs text-emerald-800/70 font-medium">Labores, costos directos y cosechas</p>
-      </div>
-      <div class="flex gap-1.5">
-        <button onclick="abrirModalCosecha()" class="btn-naranja text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-wheat-awn"></i>Cerrar Cosecha</button>
-        <button onclick="abrirModalLabor()" class="btn-verde text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nueva Labor</button>
-      </div>
-    </div>
-    <div class="grid grid-cols-2 gap-2">
-      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Inversión Directa</p><p id="agriCostoTotal" class="font-display text-2xl font-extrabold text-emerald-900 mt-0.5">$0</p></div>
-      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Labores</p><p id="agriTotalLabores" class="font-display text-2xl font-extrabold text-amber-800 mt-0.5">0</p></div>
-    </div>
-    <div class="tarjeta p-3">
-      <select id="filtroLoteAgricola" onchange="renderAgricola()" class="w-full border rounded-xl px-3 py-2.5 text-sm bg-white outline-none"><option value="">Todos los lotes</option></select>
-    </div>
-    <div id="listaLabores" class="space-y-3"></div>
-  </section>
-
-  <!-- 4. INSUMOS (GALPÓN) -->
-  <section id="seccionInsumos" class="section-anim space-y-3 hidden">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Galpón e Insumos</h2>
-        <p class="text-xs text-emerald-800/70 font-medium">Stock, reposición y valorización</p>
-      </div>
-      <button onclick="abrirModal('modalNuevoInsumo')" class="btn-verde text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Insumo</button>
-    </div>
-    <div class="grid grid-cols-2 gap-2">
-      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Valorizado en Galpón</p><p id="insumosValorTotal" class="font-display text-2xl font-extrabold text-emerald-900 mt-0.5">$0</p></div>
-      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">En Punto Reposición</p><p id="insumosAlertaCount" class="font-display text-2xl font-extrabold text-orange-600 mt-0.5">0</p></div>
-    </div>
-    <div class="tarjeta p-3">
-      <div class="relative">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="buscarInsumoInput" oninput="renderInsumos()" placeholder="Buscar semilla, herbicida, vacuna, rollo..." class="w-full border rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none">
-      </div>
-    </div>
-    <div id="listaInsumos" class="space-y-3"></div>
-  </section>
-
-  <!-- 5. PLUVIÓMETRO -->
-  <section id="seccionLluvias" class="section-anim space-y-3 hidden">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Pluviómetro Digital</h2>
-        <p class="text-xs text-emerald-800/70 font-medium">Registro de lluvias y eventos climáticos</p>
-      </div>
-      <button onclick="abrirModalLluvia()" class="btn-azul text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Cargar mm</button>
-    </div>
-    <div class="grid grid-cols-2 gap-2">
-      <div class="tarjeta p-3.5 border-l-4 border-sky-600"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Acumulado Mes</p><p id="lluviaAcumMesCard" class="font-display text-2xl font-extrabold text-sky-900 mt-0.5">0 mm</p></div>
-      <div class="tarjeta p-3.5 border-l-4 border-indigo-600"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Acumulado Anual</p><p id="lluviaAcumAnioCard" class="font-display text-2xl font-extrabold text-indigo-950 mt-0.5">0 mm</p></div>
-    </div>
-    <div id="listaLluvias" class="space-y-2.5"></div>
-  </section>
-
-  <!-- 6. FLETES -->
-  <section id="seccionFletes" class="section-anim space-y-3 hidden">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Transportes</h2>
-        <p class="text-xs text-emerald-800/70 font-medium">Registro de fletes y guías DTE</p>
-      </div>
-      <button onclick="abrirModal('modalFlete')" class="btn-naranja text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nuevo</button>
-    </div>
-    <div class="grid grid-cols-2 gap-2">
-      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total gastado</p><p id="fletesTotalGastado" class="font-display text-2xl font-extrabold text-emerald-900 mt-0.5">$0</p></div>
-      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pendiente</p><p id="fletesTotalPendiente" class="font-display text-2xl font-extrabold text-orange-700 mt-0.5">$0</p></div>
-    </div>
-    <div id="listaFletes" class="space-y-3"></div>
-  </section>
-
-  <!-- 7. TABLERO TAREAS -->
-  <section id="seccionTareas" class="section-anim space-y-3 hidden">
-    <div class="flex items-center justify-between flex-wrap gap-2">
-      <div>
-        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Tablero</h2>
-        <p class="text-xs text-emerald-800/70 font-medium">Labores de mantenimiento</p>
-      </div>
-      <div class="flex gap-1.5">
-        <button onclick="abrirModal('modalArchivadas')" class="bg-slate-700 text-white text-xs px-3 py-2 rounded-xl font-bold flex items-center gap-1"><i class="fa-solid fa-box-archive"></i><span id="countArchivadasBtn">0</span></button>
-        <button onclick="archivarCompletadas()" class="bg-slate-200 text-slate-700 text-xs px-3 py-2 rounded-xl font-bold"><i class="fa-solid fa-boxes-stacked"></i></button>
-        <button onclick="abrirModal('modalNuevaTarea')" class="btn-naranja text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nueva</button>
-      </div>
-    </div>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div class="bg-slate-100/80 p-3 rounded-2xl space-y-2.5 border border-slate-200">
-        <div class="flex justify-between items-center px-1"><span class="text-xs font-extrabold text-slate-700 uppercase">Tomadas</span><span id="countTomado" class="chip bg-slate-200 text-slate-700">0</span></div>
-        <div id="colTomado" class="space-y-2 min-h-[100px]"></div>
-      </div>
-      <div class="bg-amber-50 p-3 rounded-2xl space-y-2.5 border border-amber-200">
-        <div class="flex justify-between items-center px-1"><span class="text-xs font-extrabold text-amber-900 uppercase">En ejecución</span><span id="countEjecucion" class="chip bg-amber-200 text-amber-900">0</span></div>
-        <div id="colEjecucion" class="space-y-2 min-h-[100px]"></div>
-      </div>
-      <div class="bg-emerald-50 p-3 rounded-2xl space-y-2.5 border border-emerald-200">
-        <div class="flex justify-between items-center px-1"><span class="text-xs font-extrabold text-emerald-900 uppercase">Listas</span><span id="countCompletado" class="chip bg-emerald-200 text-emerald-900">0</span></div>
-        <div id="colCompletado" class="space-y-2 min-h-[100px]"></div>
-      </div>
-    </div>
-    <div class="tarjeta p-4 space-y-3">
-      <h3 class="font-display text-sm font-extrabold text-emerald-950 flex items-center gap-1.5"><i class="fa-solid fa-note-sticky text-orange-500"></i> Notas rápidas</h3>
-      <div class="flex gap-2">
-        <input type="text" id="notaRapidaInput" placeholder="Anotá algo rápido..." class="flex-1 border rounded-xl px-3.5 py-2.5 text-sm outline-none">
-        <button onclick="guardarNotaRapida()" class="btn-naranja px-4 py-2.5 rounded-xl text-xs font-bold">Anotar</button>
-      </div>
-      <div id="listaNotasRapidas" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-    </div>
-  </section>
-
-  <!-- 8. HISTORIAL -->
-  <section id="seccionHistorial" class="section-anim space-y-3 hidden">
-    <div class="flex items-center justify-between">
-      <div>
-        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Historial</h2>
-        <p class="text-xs text-emerald-800/70 font-medium">Bitácora general del campo</p>
-      </div>
-      <button onclick="abrirModal('modalReset')" class="bg-rose-100 text-rose-700 text-xs px-3 py-2 rounded-xl font-bold flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i>Reset</button>
-    </div>
-    <div class="tarjeta p-3 flex flex-col sm:flex-row gap-2">
-      <div class="relative flex-1">
-        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="buscarHistorialInput" oninput="renderHistorial()" placeholder="Buscar en historial (DTE, lote, motivo)..." class="w-full border rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none">
-      </div>
-      <select id="ordenHistorialSelect" onchange="renderHistorial()" class="border rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
-        <option value="recientes">Recientes</option>
-        <option value="antiguos">Antiguos</option>
-        <option value="lote">Por lote</option>
-      </select>
-    </div>
-    <div id="listaHistorial" class="tarjeta divide-y divide-slate-100 max-h-[60vh] overflow-y-auto scroll-suave"></div>
-  </section>
-
-</main>
-
-<!-- ==================== MODALES ==================== -->
-
-<!-- NUEVO LOTE MIXTO -->
-<div id="modalNuevoCorral" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Nuevo Lote Mixto</h3>
-      <button onclick="cerrarModal('modalNuevoCorral')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <input type="text" id="nombreCorralInput" placeholder="Nombre del lote / potrero" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold">
-    <div class="grid grid-cols-2 gap-2.5">
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Hectáreas (ha)</label><input type="number" step="0.1" id="haCorralInput" placeholder="Ej: 45.5" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-      <div>
-        <label class="text-[11px] font-bold text-slate-500 uppercase">Color</label>
-        <select id="colorCorralInput" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1">
-          <option value="emerald">🟢 Verde</option><option value="blue">🔵 Azul</option><option value="amber">🟡 Ámbar</option><option value="rose">🔴 Rojo</option><option value="purple">🟣 Violeta</option><option value="cyan">🔷 Celeste</option><option value="orange">🟠 Naranja</option><option value="slate">⚫ Pizarra</option>
-        </select>
-      </div>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <div>
-        <label class="text-[11px] font-bold text-slate-500 uppercase">Estado Campaña</label>
-        <select id="estadoCampanaCorralInput" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1">
-          <option value="Ganadero / Pastura">Ganadero / Pastura</option><option value="En preparación">En preparación</option><option value="Sembrado">Sembrado</option><option value="Cosechado">Cosechado</option>
-        </select>
-      </div>
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Cultivo Activo</label><input type="text" id="cultivoCorralInput" placeholder="Ej: Soja 1ra, Alfalfa" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    </div>
-    <input type="text" id="obsCorralInput" placeholder="Observación general" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalNuevoCorral')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="crearCorral()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Guardar Lote</button>
-    </div>
-  </div>
-</div>
-
-<!-- EDITAR LOTE MIXTO -->
-<div id="modalEditarCorral" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Editar Lote</h3>
-      <button onclick="cerrarModal('modalEditarCorral')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <input type="hidden" id="editCorralIdInput">
-    <input type="text" id="editNombreCorralInput" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold">
-    <div class="grid grid-cols-2 gap-2.5">
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Hectáreas (ha)</label><input type="number" step="0.1" id="editHaCorralInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-      <div>
-        <label class="text-[11px] font-bold text-slate-500 uppercase">Color</label>
-        <select id="editColorCorralInput" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1">
-          <option value="emerald">🟢 Verde</option><option value="blue">🔵 Azul</option><option value="amber">🟡 Ámbar</option><option value="rose">🔴 Rojo</option><option value="purple">🟣 Violeta</option><option value="cyan">🔷 Celeste</option><option value="orange">🟠 Naranja</option><option value="slate">⚫ Pizarra</option>
-        </select>
-      </div>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <div>
-        <label class="text-[11px] font-bold text-slate-500 uppercase">Estado Campaña</label>
-        <select id="editEstadoCampanaCorralInput" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1">
-          <option value="Ganadero / Pastura">Ganadero / Pastura</option><option value="En preparación">En preparación</option><option value="Sembrado">Sembrado</option><option value="Cosechado">Cosechado</option>
-        </select>
-      </div>
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Cultivo Activo</label><input type="text" id="editCultivoCorralInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Rinde Cosecha (qq/ha)</label><input type="number" step="0.1" id="editRindeCorralInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Costo Campaña ($)</label><input type="number" id="editCostoCampanaInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    </div>
-    <input type="text" id="editObsCorralInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalEditarCorral')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="guardarEdicionCorral()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Actualizar</button>
-    </div>
-  </div>
-</div>
-
-<!-- NUEVA CARAVANA -->
-<div id="modalNuevoAnimal" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Nueva Caravana</h3>
-      <button onclick="cerrarModal('modalNuevoAnimal')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <input type="text" id="animalCaravanaInput" placeholder="N° Caravana" class="w-full border rounded-xl p-3 text-sm outline-none font-bold">
-      <select id="animalCorralSelect" class="w-full border rounded-xl p-3 text-sm bg-white outline-none"></select>
-    </div>
-    <div class="grid grid-cols-3 gap-2">
-      <input type="text" id="animalRazaInput" placeholder="Raza" class="w-full border rounded-xl p-3 text-sm outline-none">
-      <input type="text" id="animalEdadInput" placeholder="Edad" class="w-full border rounded-xl p-3 text-sm outline-none">
-      <input type="number" id="animalPesoInput" placeholder="Kg" class="w-full border rounded-xl p-3 text-sm outline-none">
-    </div>
-    <input type="text" id="animalObsInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="border-t pt-3 space-y-2.5">
-      <div class="grid grid-cols-2 gap-2.5">
-        <select id="animalMotivoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"><option value="Compra">Compra</option><option value="Nacimiento">Nacimiento</option><option value="Ajuste (+)">Ajuste (+)</option></select>
-        <select id="animalTipoFiscalSelect" class="w-full border rounded-xl p-3 bg-white text-sm font-semibold outline-none"><option value="Interno">Interno</option><option value="Fiscal / DTE">Fiscal / DTE</option></select>
-      </div>
-      <div class="grid grid-cols-2 gap-2.5">
-        <input type="text" id="animalComprobanteInput" placeholder="N° DTE / Guía" class="w-full border rounded-xl p-3 text-sm outline-none">
-        <input type="text" id="animalUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-3 text-sm outline-none">
-      </div>
-      <input type="text" id="animalNotasIngresoInput" placeholder="Notas del ingreso" class="w-full border rounded-xl p-3 text-sm outline-none">
-    </div>
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalNuevoAnimal')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="guardarAnimal()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Confirmar</button>
-    </div>
-  </div>
-</div>
-
-<!-- EDITAR CARAVANA -->
-<div id="modalEditarAnimal" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-amber-700">Editar Ficha</h3>
-      <button onclick="cerrarModal('modalEditarAnimal')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <input type="hidden" id="editAnimalId">
-    <input type="text" id="editAnimalCaravanaInput" placeholder="N° Caravana" class="w-full border rounded-xl p-3 text-sm outline-none font-bold">
-    <div class="grid grid-cols-2 gap-2.5">
-      <input type="text" id="editAnimalRazaInput" placeholder="Raza" class="w-full border rounded-xl p-3 text-sm outline-none">
-      <input type="text" id="editAnimalEdadInput" placeholder="Edad" class="w-full border rounded-xl p-3 text-sm outline-none">
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <input type="number" id="editAnimalPesoInput" placeholder="Kg" class="w-full border rounded-xl p-3 text-sm outline-none">
-      <input type="text" id="editAnimalCorralBloqueado" disabled class="w-full border rounded-xl p-3 text-sm bg-slate-100 text-slate-500 font-semibold">
-    </div>
-    <input type="text" id="editAnimalObsInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalEditarAnimal')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="guardarEdicionAnimal()" class="bg-amber-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm">Actualizar</button>
-    </div>
-  </div>
-</div>
-
-<!-- MOVER CARAVANA -->
-<div id="modalMoverCaravana" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-blue-700">Mover: <span id="moverCaravanaTxt"></span></h3>
-      <button onclick="cerrarModal('modalMoverCaravana')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <input type="hidden" id="moverAnimalId">
-    <select id="moverCorralSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"></select>
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalMoverCaravana')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="ejecutarMoverCaravana()" class="btn-azul px-5 py-2.5 rounded-xl text-sm">Confirmar</button>
-    </div>
-  </div>
-</div>
-
-<!-- TRASLADO MASIVO -->
-<div id="modalTrasladoMasivo" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-lg rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-orange-700">Traslado Masivo</h3>
-      <button onclick="cerrarModal('modalTrasladoMasivo')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Origen</label><select id="masivoOrigenSelect" onchange="actualizarListaCaravanasMasivo()" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"></select></div>
-      <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Destino</label><select id="masivoDestinoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"></select></div>
-    </div>
-    <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Cabezas genéricas</label><input type="number" id="masivoCantidadGenerica" value="0" min="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Caravanas a mover</label><div id="masivoListaCaravanasContainer" class="border rounded-xl p-2.5 max-h-40 overflow-y-auto bg-slate-50 space-y-1 mt-1 scroll-suave"></div></div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <input type="text" id="masivoUsuarioInput" placeholder="Registra" class="border rounded-xl p-3 text-sm outline-none">
-      <input type="text" id="masivoNotasInput" placeholder="Notas" class="border rounded-xl p-3 text-sm outline-none">
-    </div>
-    <div class="flex justify-end gap-2 pt-2 border-t">
-      <button onclick="cerrarModal('modalTrasladoMasivo')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="ejecutarTrasladoMasivo()" class="btn-naranja px-5 py-2.5 rounded-xl text-sm">Ejecutar</button>
-    </div>
-  </div>
-</div>
-
-<!-- INGRESO GENÉRICO -->
-<div id="modalIngresar" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Ingreso Genérico</h3>
-      <button onclick="cerrarModal('modalIngresar')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <select id="ingCorralSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"></select>
-    <div class="grid grid-cols-2 gap-2.5">
-      <input type="number" id="ingCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-xl p-3 text-sm outline-none">
-      <select id="ingMotivoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"><option value="Compra">Compra</option><option value="Nacimiento">Nacimiento</option><option value="Ajuste (+)">Ajuste (+)</option></select>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <select id="ingTipoFiscalSelect" class="w-full border rounded-xl p-3 bg-white text-sm font-semibold outline-none"><option value="Interno">Interno</option><option value="Fiscal / DTE">Fiscal / DTE</option></select>
-      <input type="text" id="ingComprobanteInput" placeholder="N° DTE / Factura" class="w-full border rounded-xl p-3 text-sm outline-none">
-    </div>
-    <input type="text" id="ingUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <input type="text" id="ingNotasInput" placeholder="Notas" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalIngresar')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="ejecutarIngreso()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Confirmar</button>
-    </div>
-  </div>
-</div>
-
-<!-- EGRESO MIXTO -->
-<div id="modalEgresar" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-lg rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-rose-700">Registrar Egreso</h3>
-      <button onclick="cerrarModal('modalEgresar')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Lote</label><select id="egCorralSelect" onchange="actualizarListaCaravanasEgreso()" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"></select></div>
-    <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Cabezas genéricas</label><input type="number" id="egCantidadInput" value="0" min="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Caravanas que egresan</label><div id="egListaCaravanasContainer" class="border rounded-xl p-2.5 max-h-36 overflow-y-auto bg-rose-50/30 space-y-1 mt-1 scroll-suave"></div></div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <select id="egMotivoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"><option value="Venta">Venta</option><option value="Muerte">Muerte</option><option value="Ajuste (-)">Ajuste (-)</option></select>
-      <select id="egTipoFiscalSelect" class="w-full border rounded-xl p-3 bg-white text-sm font-semibold outline-none"><option value="Fiscal / DTE">Fiscal / DTE</option><option value="Interno">Interno</option></select>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <input type="text" id="egComprobanteInput" placeholder="N° DTE / Guía" class="w-full border rounded-xl p-3 text-sm outline-none">
-      <input type="text" id="egUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-3 text-sm outline-none">
-    </div>
-    <input type="text" id="egNotasInput" placeholder="Notas" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-2 border-t">
-      <button onclick="cerrarModal('modalEgresar')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="ejecutarEgreso()" class="btn-rojo px-5 py-2.5 rounded-xl text-sm">Confirmar Egreso</button>
-    </div>
-  </div>
-</div>
-
-<!-- TRASLADO TROPA -->
-<div id="modalTraslado" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-blue-700">Traslado de Tropa</h3>
-      <button onclick="cerrarModal('modalTraslado')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <select id="trOrigenSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"></select>
-    <select id="trDestinoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"></select>
-    <input type="number" id="trCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <input type="text" id="trUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <input type="text" id="trNotasInput" placeholder="Notas" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalTraslado')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="ejecutarTraslado()" class="btn-azul px-5 py-2.5 rounded-xl text-sm">Confirmar</button>
-    </div>
-  </div>
-</div>
-
-<!-- NUEVA LABOR AGRÍCOLA -->
-<div id="modalNuevaLabor" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Registrar Labor</h3>
-      <button onclick="cerrarModal('modalNuevaLabor')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Lote</label><select id="laborLoteSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"></select></div>
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Fecha</label><input type="date" id="laborFechaInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <div>
-        <label class="text-[11px] font-bold text-slate-500 uppercase">Labor</label>
-        <select id="laborTipoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1">
-          <option value="Pulverización / Barbecho">Pulverización / Barbecho</option>
-          <option value="Disco / Labranza">Disco / Labranza</option>
-          <option value="Siembra">Siembra</option>
-          <option value="Fertilización">Fertilización</option>
-          <option value="Cosecha">Cosecha</option>
-        </select>
-      </div>
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Costo Labor ($)</label><input type="number" id="laborCostoInput" placeholder="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    </div>
-    <input type="text" id="laborContratistaInput" placeholder="Contratista / Maquinaria" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="bg-emerald-50/70 border border-emerald-200 p-3.5 rounded-2xl space-y-2.5">
-      <p class="text-[11px] font-extrabold text-emerald-900 uppercase">Descontar Insumo del Galpón (Opcional)</p>
-      <select id="laborInsumoSelect" class="w-full border rounded-xl p-2.5 bg-white text-xs outline-none"><option value="">-- Ningún insumo --</option></select>
-      <input type="number" step="0.01" id="laborInsumoCantInput" placeholder="Cantidad aplicada" class="w-full border rounded-xl p-2.5 text-xs outline-none">
-    </div>
-    <input type="text" id="laborNotasInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalNuevaLabor')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="guardarLabor()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Guardar Labor</button>
-    </div>
-  </div>
-</div>
-
-<!-- CIERRE DE COSECHA -->
-<div id="modalCosecha" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-orange-700">Cierre de Cosecha</h3>
-      <button onclick="cerrarModal('modalCosecha')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div><label class="text-[11px] font-bold text-slate-500 uppercase">Lote</label><select id="cosechaLoteSelect" onchange="recalcularRindePreview()" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"></select></div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <div>
-        <label class="text-[11px] font-bold text-slate-500 uppercase">Unidad</label>
-        <select id="cosechaUnidadSelect" onchange="recalcularRindePreview()" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"><option value="qq">Quintales (qq)</option><option value="kg">Kilogramos (kg)</option></select>
-      </div>
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Total Cosechado</label><input type="number" step="0.1" id="cosechaTotalInput" oninput="recalcularRindePreview()" placeholder="Ej: 1500" class="w-full border rounded-xl p-3 text-sm outline-none mt-1 font-bold"></div>
-    </div>
-    <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-xl flex items-center justify-between">
-      <span class="text-xs font-bold text-amber-950">Rinde Calculado:</span>
-      <span id="cosechaRindePreview" class="font-display text-lg font-extrabold text-orange-700">0.0 qq/ha</span>
-    </div>
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalCosecha')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="ejecutarCierreCosecha()" class="btn-naranja px-5 py-2.5 rounded-xl text-sm">Cerrar Campaña</button>
-    </div>
-  </div>
-</div>
-
-<!-- NUEVO INSUMO -->
-<div id="modalNuevoInsumo" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Nuevo Insumo</h3>
-      <button onclick="cerrarModal('modalNuevoInsumo')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <input type="text" id="insumoNombreInput" placeholder="Nombre del insumo" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold">
-    <div class="grid grid-cols-2 gap-2.5">
-      <div>
-        <label class="text-[11px] font-bold text-slate-500 uppercase">Unidad</label>
-        <select id="insumoUnidadSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"><option value="Litros">Litros</option><option value="Bolsas">Bolsas</option><option value="Kilos">Kilos</option><option value="Dosis">Dosis</option><option value="Rollos">Rollos</option></select>
-      </div>
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Stock Inicial</label><input type="number" step="0.1" id="insumoStockInput" value="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Punto Reposición</label><input type="number" step="0.1" id="insumoMinimoInput" placeholder="Mínimo" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Costo Unitario ($)</label><input type="number" step="0.01" id="insumoCostoUnitInput" placeholder="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    </div>
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalNuevoInsumo')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="guardarNuevoInsumo()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Guardar Insumo</button>
-    </div>
-  </div>
-</div>
-
-<!-- MOVIMIENTO INSUMO -->
-<div id="modalMovInsumo" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 id="movInsumoTitulo" class="font-display text-lg font-extrabold text-emerald-950">Movimiento Insumo</h3>
-      <button onclick="cerrarModal('modalMovInsumo')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <input type="hidden" id="movInsumoId"><input type="hidden" id="movInsumoTipo">
-    <p id="movInsumoSubtitulo" class="text-xs font-bold text-slate-600"></p>
-    <div class="grid grid-cols-2 gap-2.5">
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Cantidad</label><input type="number" step="0.1" id="movInsumoCantInput" placeholder="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1 font-bold"></div>
-      <div id="movInsumoCostoWrap"><label class="text-[11px] font-bold text-slate-500 uppercase">Nuevo Costo ($)</label><input type="number" step="0.01" id="movInsumoCostoInput" placeholder="Opcional" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    </div>
-    <div id="movInsumoFiscalWrap" class="grid grid-cols-2 gap-2.5">
-      <select id="movInsumoFiscalSelect" class="w-full border rounded-xl p-3 bg-white text-sm font-semibold outline-none"><option value="Fiscal / DTE">Fiscal / Factura</option><option value="Interno">Interno</option></select>
-      <input type="text" id="movInsumoCompInput" placeholder="N° Factura / Remito" class="w-full border rounded-xl p-3 text-sm outline-none">
-    </div>
-    <input type="text" id="movInsumoNotasInput" placeholder="Detalle" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalMovInsumo')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="ejecutarMovInsumo()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Confirmar</button>
-    </div>
-  </div>
-</div>
-
-<!-- NUEVA LLUVIA -->
-<div id="modalNuevaLluvia" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-sky-900">Cargar Lluvia</h3>
-      <button onclick="cerrarModal('modalNuevaLluvia')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Fecha</label><input type="date" id="lluviaFechaInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Milímetros (mm)</label><input type="number" step="0.5" id="lluviaMmInput" placeholder="Ej: 28" class="w-full border rounded-xl p-3 text-sm outline-none mt-1 font-extrabold text-sky-900"></div>
-    </div>
-    <div>
-      <label class="text-[11px] font-bold text-slate-500 uppercase">Ubicación</label>
-      <select id="lluviaUbicacionSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"><option value="Casco">Casco</option><option value="Puesto">Puesto</option><option value="Lote Norte">Lote Norte</option><option value="Lote Sur">Lote Sur</option></select>
-    </div>
-    <div class="flex gap-4 bg-slate-50 p-3 rounded-xl border">
-      <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" id="lluviaGranizoChk" class="w-4 h-4 accent-sky-600"><span>⛈️ Granizo</span></label>
-      <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" id="lluviaHeladaChk" class="w-4 h-4 accent-sky-600"><span>❄️ Helada</span></label>
-    </div>
-    <input type="text" id="lluviaNotasInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalNuevaLluvia')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="guardarLluvia()" class="btn-azul px-5 py-2.5 rounded-xl text-sm">Guardar Registro</button>
-    </div>
-  </div>
-</div>
-
-<!-- FLETE -->
-<div id="modalFlete" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Registrar Flete</h3>
-      <button onclick="cerrarModal('modalFlete')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <input type="text" id="fleteTransportista" placeholder="Transportista" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="grid grid-cols-2 gap-2.5">
-      <input type="text" id="fleteChofer" placeholder="Chofer" class="w-full border rounded-xl p-3 text-sm outline-none">
-      <input type="text" id="fleteGuia" placeholder="Guía DTE / Carta Porte" class="w-full border rounded-xl p-3 text-sm outline-none">
-    </div>
-    <div class="grid grid-cols-2 gap-2.5">
-      <input type="number" id="fleteCantidad" placeholder="Cabezas" class="w-full border rounded-xl p-3 text-sm outline-none">
-      <input type="number" id="fleteCosto" placeholder="Costo ($)" class="w-full border rounded-xl p-3 text-sm outline-none">
-    </div>
-    <div class="grid grid-cols-3 gap-2">
-      <input type="text" id="fleteDestino" placeholder="Destino" class="w-full border rounded-xl p-3 text-sm outline-none">
-      <select id="fleteTipoFiscal" class="w-full border rounded-xl p-3 text-xs bg-white font-semibold outline-none"><option value="Fiscal / DTE">Fiscal / DTE</option><option value="Interno">Interno</option></select>
-      <select id="fleteEstadoPago" class="w-full border rounded-xl p-3 text-xs bg-white outline-none"><option value="Pendiente">Pendiente</option><option value="Pagado">Pagado</option></select>
-    </div>
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalFlete')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="guardarFlete()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<!-- WHATSAPP CONFIG -->
-<div id="modalWhatsApp" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Alertas WhatsApp</h3>
-      <button onclick="cerrarModal('modalWhatsApp')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <p class="text-xs text-slate-600 bg-emerald-50 p-3 rounded-xl border border-emerald-200">Configurá tu teléfono y API Key de <strong>CallMeBot</strong> (se guarda localmente en tu dispositivo).</p>
-    <div><label class="text-[11px] font-bold text-slate-500 uppercase">Teléfono (ej: 5492317123456)</label><input type="text" id="waPhoneInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    <div><label class="text-[11px] font-bold text-slate-500 uppercase">API Key CallMeBot</label><input type="text" id="waApiKeyInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
-    <div class="space-y-2 bg-slate-50 p-3.5 rounded-xl border text-xs font-semibold text-slate-700">
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="waChkTraslados" class="w-4 h-4 accent-emerald-700"><span>Traslados de hacienda</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="waChkEgresos" class="w-4 h-4 accent-emerald-700"><span>Egresos / Ventas</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="waChkFletes" class="w-4 h-4 accent-emerald-700"><span>Nuevos fletes</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="waChkStock" class="w-4 h-4 accent-emerald-700"><span>Stock bajo en galpón</span></label>
-    </div>
-    <div class="flex justify-between items-center pt-2">
-      <button onclick="probarAlertaWhatsApp()" class="text-xs font-bold text-emerald-700 hover:underline">Enviar prueba</button>
-      <div class="flex gap-2">
-        <button onclick="cerrarModal('modalWhatsApp')" class="px-3.5 py-2.5 text-slate-600 text-sm font-semibold">Cerrar</button>
-        <button onclick="guardarConfigWhatsApp()" class="btn-verde px-4 py-2.5 rounded-xl text-sm">Guardar</button>
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="cerrarModal('modalReset')" class="btn-secondary">Cancelar</button>
+        <button onclick="ejecutarReinicioSeguro()" class="bg-rose-700 hover:bg-rose-800 text-white font-bold px-4 py-2 rounded-xl text-xs shadow-md">Ejecutar Limpieza</button>
       </div>
     </div>
   </div>
-</div>
 
-<!-- CONTADOR -->
-<div id="modalContador" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Exportar para Contador</h3>
-      <button onclick="cerrarModal('modalContador')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <p class="text-xs text-slate-600">Genera un CSV con stock actual de hacienda, movimientos marcados como <strong>Fiscal / DTE</strong> y fletes del mes seleccionado.</p>
-    <div><label class="text-[11px] font-bold text-slate-500 uppercase">Mes a exportar</label><input type="month" id="contadorMesInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1 font-bold"></div>
-    <div class="flex justify-end gap-2 pt-2">
-      <button onclick="cerrarModal('modalContador')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
-      <button onclick="exportarReporteContador()" class="btn-naranja px-5 py-2.5 rounded-xl text-sm">Descargar CSV</button>
-    </div>
-  </div>
-</div>
-
-<!-- NUEVA TAREA / ARCHIVADAS / RESET -->
-<div id="modalNuevaTarea" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between"><h3 class="font-display text-lg font-extrabold text-indigo-700">Nueva Tarea</h3><button onclick="cerrarModal('modalNuevaTarea')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button></div>
-    <input type="text" id="tareaTituloInput" placeholder="¿Qué hay que hacer?" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <input type="text" id="tareaObsInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-2"><button onclick="cerrarModal('modalNuevaTarea')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button><button onclick="guardarTarea()" class="bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm">Guardar</button></div>
-  </div>
-</div>
-
-<div id="modalArchivadas" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3 max-h-[80vh] flex flex-col">
-    <div class="flex items-center justify-between border-b pb-3"><h3 class="font-display text-lg font-extrabold text-emerald-950">Tareas Archivadas</h3><button onclick="cerrarModal('modalArchivadas')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button></div>
-    <div id="listaTareasArchivadas" class="space-y-2 overflow-y-auto flex-1 scroll-suave"></div>
-  </div>
-</div>
-
-<div id="modalReset" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between"><h3 class="font-display text-lg font-extrabold text-rose-700">Reinicio de Base</h3><button onclick="cerrarModal('modalReset')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button></div>
-    <div class="space-y-2 bg-slate-50 p-3.5 rounded-xl text-xs max-h-56 overflow-y-auto font-medium">
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkCabezas" class="w-4 h-4 accent-rose-600"><span>Cabezas en 0 (Genéricas)</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkCaravanas" class="w-4 h-4 accent-rose-600"><span>Borrar caravanas</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkCorrales" class="w-4 h-4 accent-rose-600"><span>Borrar lotes</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkLabores" class="w-4 h-4 accent-rose-600"><span>Borrar labores agrícolas</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkInsumos" class="w-4 h-4 accent-rose-600"><span>Borrar insumos del galpón</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkLluvias" class="w-4 h-4 accent-rose-600"><span>Borrar pluviómetro</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkFletes" class="w-4 h-4 accent-rose-600"><span>Borrar fletes</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkHistorial" class="w-4 h-4 accent-rose-600"><span>Borrar historial</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkTareas" class="w-4 h-4 accent-rose-600"><span>Borrar tablero</span></label>
-      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkNotas" class="w-4 h-4 accent-rose-600"><span>Borrar notas</span></label>
-    </div>
-    <input type="text" id="inputPalabraBorrar" placeholder="Escribí BORRAR" class="w-full border rounded-xl p-3 text-sm uppercase outline-none">
-    <div class="flex justify-end gap-2 pt-2"><button onclick="cerrarModal('modalReset')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button><button onclick="ejecutarReinicioSeguro()" class="btn-rojo px-5 py-2.5 rounded-xl text-sm">Ejecutar</button></div>
-  </div>
-</div>
-
-<script type="module" src="./app.js"></script>
+  <script type="module" src="./app.js"></script>
 </body>
 </html>
