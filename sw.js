@@ -1,4 +1,4 @@
-const CACHE_NAME = 'esteban-company-v2';
+const CACHE_NAME = 'esteban-company-v3';
 const urlsToCache = [
   './',
   './index.html',
