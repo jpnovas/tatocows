@@ -1,0 +1,191 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap');
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+.font-display {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+
+/* Tarjetas institucionales */
+.tarjeta {
+  background: #ffffff;
+  border: 1px solid rgba(27, 58, 43, 0.08);
+  border-radius: 1.25rem;
+  box-shadow: 0 4px 20px -2px rgba(27, 58, 43, 0.05);
+  transition: all 0.2s ease-in-out;
+}
+
+.tarjeta-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px -4px rgba(27, 58, 43, 0.1);
+}
+
+/* Lotes con borde lateral izquierdo de color */
+.lote-item {
+  border-left-width: 6px;
+}
+
+/* Chips y Badges */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+}
+
+.badge-verde { background-color: #d1fae5; color: #065f46; }
+.badge-ambar { background-color: #fef3c7; color: #92400e; }
+.badge-azul { background-color: #dbeafe; color: #1e40af; }
+.badge-naranja { background-color: #ffedd5; color: #c2410c; }
+.badge-gris { background-color: #f1f5f9; color: #475569; }
+.badge-rojo { background-color: #fee2e2; color: #991b1b; }
+
+/* Botones principales */
+.btn-primary {
+  background-color: #1B3A2B;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.875rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(27, 58, 43, 0.2);
+  transition: all 0.2s;
+}
+.btn-primary:hover { background-color: #244E39; transform: translateY(-1px); }
+
+.btn-success {
+  background-color: #047857;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.875rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(4, 120, 87, 0.2);
+  transition: all 0.2s;
+}
+.btn-success:hover { background-color: #065f46; transform: translateY(-1px); }
+
+.btn-danger {
+  background-color: #b91c1c;
+  color: #ffffff;
+  font-weight: 700;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.875rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(185, 28, 28, 0.2);
+  transition: all 0.2s;
+}
+.btn-danger:hover { background-color: #991b1b; transform: translateY(-1px); }
+
+.btn-secondary {
+  background-color: #f1f5f9;
+  color: #334155;
+  font-weight: 700;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.875rem;
+  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+}
+.btn-secondary:hover { background-color: #e2e8f0; }
+
+.btn-icon {
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.875rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+/* Inputs y Selects */
+.input-base {
+  width: 100%;
+  background-color: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.875rem;
+  padding: 0.625rem 0.875rem;
+  font-size: 0.8125rem;
+  color: #0f172a;
+  outline: none;
+  transition: all 0.2s;
+}
+.input-base:focus {
+  border-color: #1B3A2B;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(27, 58, 43, 0.1);
+}
+
+/* Tabs de navegación */
+.tab-btn {
+  padding: 0.625rem 1.125rem;
+  border-radius: 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: #64748b;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.tab-btn:hover { color: #1B3A2B; background-color: #f8fafc; }
+.tab-btn.activo {
+  background-color: #1B3A2B;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(27, 58, 43, 0.15);
+}
+
+/* Animaciones de sección */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.section-anim {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Indicadores de señal */
+.dot-offline {
+  width: 8px;
+  height: 8px;
+  background-color: #f97316;
+  border-radius: 9999px;
+  box-shadow: 0 0 8px #f97316;
+}
+
+.pulse-dot-online {
+  width: 8px;
+  height: 8px;
+  background-color: #10b981;
+  border-radius: 9999px;
+  box-shadow: 0 0 8px #10b981;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+/* Ocultar scrollbar pero mantener funcionalidad */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
