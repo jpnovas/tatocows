@@ -1,9 +1,7 @@
-const CACHE_NAME = 'tato-mantenimiento-v8';
+const CACHE_NAME = 'tato-mantenimiento-v6';
 const urlsToCache = [
   './',
-  './index.html',
-  './styles.css',
-  './app.js'
+  './index.html'
 ];
 
 self.addEventListener('install', event => {
@@ -15,17 +13,8 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
+  // Mantenemos la caché activa sin destruir datos previos para asegurar el funcionamiento offline
+  event.waitUntil(self.clients.claim());
 });
 
 self.addEventListener('fetch', event => {
