@@ -23,7 +23,7 @@ const db = getDatabase(firebaseApp);
 
 // Inicializar Telegram y Gemini (Usando tu acceso de Google AI Studio / AI Plus)
 const bot = new Telegraf(TELEGRAM_BOT_TOKEN);
-const ai = new GoogleGenAI(); // Toma automáticamente tu API Key del entorno o SDK
+const ai = new GoogleGenAI("AQ.Ab8RN6IrMQT9T3kV2woAQfGqoxfZM7zsO3P9AoGfox0UxHOjYg"); // Toma automáticamente tu API Key del entorno o SDK
 
 // --- FUNCIÓN PARA EXTRAER DATOS CRUDOS DE FIREBASE ---
 async function obtenerEstadoCampo() {
