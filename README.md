@@ -1,2 +1,0 @@
-# tatocows
-administración agroganadera
