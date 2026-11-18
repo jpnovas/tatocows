@@ -108,8 +108,16 @@ window.addEventListener('online', actualizarSemaforoRed);
 window.addEventListener('offline', actualizarSemaforoRed);
 actualizarSemaforoRed();
 
-/* ---------- WhatsApp CallMeBot ---------- */
-window.getWaConfig = () => { try { return JSON.parse(localStorage.getItem('tc_whatsapp_cfg') || '{}'); } catch { return {}; } };
+/* ---------- WhatsApp CallMeBot (Precargado con tus credenciales) ---------- */
+window.getWaConfig = () => {
+  const defaultCfg = { phone: '5492317470742', apiKey: '3921709', traslados: true, egresos: true, fletes: true, stock: true };
+  try {
+    const saved = JSON.parse(localStorage.getItem('tc_whatsapp_cfg') || 'null');
+    if (!saved || (!saved.phone && !saved.apiKey)) return defaultCfg;
+    return { ...defaultCfg, ...saved };
+  } catch { return defaultCfg; }
+};
+
 function refrescarBadgeWa() {
   const cfg = window.getWaConfig();
   const dot = document.getElementById('waBadgeActivo');
@@ -265,7 +273,47 @@ function renderStats() {
   const el4 = document.getElementById('statLluviaMes'); if(el4) el4.innerText = `${mmMes} mm`;
 }
 
-/* ---------- 1. LOTES MIXTOS (OBSERVACIÓN Y CHIPS AMPLIADOS) ---------- */
+/* ---------- GEOLOCALIZACIÓN GPS DE LOTES (ESTILO FIELDDATA) ---------- */
+window.capturarUbicacionLote = function(modo) {
+  if (!navigator.geolocation) {
+    return alert("Tu navegador o dispositivo no soporta geolocalización GPS.");
+  }
+  const statusEl = document.getElementById(modo === 'nuevo' ? 'nuevoGpsStatus' : 'editGpsStatus');
+  if (statusEl) statusEl.innerText = "🛰️ Buscando satélites GPS...";
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = +(pos.coords.latitude.toFixed(6));
+      const lng = +(pos.coords.longitude.toFixed(6));
+      const acc = Math.round(pos.coords.accuracy);
+      const latEl = document.getElementById(modo === 'nuevo' ? 'nuevoLatInput' : 'editLatInput');
+      const lngEl = document.getElementById(modo === 'nuevo' ? 'nuevoLngInput' : 'editLngInput');
+      if (latEl) latEl.value = lat;
+      if (lngEl) lngEl.value = lng;
+      if (statusEl) statusEl.innerHTML = `<span class="text-emerald-800 font-bold">✓ Marcado: ${lat}, ${lng}</span> (±${acc}m)`;
+    },
+    err => {
+      if (statusEl) statusEl.innerHTML = `<span class="text-rose-700 font-bold">⚠️ Error GPS: Revisá permisos de ubicación.</span>`;
+    },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+  );
+};
+
+window.limpiarUbicacionLote = function(modo) {
+  const latEl = document.getElementById(modo === 'nuevo' ? 'nuevoLatInput' : 'editLatInput');
+  const lngEl = document.getElementById(modo === 'nuevo' ? 'nuevoLngInput' : 'editLngInput');
+  const statusEl = document.getElementById(modo === 'nuevo' ? 'nuevoGpsStatus' : 'editGpsStatus');
+  if (latEl) latEl.value = '';
+  if (lngEl) lngEl.value = '';
+  if (statusEl) statusEl.innerText = "Sin coordenadas marcadas.";
+};
+
+window.abrirModalNuevoCorral = function() {
+  window.limpiarUbicacionLote('nuevo');
+  abrirModal('modalNuevoCorral');
+};
+
+/* ---------- 1. LOTES MIXTOS (CON OBSERVACIÓN, CHIPS AMPLIADOS Y MAPA GPS) ---------- */
 window.renderCorrales = function() {
   const container = document.getElementById('listaCorrales');
   if (!container) return;
@@ -308,6 +356,8 @@ window.renderCorrales = function() {
     const ha = parseFloat(c.hectareas) || 0;
     const rinde = parseFloat(c.rinde) || 0;
     const costoCamp = parseFloat(c.costoCampana) || 0;
+    const tieneGps = c.lat && c.lng;
+    const mapsUrl = tieneGps ? `https://www.google.com/maps/search/?api=1&query=${c.lat},${c.lng}` : '';
 
     return `
       <div class="tarjeta tarjeta-hover lote-item p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3" style="border-left-color:${colorMap[c.color]||colorMap.emerald}">
@@ -316,6 +366,7 @@ window.renderCorrales = function() {
             <h3 class="font-display font-extrabold text-base sm:text-lg text-emerald-950 leading-tight">${c.nombre}</h3>
             ${ha > 0 ? `<span class="chip badge-gris text-xs px-2.5 py-1">${ha} ha</span>` : ''}
             <span class="chip ${estadoBadge[est] || 'badge-verde'} text-xs px-2.5 py-1">${est}</span>
+            ${tieneGps ? `<a href="${mapsUrl}" target="_blank" rel="noopener" class="chip bg-emerald-100 hover:bg-emerald-200 text-emerald-900 border border-emerald-300 text-xs px-2.5 py-1 font-bold transition"><i class="fa-solid fa-location-dot text-emerald-700 mr-1"></i>Ver en Mapa</a>` : ''}
           </div>
           
           ${c.observacion ? `<p class="text-sm sm:text-base text-slate-800 font-medium bg-emerald-50/60 px-3.5 py-2.5 rounded-xl border border-emerald-900/10">${c.observacion}</p>` : ''}
@@ -352,11 +403,16 @@ window.crearCorral = function() {
   const estadoCampana = document.getElementById('estadoCampanaCorralInput')?.value || 'Ganadero / Pastura';
   const cultivo = document.getElementById('cultivoCorralInput')?.value.trim() || '';
   const obs = document.getElementById('obsCorralInput')?.value.trim() || '';
+  const lat = parseFloat(document.getElementById('nuevoLatInput')?.value) || null;
+  const lng = parseFloat(document.getElementById('nuevoLngInput')?.value) || null;
   if (!nombre) return alert("Ingresá un nombre para el lote.");
 
   cerrarModal('modalNuevoCorral');
-  set(push(corralesRef), { nombre, hectareas, color, estadoCampana, cultivo, observacion: obs, cantidadGenerica: 0, rinde: 0, costoCampana: 0 })
-    .then(() => ['nombreCorralInput','haCorralInput','cultivoCorralInput','obsCorralInput'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; }));
+  set(push(corralesRef), { nombre, hectareas, color, estadoCampana, cultivo, observacion: obs, lat, lng, cantidadGenerica: 0, rinde: 0, costoCampana: 0 })
+    .then(() => {
+      ['nombreCorralInput','haCorralInput','cultivoCorralInput','obsCorralInput'].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+      window.limpiarUbicacionLote('nuevo');
+    });
 };
 
 window.abrirEditarCorral = function(id) {
@@ -370,6 +426,17 @@ window.abrirEditarCorral = function(id) {
   const e7 = document.getElementById('editRindeCorralInput'); if(e7) e7.value = c.rinde || '';
   const e8 = document.getElementById('editCostoCampanaInput'); if(e8) e8.value = c.costoCampana || 0;
   const e9 = document.getElementById('editObsCorralInput'); if(e9) e9.value = c.observacion || '';
+
+  const latEl = document.getElementById('editLatInput');
+  const lngEl = document.getElementById('editLngInput');
+  const statusEl = document.getElementById('editGpsStatus');
+  if (c.lat && c.lng) {
+    if (latEl) latEl.value = c.lat;
+    if (lngEl) lngEl.value = c.lng;
+    if (statusEl) statusEl.innerHTML = `<span class="text-emerald-800 font-bold">✓ Guardado: ${c.lat}, ${c.lng}</span>`;
+  } else {
+    window.limpiarUbicacionLote('edit');
+  }
   abrirModal('modalEditarCorral');
 };
 
@@ -383,6 +450,8 @@ window.guardarEdicionCorral = function() {
   const rinde = parseFloat(document.getElementById('editRindeCorralInput')?.value) || 0;
   const costoCampana = parseFloat(document.getElementById('editCostoCampanaInput')?.value) || 0;
   const obs = document.getElementById('editObsCorralInput')?.value.trim() || '';
+  const lat = parseFloat(document.getElementById('editLatInput')?.value) || null;
+  const lng = parseFloat(document.getElementById('editLngInput')?.value) || null;
   if (!id || !nombre) return alert("Nombre obligatorio.");
 
   const c = window.corralesData[id];
@@ -393,7 +462,7 @@ window.guardarEdicionCorral = function() {
   }
 
   cerrarModal('modalEditarCorral');
-  update(ref(db, `corrales/${id}`), { nombre, hectareas, color, estadoCampana, cultivo, rinde, costoCampana, observacion: obs });
+  update(ref(db, `corrales/${id}`), { nombre, hectareas, color, estadoCampana, cultivo, rinde, costoCampana, observacion: obs, lat, lng });
 };
 
 window.eliminarCorral = function(id, nombre) {
@@ -1034,7 +1103,7 @@ window.renderNotas = function() {
   const c = document.getElementById('listaNotasRapidas'); if (!c) return;
   const notas = window.notasData || {}, keys = Object.keys(notas);
   c.innerHTML = keys.length === 0 ? `<p class="text-xs text-slate-400 text-center py-2 col-span-2">No hay notas.</p>` :
-    keys.map(id => `<div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl flex justify-between items-start gap-2 text-xs"><p class="text-slate-800 break-words flex-1">${notas[id].texto}</p><button onclick="eliminarNotaRapida('${id}')" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-xmark text-xs"></i></button></div>`).join('');
+    keys.map(id => `<div class="bg-amber-50 border border-amber-200 p-2.5 rounded-xl flex justify-between items-start gap-2 text-xs"><p class="text-slate-800 break-words flex-1 font-medium">${notas[id].texto}</p><button onclick="eliminarNotaRapida('${id}')" class="text-slate-400 hover:text-rose-600"><i class="fa-solid fa-xmark text-xs"></i></button></div>`).join('');
 };
 window.guardarNotaRapida = () => { const t = document.getElementById('notaRapidaInput')?.value.trim(); if (t) set(push(notasRef), { texto:t, timestamp:Date.now() }).then(() => { const el = document.getElementById('notaRapidaInput'); if(el) el.value=''; }); };
 window.eliminarNotaRapida = id => remove(ref(db,`notas_rapidas/${id}`));
@@ -1059,10 +1128,10 @@ window.renderHistorial = function() {
 window.exportarStockCSV = function() {
   const corrales = window.corralesData || {}, animales = window.animalesData || {}, keys = Object.keys(corrales);
   if (keys.length === 0) return alert("No hay datos.");
-  let csv = "\uFEFFLote,Hectareas,Estado Campana,Cultivo,Rinde qq/ha,Con Caravana,Genericas,Total Cabezas\n";
+  let csv = "\uFEFFLote,Hectareas,Estado Campana,Cultivo,Rinde qq/ha,Latitud,Longitud,Con Caravana,Genericas,Total Cabezas\n";
   keys.forEach(id => {
     const c = corrales[id], car = Object.values(animales).filter(a => a.corralId===id && a.estado==='activo').length, gen = c.cantidadGenerica ?? c.cantidad ?? 0;
-    csv += `"${(c.nombre||'').replace(/"/g,'""')}",${c.hectareas||0},"${c.estadoCampana||'Ganadero'}","${c.cultivo||''}",${c.rinde||0},${car},${gen},${car+gen}\n`;
+    csv += `"${(c.nombre||'').replace(/"/g,'""')}",${c.hectareas||0},"${c.estadoCampana||'Ganadero'}","${c.cultivo||''}",${c.rinde||0},${c.lat||''},${c.lng||''},${car},${gen},${car+gen}\n`;
   });
   descargarCSV(csv, `stock_campo_${new Date().toISOString().slice(0,10)}.csv`);
 };
