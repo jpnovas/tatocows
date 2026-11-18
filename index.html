@@ -3,340 +3,130 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Administracion — Campo Argentino</title>
+<title>Administración — Campo Argentino</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-
-<style>
-  :root{
-    --verde-noche:#0F2A1D;
-    --verde-bosque:#1e4e37;
-    --verde-medio:#296d40;
-    --verde-salvia:#44b86b;
-    --naranja:#ff6200;
-    --naranja-claro:#f5a97a;
-    --crema:#F7F3EB;
-    --crema-2:#ddbe80;
-    --tierra:#5A4632;
-  }
-  *{ -webkit-tap-highlight-color:transparent; }
-  html,body{ scroll-behavior:smooth; }
-  body{
-    font-family:'Inter',system-ui,sans-serif;
-    background:var(--crema);
-    color:#1a241d;
-    min-height:100vh;
-  }
-  .font-display{ font-family:'Bricolage Grotesque','Inter',sans-serif; letter-spacing:-0.02em; }
-
-  /* Hero con imagen de campo */
-  .hero-campo{
-    background:
-      linear-gradient(180deg, rgba(15,42,29,0.72) 0%, rgba(15,42,29,0.55) 45%, rgba(15,42,29,0.92) 100%),
-      url('https://images.unsplash.com/photo-1516467508483-a7212febe31a?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
-    position:relative;
-    overflow:hidden;
-  }
-  .hero-campo::after{
-    content:"";
-    position:absolute; inset:0;
-    background:radial-gradient(circle at 80% 20%, rgba(232,106,26,0.18), transparent 55%);
-    pointer-events:none;
-  }
-  .grano-overlay{
-    position:absolute; inset:0;
-    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.08 0'/></filter><rect width='120' height='120' filter='url(%23n)'/></svg>");
-    opacity:.7; pointer-events:none; mix-blend-mode:overlay;
-  }
-
-  .tarjeta{
-    background:#adbead;
-    border-radius:1.25rem;
-    box-shadow:0 1px 2px rgba(15,42,29,0.06), 0 8px 24px -12px rgba(15,42,29,0.18);
-    border:1px solid rgba(45,90,61,0.08);
-  }
-  .tarjeta-hover{ transition:transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
-  .tarjeta-hover:hover{ transform:translateY(-2px); box-shadow:0 4px 8px rgba(15,42,29,0.08), 0 16px 32px -16px rgba(15,42,29,0.28); border-color:rgba(45,90,61,0.18); }
-  .tarjeta-hover:active{ transform:translateY(0) scale(0.995); }
-
-  .btn-verde{
-    background:linear-gradient(135deg, var(--verde-bosque), var(--verde-medio));
-    color:#fff; font-weight:700;
-    box-shadow:0 4px 12px -4px rgba(15,42,29,0.4);
-    transition:all .18s ease;
-  }
-  .btn-verde:hover{ filter:brightness(1.08); box-shadow:0 6px 16px -4px rgba(15,42,29,0.5); }
-  .btn-verde:active{ transform:scale(0.97); }
-
-  .btn-naranja{
-    background:linear-gradient(135deg, var(--naranja), var(--naranja-claro));
-    color:#fff; font-weight:700;
-    box-shadow:0 4px 12px -4px rgba(232,106,26,0.5);
-    transition:all .18s ease;
-  }
-  .btn-naranja:hover{ filter:brightness(1.08); box-shadow:0 6px 16px -4px rgba(232,106,26,0.6); }
-  .btn-naranja:active{ transform:scale(0.97); }
-
-  .btn-rojo{
-    background:linear-gradient(135deg,#B91C1C,#DC2626);
-    color:#fff; font-weight:700;
-    box-shadow:0 4px 12px -4px rgba(185,28,28,0.4);
-    transition:all .18s ease;
-  }
-  .btn-rojo:hover{ filter:brightness(1.08); }
-  .btn-rojo:active{ transform:scale(0.97); }
-
-  .btn-azul{
-    background:linear-gradient(135deg,#1E40AF,#2563EB);
-    color:#fff; font-weight:700;
-    box-shadow:0 4px 12px -4px rgba(30,64,175,0.4);
-    transition:all .18s ease;
-  }
-  .btn-azul:hover{ filter:brightness(1.08); }
-  .btn-azul:active{ transform:scale(0.97); }
-
-  /* Tabs */
-  .tab-btn{
-    display:flex; flex-direction:column; align-items:center; gap:2px;
-    padding:0.65rem 0.25rem;
-    border-radius:0.85rem;
-    font-weight:700; font-size:10.5px; letter-spacing:0.01em;
-    color:#5A6B60;
-    transition:all .2s ease;
-    cursor:pointer;
-    border:none; background:transparent;
-  }
-  .tab-btn i{ font-size:15px; }
-  .tab-btn.activo{
-    background:linear-gradient(135deg, var(--verde-bosque), var(--verde-medio));
-    color:#fff;
-    box-shadow:0 4px 12px -4px rgba(15,42,29,0.5);
-  }
-
-  /* Stats */
-  .stat-card{
-    background:#fff;
-    border-radius:1rem;
-    padding:0.85rem 0.7rem;
-    position:relative;
-    overflow:hidden;
-    border:1px solid rgba(45,90,61,0.08);
-    box-shadow:0 1px 2px rgba(15,42,29,0.06), 0 6px 16px -10px rgba(15,42,29,0.18);
-  }
-  .stat-card::before{
-    content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
-    background:var(--verde-bosque);
-  }
-  .stat-card.s2::before{ background:var(--verde-medio); }
-  .stat-card.s3::before{ background:var(--naranja); }
-  .stat-card.s4::before{ background:var(--naranja-claro); }
-  .stat-num{ font-family:'Bricolage Grotesque'; font-weight:800; font-size:1.5rem; line-height:1; letter-spacing:-0.03em; color:var(--verde-noche); }
-  .stat-lbl{ font-size:9px; font-weight:700; text-transform:uppercase; letter-spacing:0.08em; color:#8A9A8F; margin-top:2px; }
-
-  input, select, textarea{
-    background:#FBFAF6;
-    border:1.5px solid #DDD6C7;
-    border-radius:0.75rem;
-    transition:border-color .15s ease, box-shadow .15s ease, background .15s ease;
-    font-family:'Inter',sans-serif;
-  }
-  input:focus, select:focus, textarea:focus{
-    outline:none;
-    border-color:var(--verde-medio);
-    background:#fff;
-    box-shadow:0 0 0 3px rgba(45,90,61,0.12);
-  }
-
-  .modal-bg{
-    background:rgba(10,25,16,0.72);
-    backdrop-filter:blur(6px);
-    -webkit-backdrop-filter:blur(6px);
-    animation:fadeIn .2s ease;
-  }
-  .modal-card{ animation:slideUp .25s cubic-bezier(0.34,1.56,0.64,1); }
-  @keyframes fadeIn{ from{opacity:0} to{opacity:1} }
-  @keyframes slideUp{ from{opacity:0; transform:translateY(24px) scale(0.97)} to{opacity:1; transform:translateY(0) scale(1)} }
-
-  .section-anim{ animation:sectionIn .35s ease; }
-  @keyframes sectionIn{ from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:translateY(0)} }
-
-  .badge-verde{ background:#DCEAD9; color:#1B3A2B; }
-  .badge-naranja{ background:#FDE8D6; color:#B8500C; }
-  .badge-rojo{ background:#FEE2E2; color:#991B1B; }
-  .badge-azul{ background:#DBEAFE; color:#1E40AF; }
-
-  .lote-item{ border-left-width:6px; border-left-style:solid; }
-  .caravana-item{ border-left:4px solid var(--verde-bosque); }
-
-  .scroll-suave::-webkit-scrollbar{ width:6px; height:6px; }
-  .scroll-suave::-webkit-scrollbar-thumb{ background:var(--verde-salvia); border-radius:3px; }
-  .scroll-suave::-webkit-scrollbar-track{ background:transparent; }
-
-  .banner-prueba{
-    background:repeating-linear-gradient(45deg,#E86A1A,#E86A1A 10px,#C55510 10px,#C55510 20px);
-  }
-
-  .pulse-dot{
-    display:inline-block; width:6px; height:6px; border-radius:50%;
-    background:#FF8C42; box-shadow:0 0 0 0 rgba(255,140,66,0.7);
-    animation:pulse 1.8s infinite;
-  }
-  @keyframes pulse{
-    0%{ box-shadow:0 0 0 0 rgba(255,140,66,0.7); }
-    70%{ box-shadow:0 0 0 8px rgba(255,140,66,0); }
-    100%{ box-shadow:0 0 0 0 rgba(255,140,66,0); }
-  }
-
-  .chip{
-    display:inline-flex; align-items:center; gap:4px;
-    padding:2px 8px; border-radius:99px;
-    font-size:10px; font-weight:700;
-  }
-</style>
-
-<script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('SW registrado:', reg.scope))
-        .catch(err => console.log('SW error:', err));
-    });
-  }
-</script>
+<link rel="stylesheet" href="./styles.css">
 </head>
 <body class="pb-24">
 
-<!-- Banner prueba -->
-<div class="banner-prueba text-white text-center py-1 text-[10px] font-bold tracking-widest shadow-sm relative z-20">
+<div class="banner-prueba text-white text-center py-1 text-[11px] font-bold tracking-widest shadow-sm relative z-20">
   ⚠️ ENTORNO DE PRUEBA · tatocowspruebas
 </div>
 
 <!-- HERO -->
 <header class="hero-campo relative">
-  <div class="grano-overlay"></div>
-  <div class="relative max-w-3xl mx-auto px-4 pt-5 pb-7">
-    <div class="flex items-center justify-between">
+  <div class="relative max-w-4xl mx-auto px-4 pt-4 pb-7">
+    <div class="flex items-center justify-between gap-2">
       <div class="flex items-center gap-2.5">
-        <div class="w-9 h-9 rounded-xl bg-white/15 backdrop-blur flex items-center justify-center border border-white/20">
+        <div class="w-11 h-11 rounded-2xl bg-white/15 backdrop-blur flex items-center justify-center border border-white/20 flex-shrink-0">
           <i class="fa-solid fa-cow text-orange-400 text-lg"></i>
         </div>
         <div>
-          <h1 class="font-display text-white text-base font-extrabold leading-tight">Encargado de<br class="sm:hidden"> Mantenimiento</h1>
-          <p class="text-[10px] text-emerald-200/80 font-medium tracking-wide">ESTEBAN COMPANY · CAMPO</p>
+          <h1 class="font-display text-white text-base sm:text-lg font-extrabold leading-tight">Encargado de Mantenimiento</h1>
+          <p class="text-[11px] text-emerald-200/80 font-medium tracking-wide">ESTEBAN COMPANY · CAMPO MIXTO</p>
         </div>
       </div>
-      <div class="text-right">
-        <div class="flex items-center gap-1.5 justify-end">
-          <span class="pulse-dot"></span>
-          <span class="text-[10px] text-emerald-100/80 font-bold">EN VIVO</span>
+
+      <div class="flex items-center gap-2">
+        <button onclick="abrirModal('modalContador')" class="bg-white/15 hover:bg-white/25 backdrop-blur border border-white/20 text-white px-3 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5">
+          <i class="fa-solid fa-file-invoice-dollar text-amber-300"></i>
+          <span class="hidden sm:inline">Contador</span>
+        </button>
+
+        <button onclick="abrirConfigWhatsApp()" class="w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 backdrop-blur border border-white/20 text-white flex items-center justify-center relative" title="Alertas WhatsApp">
+          <i class="fa-solid fa-gear text-sm"></i>
+          <span id="waBadgeActivo" class="hidden absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 border border-emerald-950"></span>
+        </button>
+
+        <div class="text-right pl-1">
+          <div id="semaforoRedBadge" class="flex items-center gap-1.5 justify-end">
+            <span class="pulse-dot-online"></span>
+            <span class="text-[11px] text-emerald-100 font-bold">EN VIVO</span>
+          </div>
+          <p id="heroFecha" class="text-[11px] text-emerald-200/75 font-medium mt-0.5"></p>
         </div>
-        <p id="heroFecha" class="text-[10px] text-emerald-200/70 font-medium mt-0.5"></p>
       </div>
     </div>
   </div>
 </header>
 
-<main class="max-w-3xl mx-auto px-3.5 -mt-4 relative z-10 space-y-4">
+<main class="max-w-4xl mx-auto px-3 -mt-4 relative z-10 space-y-3.5">
 
   <!-- TABS -->
-  <nav class="tarjeta p-1.5 grid grid-cols-5 gap-1">
-    <button onclick="cambiarTab('corrales')" id="btnTabCorrales" class="tab-btn activo">
-      <i class="fa-solid fa-layer-group"></i><span>Lotes</span>
+  <nav class="tarjeta p-1.5 grid grid-cols-4 sm:grid-cols-8 gap-1">
+    <button onclick="cambiarTab('corrales')" id="btnTabCorrales" class="tab-btn activo"><i class="fa-solid fa-layer-group"></i><span>Lotes</span></button>
+    <button onclick="cambiarTab('caravanas')" id="btnTabCaravanas" class="tab-btn"><i class="fa-solid fa-fingerprint"></i><span>Caravanas</span></button>
+    <button onclick="cambiarTab('agricola')" id="btnTabAgricola" class="tab-btn"><i class="fa-solid fa-tractor"></i><span>Agrícola</span></button>
+    <button onclick="cambiarTab('insumos')" id="btnTabInsumos" class="tab-btn relative">
+      <i class="fa-solid fa-warehouse"></i><span>Galpón</span>
+      <span id="dotAlertaStock" class="hidden absolute top-1 right-2 w-2.5 h-2.5 rounded-full bg-orange-500"></span>
     </button>
-    <button onclick="cambiarTab('caravanas')" id="btnTabCaravanas" class="tab-btn">
-      <i class="fa-solid fa-fingerprint"></i><span>Caravanas</span>
-    </button>
-    <button onclick="cambiarTab('fletes')" id="btnTabFletes" class="tab-btn">
-      <i class="fa-solid fa-truck-moving"></i><span>Fletes</span>
-    </button>
-    <button onclick="cambiarTab('tareas')" id="btnTabTareas" class="tab-btn">
-      <i class="fa-solid fa-clipboard-list"></i><span>Tablero</span>
-    </button>
-    <button onclick="cambiarTab('historial')" id="btnTabHistorial" class="tab-btn">
-      <i class="fa-solid fa-clock-rotate-left"></i><span>Historial</span>
-    </button>
+    <button onclick="cambiarTab('lluvias')" id="btnTabLluvias" class="tab-btn"><i class="fa-solid fa-cloud-rain"></i><span>Lluvias</span></button>
+    <button onclick="cambiarTab('fletes')" id="btnTabFletes" class="tab-btn"><i class="fa-solid fa-truck-moving"></i><span>Fletes</span></button>
+    <button onclick="cambiarTab('tareas')" id="btnTabTareas" class="tab-btn"><i class="fa-solid fa-clipboard-list"></i><span>Tablero</span></button>
+    <button onclick="cambiarTab('historial')" id="btnTabHistorial" class="tab-btn"><i class="fa-solid fa-clock-rotate-left"></i><span>Historial</span></button>
   </nav>
 
   <!-- STATS -->
   <section class="grid grid-cols-4 gap-2">
-    <div class="stat-card">
-      <p id="statTotalVacas" class="stat-num">0</p>
-      <p class="stat-lbl">Cabezas</p>
-    </div>
-    <div class="stat-card s2">
-      <p id="statTotalCorrales" class="stat-num">0</p>
-      <p class="stat-lbl">Lotes</p>
-    </div>
-    <div class="stat-card s3">
-      <p id="statTotalFletes" class="stat-num">0</p>
-      <p class="stat-lbl">Fletes</p>
-    </div>
-    <div class="stat-card s4">
-      <p id="statTotalTareas" class="stat-num">0</p>
-      <p class="stat-lbl">Tareas</p>
-    </div>
+    <div class="stat-card"><p id="statTotalVacas" class="stat-num">0</p><p class="stat-lbl">Cabezas</p></div>
+    <div class="stat-card s2"><p id="statTotalHectareas" class="stat-num">0</p><p class="stat-lbl">Hectáreas</p></div>
+    <div class="stat-card s3"><p id="statInsumosBajos" class="stat-num">0</p><p class="stat-lbl">Stock Bajo</p></div>
+    <div class="stat-card s4"><p id="statLluviaMes" class="stat-num">0 mm</p><p class="stat-lbl">Lluvia Mes</p></div>
   </section>
 
-  <!-- SECCIÓN LOTES -->
+  <!-- 1. LOTES MIXTOS -->
   <section id="seccionCorrales" class="section-anim space-y-3">
     <div class="flex items-center justify-between">
       <div>
-        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Lotes y Hacienda</h2>
-        <p class="text-[11px] text-emerald-800/60 font-medium">Gestión de corrales y stock</p>
+        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Lotes Mixtos</h2>
+        <p class="text-xs text-emerald-800/70 font-medium">Hacienda, campaña agrícola y rindes</p>
       </div>
       <div class="flex gap-1.5">
-        <button onclick="exportarStockCSV()" class="btn-naranja text-[11px] px-3 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-file-excel"></i><span class="hidden sm:inline">Exportar</span></button>
-        <button onclick="abrirModal('modalNuevoCorral')" class="btn-verde text-[11px] px-3 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Lote</button>
+        <button onclick="exportarStockCSV()" class="btn-naranja text-xs px-3 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-file-excel"></i><span class="hidden sm:inline">Stock CSV</span></button>
+        <button onclick="abrirModal('modalNuevoCorral')" class="btn-verde text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Lote</button>
       </div>
     </div>
 
-    <div class="tarjeta p-2.5 flex flex-col sm:flex-row gap-2">
+    <div class="tarjeta p-3 flex flex-col sm:flex-row gap-2">
       <div class="relative flex-1">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="buscarCorralInput" oninput="renderCorrales()" placeholder="Buscar lote u observación..." class="w-full border rounded-xl pl-8 pr-3 py-2.5 text-sm outline-none">
+        <input type="text" id="buscarCorralInput" oninput="renderCorrales()" placeholder="Buscar lote, cultivo, estado..." class="w-full border rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none">
       </div>
       <select id="ordenCorralSelect" onchange="renderCorrales()" class="border rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
         <option value="nombre">A → Z</option>
         <option value="mayor_cantidad">Más cabezas</option>
-        <option value="menor_cantidad">Menos cabezas</option>
+        <option value="mayor_ha">Más hectáreas</option>
       </select>
     </div>
 
     <div class="grid grid-cols-4 gap-2">
-      <button onclick="abrirModal('modalIngresar')" class="btn-verde rounded-2xl py-3 flex flex-col items-center gap-1 shadow-lg">
-        <i class="fa-solid fa-circle-plus text-lg"></i><span class="text-[10px] font-bold">INGRESAR</span>
-      </button>
-      <button onclick="abrirEgreso()" class="btn-rojo rounded-2xl py-3 flex flex-col items-center gap-1 shadow-lg">
-        <i class="fa-solid fa-circle-minus text-lg"></i><span class="text-[10px] font-bold">EGRESAR</span>
-      </button>
-      <button onclick="abrirModal('modalTraslado')" class="btn-azul rounded-2xl py-3 flex flex-col items-center gap-1 shadow-lg">
-        <i class="fa-solid fa-arrow-right-arrow-left text-lg"></i><span class="text-[10px] font-bold">TROPA</span>
-      </button>
-      <button onclick="abrirTrasladoMasivo()" class="btn-naranja rounded-2xl py-3 flex flex-col items-center gap-1 shadow-lg">
-        <i class="fa-solid fa-check-to-slot text-lg"></i><span class="text-[10px] font-bold">MASIVO</span>
-      </button>
+      <button onclick="abrirModal('modalIngresar')" class="btn-verde rounded-2xl py-3 flex flex-col items-center gap-1 shadow"><i class="fa-solid fa-circle-plus text-base"></i><span class="text-[11px] font-bold">INGRESAR</span></button>
+      <button onclick="abrirEgreso()" class="btn-rojo rounded-2xl py-3 flex flex-col items-center gap-1 shadow"><i class="fa-solid fa-circle-minus text-base"></i><span class="text-[11px] font-bold">EGRESAR</span></button>
+      <button onclick="abrirModal('modalTraslado')" class="btn-azul rounded-2xl py-3 flex flex-col items-center gap-1 shadow"><i class="fa-solid fa-arrow-right-arrow-left text-base"></i><span class="text-[11px] font-bold">TROPA</span></button>
+      <button onclick="abrirTrasladoMasivo()" class="btn-naranja rounded-2xl py-3 flex flex-col items-center gap-1 shadow"><i class="fa-solid fa-check-to-slot text-base"></i><span class="text-[11px] font-bold">MASIVO</span></button>
     </div>
 
-    <div id="listaCorrales" class="space-y-2.5"></div>
+    <div id="listaCorrales" class="space-y-3"></div>
   </section>
 
-  <!-- SECCIÓN CARAVANAS -->
+  <!-- 2. CARAVANAS -->
   <section id="seccionCaravanas" class="section-anim space-y-3 hidden">
     <div class="flex items-center justify-between">
       <div>
         <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Control Individual</h2>
-        <p class="text-[11px] text-emerald-800/60 font-medium">Seguimiento por caravana</p>
+        <p class="text-xs text-emerald-800/70 font-medium">Seguimiento por caravana</p>
       </div>
-      <button onclick="abrirModal('modalNuevoAnimal')" class="btn-verde text-[11px] px-3 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nueva</button>
+      <button onclick="abrirModal('modalNuevoAnimal')" class="btn-verde text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nueva</button>
     </div>
-
-    <div class="tarjeta p-2.5 flex flex-col sm:flex-row gap-2">
+    <div class="tarjeta p-3 flex flex-col sm:flex-row gap-2">
       <div class="relative flex-1">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="buscarAnimalInput" oninput="renderAnimales()" placeholder="Buscar por caravana, lote, raza..." class="w-full border rounded-xl pl-8 pr-3 py-2.5 text-sm outline-none">
+        <input type="text" id="buscarAnimalInput" oninput="renderAnimales()" placeholder="Buscar por caravana, lote, raza..." class="w-full border rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none">
       </div>
       <select id="ordenAnimalSelect" onchange="renderAnimales()" class="border rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
         <option value="caravana">Caravana</option>
@@ -344,102 +134,135 @@
         <option value="menor_peso">Menor peso</option>
       </select>
     </div>
-
-    <div id="listaAnimales" class="space-y-2.5"></div>
+    <div id="listaAnimales" class="space-y-3"></div>
   </section>
 
-  <!-- SECCIÓN FLETES -->
+  <!-- 3. AGRÍCOLA -->
+  <section id="seccionAgricola" class="section-anim space-y-3 hidden">
+    <div class="flex items-center justify-between flex-wrap gap-2">
+      <div>
+        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Campaña Agrícola</h2>
+        <p class="text-xs text-emerald-800/70 font-medium">Labores, costos directos y cosechas</p>
+      </div>
+      <div class="flex gap-1.5">
+        <button onclick="abrirModalCosecha()" class="btn-naranja text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-wheat-awn"></i>Cerrar Cosecha</button>
+        <button onclick="abrirModalLabor()" class="btn-verde text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nueva Labor</button>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Inversión Directa</p><p id="agriCostoTotal" class="font-display text-2xl font-extrabold text-emerald-900 mt-0.5">$0</p></div>
+      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Labores</p><p id="agriTotalLabores" class="font-display text-2xl font-extrabold text-amber-800 mt-0.5">0</p></div>
+    </div>
+    <div class="tarjeta p-3">
+      <select id="filtroLoteAgricola" onchange="renderAgricola()" class="w-full border rounded-xl px-3 py-2.5 text-sm bg-white outline-none"><option value="">Todos los lotes</option></select>
+    </div>
+    <div id="listaLabores" class="space-y-3"></div>
+  </section>
+
+  <!-- 4. INSUMOS (GALPÓN) -->
+  <section id="seccionInsumos" class="section-anim space-y-3 hidden">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Galpón e Insumos</h2>
+        <p class="text-xs text-emerald-800/70 font-medium">Stock, reposición y valorización</p>
+      </div>
+      <button onclick="abrirModal('modalNuevoInsumo')" class="btn-verde text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Insumo</button>
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Valorizado en Galpón</p><p id="insumosValorTotal" class="font-display text-2xl font-extrabold text-emerald-900 mt-0.5">$0</p></div>
+      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">En Punto Reposición</p><p id="insumosAlertaCount" class="font-display text-2xl font-extrabold text-orange-600 mt-0.5">0</p></div>
+    </div>
+    <div class="tarjeta p-3">
+      <div class="relative">
+        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        <input type="text" id="buscarInsumoInput" oninput="renderInsumos()" placeholder="Buscar semilla, herbicida, vacuna, rollo..." class="w-full border rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none">
+      </div>
+    </div>
+    <div id="listaInsumos" class="space-y-3"></div>
+  </section>
+
+  <!-- 5. PLUVIÓMETRO -->
+  <section id="seccionLluvias" class="section-anim space-y-3 hidden">
+    <div class="flex items-center justify-between">
+      <div>
+        <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Pluviómetro Digital</h2>
+        <p class="text-xs text-emerald-800/70 font-medium">Registro de lluvias y eventos climáticos</p>
+      </div>
+      <button onclick="abrirModalLluvia()" class="btn-azul text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Cargar mm</button>
+    </div>
+    <div class="grid grid-cols-2 gap-2">
+      <div class="tarjeta p-3.5 border-l-4 border-sky-600"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Acumulado Mes</p><p id="lluviaAcumMesCard" class="font-display text-2xl font-extrabold text-sky-900 mt-0.5">0 mm</p></div>
+      <div class="tarjeta p-3.5 border-l-4 border-indigo-600"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Acumulado Anual</p><p id="lluviaAcumAnioCard" class="font-display text-2xl font-extrabold text-indigo-950 mt-0.5">0 mm</p></div>
+    </div>
+    <div id="listaLluvias" class="space-y-2.5"></div>
+  </section>
+
+  <!-- 6. FLETES -->
   <section id="seccionFletes" class="section-anim space-y-3 hidden">
     <div class="flex items-center justify-between">
       <div>
         <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Transportes</h2>
-        <p class="text-[11px] text-emerald-800/60 font-medium">Registro de fletes</p>
+        <p class="text-xs text-emerald-800/70 font-medium">Registro de fletes y guías DTE</p>
       </div>
-      <button onclick="abrirModal('modalFlete')" class="btn-naranja text-[11px] px-3 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nuevo</button>
+      <button onclick="abrirModal('modalFlete')" class="btn-naranja text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nuevo</button>
     </div>
-
     <div class="grid grid-cols-2 gap-2">
-      <div class="tarjeta p-3">
-        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total gastado</p>
-        <p id="fletesTotalGastado" class="font-display text-xl font-extrabold text-emerald-900 mt-0.5">$0</p>
-      </div>
-      <div class="tarjeta p-3">
-        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Pendiente</p>
-        <p id="fletesTotalPendiente" class="font-display text-xl font-extrabold text-orange-700 mt-0.5">$0</p>
-      </div>
+      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total gastado</p><p id="fletesTotalGastado" class="font-display text-2xl font-extrabold text-emerald-900 mt-0.5">$0</p></div>
+      <div class="tarjeta p-3.5"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Pendiente</p><p id="fletesTotalPendiente" class="font-display text-2xl font-extrabold text-orange-700 mt-0.5">$0</p></div>
     </div>
-
-    <div id="listaFletes" class="space-y-2.5"></div>
+    <div id="listaFletes" class="space-y-3"></div>
   </section>
 
-  <!-- SECCIÓN TAREAS -->
+  <!-- 7. TABLERO TAREAS -->
   <section id="seccionTareas" class="section-anim space-y-3 hidden">
     <div class="flex items-center justify-between flex-wrap gap-2">
       <div>
         <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Tablero</h2>
-        <p class="text-[11px] text-emerald-800/60 font-medium">Labores del día</p>
+        <p class="text-xs text-emerald-800/70 font-medium">Labores de mantenimiento</p>
       </div>
       <div class="flex gap-1.5">
-        <button onclick="abrirModal('modalArchivadas')" class="bg-slate-700 text-white text-[11px] px-2.5 py-2 rounded-xl font-bold flex items-center gap-1">
-          <i class="fa-solid fa-box-archive"></i><span id="countArchivadasBtn">0</span>
-        </button>
-        <button onclick="archivarCompletadas()" class="bg-slate-200 text-slate-700 text-[11px] px-2.5 py-2 rounded-xl font-bold">
-          <i class="fa-solid fa-boxes-stacked"></i>
-        </button>
-        <button onclick="abrirModal('modalNuevaTarea')" class="btn-naranja text-[11px] px-3 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nueva</button>
+        <button onclick="abrirModal('modalArchivadas')" class="bg-slate-700 text-white text-xs px-3 py-2 rounded-xl font-bold flex items-center gap-1"><i class="fa-solid fa-box-archive"></i><span id="countArchivadasBtn">0</span></button>
+        <button onclick="archivarCompletadas()" class="bg-slate-200 text-slate-700 text-xs px-3 py-2 rounded-xl font-bold"><i class="fa-solid fa-boxes-stacked"></i></button>
+        <button onclick="abrirModal('modalNuevaTarea')" class="btn-naranja text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5"><i class="fa-solid fa-plus"></i>Nueva</button>
       </div>
     </div>
-
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-2.5">
-      <div class="bg-slate-100/80 p-2.5 rounded-2xl space-y-2 border border-slate-200">
-        <div class="flex justify-between items-center px-1">
-          <span class="text-[10px] font-extrabold text-slate-700 uppercase tracking-wider">Tomadas</span>
-          <span id="countTomado" class="chip bg-slate-200 text-slate-700">0</span>
-        </div>
-        <div id="colTomado" class="space-y-1.5 min-h-[100px]"></div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="bg-slate-100/80 p-3 rounded-2xl space-y-2.5 border border-slate-200">
+        <div class="flex justify-between items-center px-1"><span class="text-xs font-extrabold text-slate-700 uppercase">Tomadas</span><span id="countTomado" class="chip bg-slate-200 text-slate-700">0</span></div>
+        <div id="colTomado" class="space-y-2 min-h-[100px]"></div>
       </div>
-      <div class="bg-amber-50 p-2.5 rounded-2xl space-y-2 border border-amber-200">
-        <div class="flex justify-between items-center px-1">
-          <span class="text-[10px] font-extrabold text-amber-900 uppercase tracking-wider">En ejecución</span>
-          <span id="countEjecucion" class="chip bg-amber-200 text-amber-900">0</span>
-        </div>
-        <div id="colEjecucion" class="space-y-1.5 min-h-[100px]"></div>
+      <div class="bg-amber-50 p-3 rounded-2xl space-y-2.5 border border-amber-200">
+        <div class="flex justify-between items-center px-1"><span class="text-xs font-extrabold text-amber-900 uppercase">En ejecución</span><span id="countEjecucion" class="chip bg-amber-200 text-amber-900">0</span></div>
+        <div id="colEjecucion" class="space-y-2 min-h-[100px]"></div>
       </div>
-      <div class="bg-emerald-50 p-2.5 rounded-2xl space-y-2 border border-emerald-200">
-        <div class="flex justify-between items-center px-1">
-          <span class="text-[10px] font-extrabold text-emerald-900 uppercase tracking-wider">Listas</span>
-          <span id="countCompletado" class="chip bg-emerald-200 text-emerald-900">0</span>
-        </div>
-        <div id="colCompletado" class="space-y-1.5 min-h-[100px]"></div>
+      <div class="bg-emerald-50 p-3 rounded-2xl space-y-2.5 border border-emerald-200">
+        <div class="flex justify-between items-center px-1"><span class="text-xs font-extrabold text-emerald-900 uppercase">Listas</span><span id="countCompletado" class="chip bg-emerald-200 text-emerald-900">0</span></div>
+        <div id="colCompletado" class="space-y-2 min-h-[100px]"></div>
       </div>
     </div>
-
-    <div class="tarjeta p-3.5 space-y-2.5">
+    <div class="tarjeta p-4 space-y-3">
       <h3 class="font-display text-sm font-extrabold text-emerald-950 flex items-center gap-1.5"><i class="fa-solid fa-note-sticky text-orange-500"></i> Notas rápidas</h3>
-      <div class="flex gap-1.5">
-        <input type="text" id="notaRapidaInput" placeholder="Anotá algo rápido..." class="flex-1 border rounded-xl px-3 py-2.5 text-sm outline-none">
-        <button onclick="guardarNotaRapida()" class="btn-naranja px-3.5 py-2.5 rounded-xl text-xs font-bold">Anotar</button>
+      <div class="flex gap-2">
+        <input type="text" id="notaRapidaInput" placeholder="Anotá algo rápido..." class="flex-1 border rounded-xl px-3.5 py-2.5 text-sm outline-none">
+        <button onclick="guardarNotaRapida()" class="btn-naranja px-4 py-2.5 rounded-xl text-xs font-bold">Anotar</button>
       </div>
-      <div id="listaNotasRapidas" class="grid grid-cols-1 sm:grid-cols-2 gap-1.5"></div>
+      <div id="listaNotasRapidas" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
     </div>
   </section>
 
-  <!-- SECCIÓN HISTORIAL -->
+  <!-- 8. HISTORIAL -->
   <section id="seccionHistorial" class="section-anim space-y-3 hidden">
     <div class="flex items-center justify-between">
       <div>
         <h2 class="font-display text-lg font-extrabold text-emerald-950 leading-tight">Historial</h2>
-        <p class="text-[11px] text-emerald-800/60 font-medium">Todos los movimientos</p>
+        <p class="text-xs text-emerald-800/70 font-medium">Bitácora general del campo</p>
       </div>
-      <button onclick="abrirModal('modalReset')" class="bg-rose-100 text-rose-700 text-[11px] px-2.5 py-2 rounded-xl font-bold flex items-center gap-1">
-        <i class="fa-solid fa-triangle-exclamation"></i>Reset
-      </button>
+      <button onclick="abrirModal('modalReset')" class="bg-rose-100 text-rose-700 text-xs px-3 py-2 rounded-xl font-bold flex items-center gap-1"><i class="fa-solid fa-triangle-exclamation"></i>Reset</button>
     </div>
-
-    <div class="tarjeta p-2.5 flex flex-col sm:flex-row gap-2">
+    <div class="tarjeta p-3 flex flex-col sm:flex-row gap-2">
       <div class="relative flex-1">
         <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-        <input type="text" id="buscarHistorialInput" oninput="renderHistorial()" placeholder="Buscar en historial..." class="w-full border rounded-xl pl-8 pr-3 py-2.5 text-sm outline-none">
+        <input type="text" id="buscarHistorialInput" oninput="renderHistorial()" placeholder="Buscar en historial (DTE, lote, motivo)..." class="w-full border rounded-xl pl-9 pr-3 py-2.5 text-sm outline-none">
       </div>
       <select id="ordenHistorialSelect" onchange="renderHistorial()" class="border rounded-xl px-3 py-2.5 text-sm bg-white outline-none">
         <option value="recientes">Recientes</option>
@@ -447,1192 +270,505 @@
         <option value="lote">Por lote</option>
       </select>
     </div>
-
     <div id="listaHistorial" class="tarjeta divide-y divide-slate-100 max-h-[60vh] overflow-y-auto scroll-suave"></div>
   </section>
 
 </main>
 
-<!-- ============ MODALES ============ -->
+<!-- ==================== MODALES ==================== -->
 
-<div id="modalNuevoAnimal" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-2.5 max-h-[92vh] overflow-y-auto scroll-suave">
-    <div class="flex items-center justify-between mb-1">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Nueva Caravana</h3>
-      <button onclick="cerrarModal('modalNuevoAnimal')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+<!-- NUEVO LOTE MIXTO -->
+<div id="modalNuevoCorral" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display text-lg font-extrabold text-emerald-950">Nuevo Lote Mixto</h3>
+      <button onclick="cerrarModal('modalNuevoCorral')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <div class="grid grid-cols-2 gap-2">
-      <input type="text" id="animalCaravanaInput" placeholder="N° Caravana" class="w-full border rounded-xl p-2.5 text-sm outline-none font-bold">
-      <select id="animalCorralSelect" class="w-full border rounded-xl p-2.5 text-sm bg-white outline-none"></select>
+    <input type="text" id="nombreCorralInput" placeholder="Nombre del lote / potrero" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold">
+    <div class="grid grid-cols-2 gap-2.5">
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Hectáreas (ha)</label><input type="number" step="0.1" id="haCorralInput" placeholder="Ej: 45.5" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 uppercase">Color</label>
+        <select id="colorCorralInput" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1">
+          <option value="emerald">🟢 Verde</option><option value="blue">🔵 Azul</option><option value="amber">🟡 Ámbar</option><option value="rose">🔴 Rojo</option><option value="purple">🟣 Violeta</option><option value="cyan">🔷 Celeste</option><option value="orange">🟠 Naranja</option><option value="slate">⚫ Pizarra</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 uppercase">Estado Campaña</label>
+        <select id="estadoCampanaCorralInput" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1">
+          <option value="Ganadero / Pastura">Ganadero / Pastura</option><option value="En preparación">En preparación</option><option value="Sembrado">Sembrado</option><option value="Cosechado">Cosechado</option>
+        </select>
+      </div>
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Cultivo Activo</label><input type="text" id="cultivoCorralInput" placeholder="Ej: Soja 1ra, Alfalfa" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    </div>
+    <input type="text" id="obsCorralInput" placeholder="Observación general" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalNuevoCorral')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="crearCorral()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Guardar Lote</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDITAR LOTE MIXTO -->
+<div id="modalEditarCorral" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display text-lg font-extrabold text-emerald-950">Editar Lote</h3>
+      <button onclick="cerrarModal('modalEditarCorral')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <input type="hidden" id="editCorralIdInput">
+    <input type="text" id="editNombreCorralInput" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold">
+    <div class="grid grid-cols-2 gap-2.5">
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Hectáreas (ha)</label><input type="number" step="0.1" id="editHaCorralInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 uppercase">Color</label>
+        <select id="editColorCorralInput" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1">
+          <option value="emerald">🟢 Verde</option><option value="blue">🔵 Azul</option><option value="amber">🟡 Ámbar</option><option value="rose">🔴 Rojo</option><option value="purple">🟣 Violeta</option><option value="cyan">🔷 Celeste</option><option value="orange">🟠 Naranja</option><option value="slate">⚫ Pizarra</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 uppercase">Estado Campaña</label>
+        <select id="editEstadoCampanaCorralInput" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1">
+          <option value="Ganadero / Pastura">Ganadero / Pastura</option><option value="En preparación">En preparación</option><option value="Sembrado">Sembrado</option><option value="Cosechado">Cosechado</option>
+        </select>
+      </div>
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Cultivo Activo</label><input type="text" id="editCultivoCorralInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Rinde Cosecha (qq/ha)</label><input type="number" step="0.1" id="editRindeCorralInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Costo Campaña ($)</label><input type="number" id="editCostoCampanaInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    </div>
+    <input type="text" id="editObsCorralInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalEditarCorral')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="guardarEdicionCorral()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Actualizar</button>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVA CARAVANA -->
+<div id="modalNuevoAnimal" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display text-lg font-extrabold text-emerald-950">Nueva Caravana</h3>
+      <button onclick="cerrarModal('modalNuevoAnimal')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <input type="text" id="animalCaravanaInput" placeholder="N° Caravana" class="w-full border rounded-xl p-3 text-sm outline-none font-bold">
+      <select id="animalCorralSelect" class="w-full border rounded-xl p-3 text-sm bg-white outline-none"></select>
     </div>
     <div class="grid grid-cols-3 gap-2">
-      <input type="text" id="animalRazaInput" placeholder="Raza" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-      <input type="text" id="animalEdadInput" placeholder="Edad" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-      <input type="number" id="animalPesoInput" placeholder="Kg" class="w-full border rounded-xl p-2.5 text-sm outline-none">
+      <input type="text" id="animalRazaInput" placeholder="Raza" class="w-full border rounded-xl p-3 text-sm outline-none">
+      <input type="text" id="animalEdadInput" placeholder="Edad" class="w-full border rounded-xl p-3 text-sm outline-none">
+      <input type="number" id="animalPesoInput" placeholder="Kg" class="w-full border rounded-xl p-3 text-sm outline-none">
     </div>
-    <input type="text" id="animalObsInput" placeholder="Observaciones" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <div class="border-t pt-2 space-y-2">
-      <p class="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider">Ingreso</p>
-      <div class="grid grid-cols-2 gap-2">
-        <select id="animalMotivoSelect" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none">
-          <option value="Compra">Compra</option>
-          <option value="Nacimiento">Nacimiento</option>
-          <option value="Ajuste (+)">Ajuste (+)</option>
-        </select>
-        <input type="text" id="animalUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-2.5 text-sm outline-none">
+    <input type="text" id="animalObsInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="border-t pt-3 space-y-2.5">
+      <div class="grid grid-cols-2 gap-2.5">
+        <select id="animalMotivoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"><option value="Compra">Compra</option><option value="Nacimiento">Nacimiento</option><option value="Ajuste (+)">Ajuste (+)</option></select>
+        <select id="animalTipoFiscalSelect" class="w-full border rounded-xl p-3 bg-white text-sm font-semibold outline-none"><option value="Interno">Interno</option><option value="Fiscal / DTE">Fiscal / DTE</option></select>
       </div>
-      <input type="text" id="animalNotasIngresoInput" placeholder="Notas del ingreso" class="w-full border rounded-xl p-2.5 text-sm outline-none">
+      <div class="grid grid-cols-2 gap-2.5">
+        <input type="text" id="animalComprobanteInput" placeholder="N° DTE / Guía" class="w-full border rounded-xl p-3 text-sm outline-none">
+        <input type="text" id="animalUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-3 text-sm outline-none">
+      </div>
+      <input type="text" id="animalNotasIngresoInput" placeholder="Notas del ingreso" class="w-full border rounded-xl p-3 text-sm outline-none">
     </div>
-    <div class="bg-amber-50 border border-amber-200 p-2 rounded-lg text-[10px] text-amber-900 leading-tight">
-      <i class="fa-solid fa-lock mr-1"></i>El lote inicial queda fijo. Para mover luego usá Traslado.
-    </div>
-    <div class="flex justify-end gap-2 pt-1">
-      <button onclick="cerrarModal('modalNuevoAnimal')" class="px-4 py-2 text-slate-600 text-sm font-medium">Cancelar</button>
-      <button onclick="guardarAnimal()" class="btn-verde px-5 py-2 rounded-xl text-sm">Confirmar</button>
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalNuevoAnimal')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="guardarAnimal()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Confirmar</button>
     </div>
   </div>
 </div>
 
+<!-- EDITAR CARAVANA -->
 <div id="modalEditarAnimal" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-2.5">
-    <div class="flex items-center justify-between mb-1">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
+    <div class="flex items-center justify-between">
       <h3 class="font-display text-lg font-extrabold text-amber-700">Editar Ficha</h3>
-      <button onclick="cerrarModal('modalEditarAnimal')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <button onclick="cerrarModal('modalEditarAnimal')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <input type="hidden" id="editAnimalId">
-    <input type="text" id="editAnimalCaravanaInput" placeholder="N° Caravana" class="w-full border rounded-xl p-2.5 text-sm outline-none font-bold">
-    <div class="grid grid-cols-2 gap-2">
-      <input type="text" id="editAnimalRazaInput" placeholder="Raza" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-      <input type="text" id="editAnimalEdadInput" placeholder="Edad" class="w-full border rounded-xl p-2.5 text-sm outline-none">
+    <input type="text" id="editAnimalCaravanaInput" placeholder="N° Caravana" class="w-full border rounded-xl p-3 text-sm outline-none font-bold">
+    <div class="grid grid-cols-2 gap-2.5">
+      <input type="text" id="editAnimalRazaInput" placeholder="Raza" class="w-full border rounded-xl p-3 text-sm outline-none">
+      <input type="text" id="editAnimalEdadInput" placeholder="Edad" class="w-full border rounded-xl p-3 text-sm outline-none">
     </div>
-    <div class="grid grid-cols-2 gap-2">
-      <input type="number" id="editAnimalPesoInput" placeholder="Kg" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-      <input type="text" id="editAnimalCorralBloqueado" disabled class="w-full border rounded-xl p-2.5 text-sm bg-slate-100 text-slate-500 font-semibold">
+    <div class="grid grid-cols-2 gap-2.5">
+      <input type="number" id="editAnimalPesoInput" placeholder="Kg" class="w-full border rounded-xl p-3 text-sm outline-none">
+      <input type="text" id="editAnimalCorralBloqueado" disabled class="w-full border rounded-xl p-3 text-sm bg-slate-100 text-slate-500 font-semibold">
     </div>
-    <input type="text" id="editAnimalObsInput" placeholder="Observaciones" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-1">
-      <button onclick="cerrarModal('modalEditarAnimal')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="guardarEdicionAnimal()" class="bg-amber-700 text-white px-5 py-2 rounded-xl font-bold text-sm">Actualizar</button>
+    <input type="text" id="editAnimalObsInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalEditarAnimal')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="guardarEdicionAnimal()" class="bg-amber-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm">Actualizar</button>
     </div>
   </div>
 </div>
 
+<!-- MOVER CARAVANA -->
 <div id="modalMoverCaravana" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
   <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
     <div class="flex items-center justify-between">
       <h3 class="font-display text-lg font-extrabold text-blue-700">Mover: <span id="moverCaravanaTxt"></span></h3>
-      <button onclick="cerrarModal('modalMoverCaravana')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <button onclick="cerrarModal('modalMoverCaravana')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
     </div>
     <input type="hidden" id="moverAnimalId">
-    <label class="text-xs font-bold text-slate-600 block">Lote destino:</label>
-    <select id="moverCorralSelect" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none"></select>
-    <div class="flex justify-end gap-2 pt-1">
-      <button onclick="cerrarModal('modalMoverCaravana')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="ejecutarMoverCaravana()" class="btn-azul px-5 py-2 rounded-xl text-sm">Confirmar</button>
+    <select id="moverCorralSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"></select>
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalMoverCaravana')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="ejecutarMoverCaravana()" class="btn-azul px-5 py-2.5 rounded-xl text-sm">Confirmar</button>
     </div>
   </div>
 </div>
 
+<!-- TRASLADO MASIVO -->
 <div id="modalTrasladoMasivo" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
   <div class="modal-card bg-white w-full max-w-lg rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
     <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-orange-700 flex items-center gap-2"><i class="fa-solid fa-check-to-slot"></i>Traslado Masivo</h3>
-      <button onclick="cerrarModal('modalTrasladoMasivo')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="font-display text-lg font-extrabold text-orange-700">Traslado Masivo</h3>
+      <button onclick="cerrarModal('modalTrasladoMasivo')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <div class="grid grid-cols-2 gap-2">
-      <div>
-        <label class="text-[10px] font-extrabold text-slate-600 uppercase">Origen</label>
-        <select id="masivoOrigenSelect" onchange="actualizarListaCaravanasMasivo()" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none mt-1"></select>
-      </div>
-      <div>
-        <label class="text-[10px] font-extrabold text-slate-600 uppercase">Destino</label>
-        <select id="masivoDestinoSelect" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none mt-1"></select>
-      </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Origen</label><select id="masivoOrigenSelect" onchange="actualizarListaCaravanasMasivo()" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"></select></div>
+      <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Destino</label><select id="masivoDestinoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"></select></div>
     </div>
-    <div>
-      <label class="text-[10px] font-extrabold text-slate-600 uppercase">Cabezas genéricas</label>
-      <input type="number" id="masivoCantidadGenerica" value="0" min="0" class="w-full border rounded-xl p-2.5 text-sm outline-none mt-1">
-    </div>
-    <div>
-      <label class="text-[10px] font-extrabold text-slate-600 uppercase">Caravanas a mover</label>
-      <div id="masivoListaCaravanasContainer" class="border rounded-xl p-2 max-h-40 overflow-y-auto bg-slate-50 space-y-1 mt-1 scroll-suave"></div>
-    </div>
-    <div class="grid grid-cols-2 gap-2">
-      <input type="text" id="masivoUsuarioInput" placeholder="Registra" class="border rounded-xl p-2.5 text-sm outline-none">
-      <input type="text" id="masivoNotasInput" placeholder="Notas" class="border rounded-xl p-2.5 text-sm outline-none">
+    <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Cabezas genéricas</label><input type="number" id="masivoCantidadGenerica" value="0" min="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Caravanas a mover</label><div id="masivoListaCaravanasContainer" class="border rounded-xl p-2.5 max-h-40 overflow-y-auto bg-slate-50 space-y-1 mt-1 scroll-suave"></div></div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <input type="text" id="masivoUsuarioInput" placeholder="Registra" class="border rounded-xl p-3 text-sm outline-none">
+      <input type="text" id="masivoNotasInput" placeholder="Notas" class="border rounded-xl p-3 text-sm outline-none">
     </div>
     <div class="flex justify-end gap-2 pt-2 border-t">
-      <button onclick="cerrarModal('modalTrasladoMasivo')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="ejecutarTrasladoMasivo()" class="btn-naranja px-5 py-2 rounded-xl text-sm">Ejecutar</button>
+      <button onclick="cerrarModal('modalTrasladoMasivo')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="ejecutarTrasladoMasivo()" class="btn-naranja px-5 py-2.5 rounded-xl text-sm">Ejecutar</button>
     </div>
   </div>
 </div>
 
-<div id="modalNuevoCorral" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Nuevo Lote</h3>
-      <button onclick="cerrarModal('modalNuevoCorral')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <input type="text" id="nombreCorralInput" placeholder="Nombre" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <input type="text" id="obsCorralInput" placeholder="Observación" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <select id="colorCorralInput" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none">
-      <option value="emerald">🟢 Verde</option>
-      <option value="blue">🔵 Azul</option>
-      <option value="amber">🟡 Ámbar</option>
-      <option value="rose">🔴 Rojo</option>
-      <option value="purple">🟣 Violeta</option>
-      <option value="cyan">🔷 Celeste</option>
-      <option value="orange">🟠 Naranja</option>
-      <option value="slate">⚫ Pizarra</option>
-    </select>
-    <div class="flex justify-end gap-2 pt-1">
-      <button onclick="cerrarModal('modalNuevoCorral')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="crearCorral()" class="btn-verde px-5 py-2 rounded-xl text-sm">Guardar</button>
-    </div>
-  </div>
-</div>
-
-<div id="modalEditarCorral" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Editar Lote</h3>
-      <button onclick="cerrarModal('modalEditarCorral')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
-    <input type="hidden" id="editCorralIdInput">
-    <input type="text" id="editNombreCorralInput" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <input type="text" id="editObsCorralInput" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <select id="editColorCorralInput" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none">
-      <option value="emerald">🟢 Verde</option>
-      <option value="blue">🔵 Azul</option>
-      <option value="amber">🟡 Ámbar</option>
-      <option value="rose">🔴 Rojo</option>
-      <option value="purple">🟣 Violeta</option>
-      <option value="cyan">🔷 Celeste</option>
-      <option value="orange">🟠 Naranja</option>
-      <option value="slate">⚫ Pizarra</option>
-    </select>
-    <div class="flex justify-end gap-2 pt-1">
-      <button onclick="cerrarModal('modalEditarCorral')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="guardarEdicionCorral()" class="btn-verde px-5 py-2 rounded-xl text-sm">Actualizar</button>
-    </div>
-  </div>
-</div>
-
+<!-- INGRESO GENÉRICO -->
 <div id="modalIngresar" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-2.5">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
     <div class="flex items-center justify-between">
       <h3 class="font-display text-lg font-extrabold text-emerald-950">Ingreso Genérico</h3>
-      <button onclick="cerrarModal('modalIngresar')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <button onclick="cerrarModal('modalIngresar')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <select id="ingCorralSelect" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none"></select>
-    <input type="number" id="ingCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <select id="ingMotivoSelect" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none">
-      <option value="Compra">Compra</option><option value="Nacimiento">Nacimiento</option><option value="Ajuste (+)">Ajuste (+)</option>
-    </select>
-    <input type="text" id="ingUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <input type="text" id="ingNotasInput" placeholder="Notas" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-1">
-      <button onclick="cerrarModal('modalIngresar')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="ejecutarIngreso()" class="btn-verde px-5 py-2 rounded-xl text-sm">Confirmar</button>
+    <select id="ingCorralSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"></select>
+    <div class="grid grid-cols-2 gap-2.5">
+      <input type="number" id="ingCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-xl p-3 text-sm outline-none">
+      <select id="ingMotivoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"><option value="Compra">Compra</option><option value="Nacimiento">Nacimiento</option><option value="Ajuste (+)">Ajuste (+)</option></select>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <select id="ingTipoFiscalSelect" class="w-full border rounded-xl p-3 bg-white text-sm font-semibold outline-none"><option value="Interno">Interno</option><option value="Fiscal / DTE">Fiscal / DTE</option></select>
+      <input type="text" id="ingComprobanteInput" placeholder="N° DTE / Factura" class="w-full border rounded-xl p-3 text-sm outline-none">
+    </div>
+    <input type="text" id="ingUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <input type="text" id="ingNotasInput" placeholder="Notas" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalIngresar')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="ejecutarIngreso()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Confirmar</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL EGRESO MIXTO (GENÉRICAS + CARAVANAS ESPECÍFICAS) -->
+<!-- EGRESO MIXTO -->
 <div id="modalEgresar" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
   <div class="modal-card bg-white w-full max-w-lg rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
     <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-rose-700 flex items-center gap-2"><i class="fa-solid fa-circle-minus"></i>Registrar Egreso</h3>
-      <button onclick="cerrarModal('modalEgresar')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="font-display text-lg font-extrabold text-rose-700">Registrar Egreso</h3>
+      <button onclick="cerrarModal('modalEgresar')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    
-    <div>
-      <label class="text-[10px] font-extrabold text-slate-600 uppercase">Lote de salida</label>
-      <select id="egCorralSelect" onchange="actualizarListaCaravanasEgreso()" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none mt-1"></select>
+    <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Lote</label><select id="egCorralSelect" onchange="actualizarListaCaravanasEgreso()" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"></select></div>
+    <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Cabezas genéricas</label><input type="number" id="egCantidadInput" value="0" min="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    <div><label class="text-[11px] font-extrabold text-slate-600 uppercase">Caravanas que egresan</label><div id="egListaCaravanasContainer" class="border rounded-xl p-2.5 max-h-36 overflow-y-auto bg-rose-50/30 space-y-1 mt-1 scroll-suave"></div></div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <select id="egMotivoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"><option value="Venta">Venta</option><option value="Muerte">Muerte</option><option value="Ajuste (-)">Ajuste (-)</option></select>
+      <select id="egTipoFiscalSelect" class="w-full border rounded-xl p-3 bg-white text-sm font-semibold outline-none"><option value="Fiscal / DTE">Fiscal / DTE</option><option value="Interno">Interno</option></select>
     </div>
-
-    <div>
-      <label class="text-[10px] font-extrabold text-slate-600 uppercase">Cabezas genéricas (sin caravana)</label>
-      <input type="number" id="egCantidadInput" value="0" min="0" class="w-full border rounded-xl p-2.5 text-sm outline-none mt-1">
+    <div class="grid grid-cols-2 gap-2.5">
+      <input type="text" id="egComprobanteInput" placeholder="N° DTE / Guía" class="w-full border rounded-xl p-3 text-sm outline-none">
+      <input type="text" id="egUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-3 text-sm outline-none">
     </div>
-
-    <div>
-      <label class="text-[10px] font-extrabold text-slate-600 uppercase">O tildá las caravanas que egresan (se darán de baja)</label>
-      <div id="egListaCaravanasContainer" class="border rounded-xl p-2 max-h-40 overflow-y-auto bg-rose-50/30 space-y-1 mt-1 scroll-suave"></div>
-    </div>
-
-    <div class="grid grid-cols-2 gap-2">
-      <select id="egMotivoSelect" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none">
-        <option value="Venta">Venta</option>
-        <option value="Muerte">Muerte</option>
-        <option value="Ajuste (-)">Ajuste (-)</option>
-      </select>
-      <input type="text" id="egUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    </div>
-    <input type="text" id="egNotasInput" placeholder="Notas (ej. comprador, consignatario...)" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-
+    <input type="text" id="egNotasInput" placeholder="Notas" class="w-full border rounded-xl p-3 text-sm outline-none">
     <div class="flex justify-end gap-2 pt-2 border-t">
-      <button onclick="cerrarModal('modalEgresar')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="ejecutarEgreso()" class="btn-rojo px-5 py-2 rounded-xl text-sm">Confirmar Egreso</button>
+      <button onclick="cerrarModal('modalEgresar')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="ejecutarEgreso()" class="btn-rojo px-5 py-2.5 rounded-xl text-sm">Confirmar Egreso</button>
     </div>
   </div>
 </div>
 
+<!-- TRASLADO TROPA -->
 <div id="modalTraslado" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-2.5">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
     <div class="flex items-center justify-between">
       <h3 class="font-display text-lg font-extrabold text-blue-700">Traslado de Tropa</h3>
-      <button onclick="cerrarModal('modalTraslado')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <button onclick="cerrarModal('modalTraslado')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <label class="text-[10px] font-extrabold text-slate-600 uppercase">Origen</label>
-    <select id="trOrigenSelect" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none"></select>
-    <label class="text-[10px] font-extrabold text-slate-600 uppercase">Destino</label>
-    <select id="trDestinoSelect" class="w-full border rounded-xl p-2.5 bg-white text-sm outline-none"></select>
-    <input type="number" id="trCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <input type="text" id="trUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <input type="text" id="trNotasInput" placeholder="Notas" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-1">
-      <button onclick="cerrarModal('modalTraslado')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="ejecutarTraslado()" class="btn-azul px-5 py-2 rounded-xl text-sm">Confirmar</button>
+    <select id="trOrigenSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"></select>
+    <select id="trDestinoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none"></select>
+    <input type="number" id="trCantidadInput" placeholder="Cantidad" min="1" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <input type="text" id="trUsuarioInput" placeholder="Registra" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <input type="text" id="trNotasInput" placeholder="Notas" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalTraslado')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="ejecutarTraslado()" class="btn-azul px-5 py-2.5 rounded-xl text-sm">Confirmar</button>
     </div>
   </div>
 </div>
 
+<!-- NUEVA LABOR AGRÍCOLA -->
+<div id="modalNuevaLabor" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3 max-h-[92vh] overflow-y-auto scroll-suave">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display text-lg font-extrabold text-emerald-950">Registrar Labor</h3>
+      <button onclick="cerrarModal('modalNuevaLabor')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Lote</label><select id="laborLoteSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"></select></div>
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Fecha</label><input type="date" id="laborFechaInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 uppercase">Labor</label>
+        <select id="laborTipoSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1">
+          <option value="Pulverización / Barbecho">Pulverización / Barbecho</option>
+          <option value="Disco / Labranza">Disco / Labranza</option>
+          <option value="Siembra">Siembra</option>
+          <option value="Fertilización">Fertilización</option>
+          <option value="Cosecha">Cosecha</option>
+        </select>
+      </div>
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Costo Labor ($)</label><input type="number" id="laborCostoInput" placeholder="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    </div>
+    <input type="text" id="laborContratistaInput" placeholder="Contratista / Maquinaria" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="bg-emerald-50/70 border border-emerald-200 p-3.5 rounded-2xl space-y-2.5">
+      <p class="text-[11px] font-extrabold text-emerald-900 uppercase">Descontar Insumo del Galpón (Opcional)</p>
+      <select id="laborInsumoSelect" class="w-full border rounded-xl p-2.5 bg-white text-xs outline-none"><option value="">-- Ningún insumo --</option></select>
+      <input type="number" step="0.01" id="laborInsumoCantInput" placeholder="Cantidad aplicada" class="w-full border rounded-xl p-2.5 text-xs outline-none">
+    </div>
+    <input type="text" id="laborNotasInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalNuevaLabor')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="guardarLabor()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Guardar Labor</button>
+    </div>
+  </div>
+</div>
+
+<!-- CIERRE DE COSECHA -->
+<div id="modalCosecha" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display text-lg font-extrabold text-orange-700">Cierre de Cosecha</h3>
+      <button onclick="cerrarModal('modalCosecha')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div><label class="text-[11px] font-bold text-slate-500 uppercase">Lote</label><select id="cosechaLoteSelect" onchange="recalcularRindePreview()" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"></select></div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 uppercase">Unidad</label>
+        <select id="cosechaUnidadSelect" onchange="recalcularRindePreview()" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"><option value="qq">Quintales (qq)</option><option value="kg">Kilogramos (kg)</option></select>
+      </div>
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Total Cosechado</label><input type="number" step="0.1" id="cosechaTotalInput" oninput="recalcularRindePreview()" placeholder="Ej: 1500" class="w-full border rounded-xl p-3 text-sm outline-none mt-1 font-bold"></div>
+    </div>
+    <div class="bg-amber-50 border border-amber-200 p-3.5 rounded-xl flex items-center justify-between">
+      <span class="text-xs font-bold text-amber-950">Rinde Calculado:</span>
+      <span id="cosechaRindePreview" class="font-display text-lg font-extrabold text-orange-700">0.0 qq/ha</span>
+    </div>
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalCosecha')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="ejecutarCierreCosecha()" class="btn-naranja px-5 py-2.5 rounded-xl text-sm">Cerrar Campaña</button>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVO INSUMO -->
+<div id="modalNuevoInsumo" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display text-lg font-extrabold text-emerald-950">Nuevo Insumo</h3>
+      <button onclick="cerrarModal('modalNuevoInsumo')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <input type="text" id="insumoNombreInput" placeholder="Nombre del insumo" class="w-full border rounded-xl p-3 text-sm outline-none font-semibold">
+    <div class="grid grid-cols-2 gap-2.5">
+      <div>
+        <label class="text-[11px] font-bold text-slate-500 uppercase">Unidad</label>
+        <select id="insumoUnidadSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"><option value="Litros">Litros</option><option value="Bolsas">Bolsas</option><option value="Kilos">Kilos</option><option value="Dosis">Dosis</option><option value="Rollos">Rollos</option></select>
+      </div>
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Stock Inicial</label><input type="number" step="0.1" id="insumoStockInput" value="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Punto Reposición</label><input type="number" step="0.1" id="insumoMinimoInput" placeholder="Mínimo" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Costo Unitario ($)</label><input type="number" step="0.01" id="insumoCostoUnitInput" placeholder="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    </div>
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalNuevoInsumo')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="guardarNuevoInsumo()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Guardar Insumo</button>
+    </div>
+  </div>
+</div>
+
+<!-- MOVIMIENTO INSUMO -->
+<div id="modalMovInsumo" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
+    <div class="flex items-center justify-between">
+      <h3 id="movInsumoTitulo" class="font-display text-lg font-extrabold text-emerald-950">Movimiento Insumo</h3>
+      <button onclick="cerrarModal('modalMovInsumo')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <input type="hidden" id="movInsumoId"><input type="hidden" id="movInsumoTipo">
+    <p id="movInsumoSubtitulo" class="text-xs font-bold text-slate-600"></p>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Cantidad</label><input type="number" step="0.1" id="movInsumoCantInput" placeholder="0" class="w-full border rounded-xl p-3 text-sm outline-none mt-1 font-bold"></div>
+      <div id="movInsumoCostoWrap"><label class="text-[11px] font-bold text-slate-500 uppercase">Nuevo Costo ($)</label><input type="number" step="0.01" id="movInsumoCostoInput" placeholder="Opcional" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    </div>
+    <div id="movInsumoFiscalWrap" class="grid grid-cols-2 gap-2.5">
+      <select id="movInsumoFiscalSelect" class="w-full border rounded-xl p-3 bg-white text-sm font-semibold outline-none"><option value="Fiscal / DTE">Fiscal / Factura</option><option value="Interno">Interno</option></select>
+      <input type="text" id="movInsumoCompInput" placeholder="N° Factura / Remito" class="w-full border rounded-xl p-3 text-sm outline-none">
+    </div>
+    <input type="text" id="movInsumoNotasInput" placeholder="Detalle" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalMovInsumo')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="ejecutarMovInsumo()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVA LLUVIA -->
+<div id="modalNuevaLluvia" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display text-lg font-extrabold text-sky-900">Cargar Lluvia</h3>
+      <button onclick="cerrarModal('modalNuevaLluvia')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <div class="grid grid-cols-2 gap-2.5">
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Fecha</label><input type="date" id="lluviaFechaInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+      <div><label class="text-[11px] font-bold text-slate-500 uppercase">Milímetros (mm)</label><input type="number" step="0.5" id="lluviaMmInput" placeholder="Ej: 28" class="w-full border rounded-xl p-3 text-sm outline-none mt-1 font-extrabold text-sky-900"></div>
+    </div>
+    <div>
+      <label class="text-[11px] font-bold text-slate-500 uppercase">Ubicación</label>
+      <select id="lluviaUbicacionSelect" class="w-full border rounded-xl p-3 bg-white text-sm outline-none mt-1"><option value="Casco">Casco</option><option value="Puesto">Puesto</option><option value="Lote Norte">Lote Norte</option><option value="Lote Sur">Lote Sur</option></select>
+    </div>
+    <div class="flex gap-4 bg-slate-50 p-3 rounded-xl border">
+      <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" id="lluviaGranizoChk" class="w-4 h-4 accent-sky-600"><span>⛈️ Granizo</span></label>
+      <label class="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer"><input type="checkbox" id="lluviaHeladaChk" class="w-4 h-4 accent-sky-600"><span>❄️ Helada</span></label>
+    </div>
+    <input type="text" id="lluviaNotasInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalNuevaLluvia')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="guardarLluvia()" class="btn-azul px-5 py-2.5 rounded-xl text-sm">Guardar Registro</button>
+    </div>
+  </div>
+</div>
+
+<!-- FLETE -->
 <div id="modalFlete" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-2.5">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
     <div class="flex items-center justify-between">
       <h3 class="font-display text-lg font-extrabold text-emerald-950">Registrar Flete</h3>
-      <button onclick="cerrarModal('modalFlete')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <button onclick="cerrarModal('modalFlete')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <input type="text" id="fleteTransportista" placeholder="Transportista" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <div class="grid grid-cols-2 gap-2">
-      <input type="text" id="fleteChofer" placeholder="Chofer" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-      <input type="text" id="fleteGuia" placeholder="Guía DTE" class="w-full border rounded-xl p-2.5 text-sm outline-none">
+    <input type="text" id="fleteTransportista" placeholder="Transportista" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="grid grid-cols-2 gap-2.5">
+      <input type="text" id="fleteChofer" placeholder="Chofer" class="w-full border rounded-xl p-3 text-sm outline-none">
+      <input type="text" id="fleteGuia" placeholder="Guía DTE / Carta Porte" class="w-full border rounded-xl p-3 text-sm outline-none">
     </div>
-    <div class="grid grid-cols-2 gap-2">
-      <input type="number" id="fleteCantidad" placeholder="Cabezas" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-      <input type="number" id="fleteCosto" placeholder="Costo ($)" class="w-full border rounded-xl p-2.5 text-sm outline-none">
+    <div class="grid grid-cols-2 gap-2.5">
+      <input type="number" id="fleteCantidad" placeholder="Cabezas" class="w-full border rounded-xl p-3 text-sm outline-none">
+      <input type="number" id="fleteCosto" placeholder="Costo ($)" class="w-full border rounded-xl p-3 text-sm outline-none">
     </div>
-    <div class="grid grid-cols-2 gap-2">
-      <input type="text" id="fleteDestino" placeholder="Destino" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-      <select id="fleteEstadoPago" class="w-full border rounded-xl p-2.5 text-sm bg-white outline-none">
-        <option value="Pendiente">Pendiente</option><option value="Pagado">Pagado</option>
-      </select>
+    <div class="grid grid-cols-3 gap-2">
+      <input type="text" id="fleteDestino" placeholder="Destino" class="w-full border rounded-xl p-3 text-sm outline-none">
+      <select id="fleteTipoFiscal" class="w-full border rounded-xl p-3 text-xs bg-white font-semibold outline-none"><option value="Fiscal / DTE">Fiscal / DTE</option><option value="Interno">Interno</option></select>
+      <select id="fleteEstadoPago" class="w-full border rounded-xl p-3 text-xs bg-white outline-none"><option value="Pendiente">Pendiente</option><option value="Pagado">Pagado</option></select>
     </div>
-    <div class="flex justify-end gap-2 pt-1">
-      <button onclick="cerrarModal('modalFlete')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="guardarFlete()" class="btn-verde px-5 py-2 rounded-xl text-sm">Guardar</button>
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalFlete')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="guardarFlete()" class="btn-verde px-5 py-2.5 rounded-xl text-sm">Guardar</button>
     </div>
   </div>
 </div>
 
-<div id="modalNuevaTarea" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
-  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-2.5">
+<!-- WHATSAPP CONFIG -->
+<div id="modalWhatsApp" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
     <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-indigo-700">Nueva Tarea</h3>
-      <button onclick="cerrarModal('modalNuevaTarea')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+      <h3 class="font-display text-lg font-extrabold text-emerald-950">Alertas WhatsApp</h3>
+      <button onclick="cerrarModal('modalWhatsApp')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
     </div>
-    <input type="text" id="tareaTituloInput" placeholder="¿Qué hay que hacer?" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <input type="text" id="tareaObsInput" placeholder="Observaciones" class="w-full border rounded-xl p-2.5 text-sm outline-none">
-    <div class="flex justify-end gap-2 pt-1">
-      <button onclick="cerrarModal('modalNuevaTarea')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="guardarTarea()" class="bg-indigo-700 text-white px-5 py-2 rounded-xl font-bold text-sm">Guardar</button>
+    <p class="text-xs text-slate-600 bg-emerald-50 p-3 rounded-xl border border-emerald-200">Configurá tu teléfono y API Key de <strong>CallMeBot</strong> (se guarda localmente en tu dispositivo).</p>
+    <div><label class="text-[11px] font-bold text-slate-500 uppercase">Teléfono (ej: 5492317123456)</label><input type="text" id="waPhoneInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    <div><label class="text-[11px] font-bold text-slate-500 uppercase">API Key CallMeBot</label><input type="text" id="waApiKeyInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1"></div>
+    <div class="space-y-2 bg-slate-50 p-3.5 rounded-xl border text-xs font-semibold text-slate-700">
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="waChkTraslados" class="w-4 h-4 accent-emerald-700"><span>Traslados de hacienda</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="waChkEgresos" class="w-4 h-4 accent-emerald-700"><span>Egresos / Ventas</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="waChkFletes" class="w-4 h-4 accent-emerald-700"><span>Nuevos fletes</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="waChkStock" class="w-4 h-4 accent-emerald-700"><span>Stock bajo en galpón</span></label>
     </div>
+    <div class="flex justify-between items-center pt-2">
+      <button onclick="probarAlertaWhatsApp()" class="text-xs font-bold text-emerald-700 hover:underline">Enviar prueba</button>
+      <div class="flex gap-2">
+        <button onclick="cerrarModal('modalWhatsApp')" class="px-3.5 py-2.5 text-slate-600 text-sm font-semibold">Cerrar</button>
+        <button onclick="guardarConfigWhatsApp()" class="btn-verde px-4 py-2.5 rounded-xl text-sm">Guardar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTADOR -->
+<div id="modalContador" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
+    <div class="flex items-center justify-between">
+      <h3 class="font-display text-lg font-extrabold text-emerald-950">Exportar para Contador</h3>
+      <button onclick="cerrarModal('modalContador')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    </div>
+    <p class="text-xs text-slate-600">Genera un CSV con stock actual de hacienda, movimientos marcados como <strong>Fiscal / DTE</strong> y fletes del mes seleccionado.</p>
+    <div><label class="text-[11px] font-bold text-slate-500 uppercase">Mes a exportar</label><input type="month" id="contadorMesInput" class="w-full border rounded-xl p-3 text-sm outline-none mt-1 font-bold"></div>
+    <div class="flex justify-end gap-2 pt-2">
+      <button onclick="cerrarModal('modalContador')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button>
+      <button onclick="exportarReporteContador()" class="btn-naranja px-5 py-2.5 rounded-xl text-sm">Descargar CSV</button>
+    </div>
+  </div>
+</div>
+
+<!-- NUEVA TAREA / ARCHIVADAS / RESET -->
+<div id="modalNuevaTarea" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
+  <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
+    <div class="flex items-center justify-between"><h3 class="font-display text-lg font-extrabold text-indigo-700">Nueva Tarea</h3><button onclick="cerrarModal('modalNuevaTarea')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button></div>
+    <input type="text" id="tareaTituloInput" placeholder="¿Qué hay que hacer?" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <input type="text" id="tareaObsInput" placeholder="Observaciones" class="w-full border rounded-xl p-3 text-sm outline-none">
+    <div class="flex justify-end gap-2 pt-2"><button onclick="cerrarModal('modalNuevaTarea')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button><button onclick="guardarTarea()" class="bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold text-sm">Guardar</button></div>
   </div>
 </div>
 
 <div id="modalArchivadas" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
   <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3 max-h-[80vh] flex flex-col">
-    <div class="flex items-center justify-between border-b pb-2">
-      <h3 class="font-display text-lg font-extrabold text-emerald-950">Tareas Archivadas</h3>
-      <button onclick="cerrarModal('modalArchivadas')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
-    </div>
+    <div class="flex items-center justify-between border-b pb-3"><h3 class="font-display text-lg font-extrabold text-emerald-950">Tareas Archivadas</h3><button onclick="cerrarModal('modalArchivadas')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button></div>
     <div id="listaTareasArchivadas" class="space-y-2 overflow-y-auto flex-1 scroll-suave"></div>
   </div>
 </div>
 
 <div id="modalReset" class="fixed inset-0 modal-bg hidden items-center justify-center p-3 z-50">
   <div class="modal-card bg-white w-full max-w-md rounded-2xl p-5 shadow-2xl space-y-3">
-    <div class="flex items-center justify-between">
-      <h3 class="font-display text-lg font-extrabold text-rose-700">Reinicio de Base</h3>
-      <button onclick="cerrarModal('modalReset')" class="w-8 h-8 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+    <div class="flex items-center justify-between"><h3 class="font-display text-lg font-extrabold text-rose-700">Reinicio de Base</h3><button onclick="cerrarModal('modalReset')" class="w-9 h-9 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button></div>
+    <div class="space-y-2 bg-slate-50 p-3.5 rounded-xl text-xs max-h-56 overflow-y-auto font-medium">
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkCabezas" class="w-4 h-4 accent-rose-600"><span>Cabezas en 0 (Genéricas)</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkCaravanas" class="w-4 h-4 accent-rose-600"><span>Borrar caravanas</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkCorrales" class="w-4 h-4 accent-rose-600"><span>Borrar lotes</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkLabores" class="w-4 h-4 accent-rose-600"><span>Borrar labores agrícolas</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkInsumos" class="w-4 h-4 accent-rose-600"><span>Borrar insumos del galpón</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkLluvias" class="w-4 h-4 accent-rose-600"><span>Borrar pluviómetro</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkFletes" class="w-4 h-4 accent-rose-600"><span>Borrar fletes</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkHistorial" class="w-4 h-4 accent-rose-600"><span>Borrar historial</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkTareas" class="w-4 h-4 accent-rose-600"><span>Borrar tablero</span></label>
+      <label class="flex items-center gap-2.5"><input type="checkbox" id="chkNotas" class="w-4 h-4 accent-rose-600"><span>Borrar notas</span></label>
     </div>
-    <div class="space-y-1.5 bg-slate-50 p-3 rounded-xl text-sm">
-      <label class="flex items-center gap-2"><input type="checkbox" id="chkCabezas" class="w-4 h-4 accent-rose-600"><span>Cabezas en 0 (Genéricas)</span></label>
-      <label class="flex items-center gap-2"><input type="checkbox" id="chkCaravanas" class="w-4 h-4 accent-rose-600"><span>Borrar caravanas individuales</span></label>
-      <label class="flex items-center gap-2"><input type="checkbox" id="chkCorrales" class="w-4 h-4 accent-rose-600"><span>Borrar lotes</span></label>
-      <label class="flex items-center gap-2"><input type="checkbox" id="chkFletes" class="w-4 h-4 accent-rose-600"><span>Borrar fletes</span></label>
-      <label class="flex items-center gap-2"><input type="checkbox" id="chkHistorial" class="w-4 h-4 accent-rose-600"><span>Borrar historial</span></label>
-      <label class="flex items-center gap-2"><input type="checkbox" id="chkTareas" class="w-4 h-4 accent-rose-600"><span>Borrar tablero</span></label>
-      <label class="flex items-center gap-2"><input type="checkbox" id="chkNotas" class="w-4 h-4 accent-rose-600"><span>Borrar notas</span></label>
-    </div>
-    <input type="text" id="inputPalabraBorrar" placeholder="Escribí BORRAR" class="w-full border rounded-xl p-2.5 text-sm uppercase outline-none">
-    <div class="flex justify-end gap-2 pt-1">
-      <button onclick="cerrarModal('modalReset')" class="px-4 py-2 text-slate-600 text-sm">Cancelar</button>
-      <button onclick="ejecutarReinicioSeguro()" class="btn-rojo px-5 py-2 rounded-xl text-sm">Ejecutar</button>
-    </div>
+    <input type="text" id="inputPalabraBorrar" placeholder="Escribí BORRAR" class="w-full border rounded-xl p-3 text-sm uppercase outline-none">
+    <div class="flex justify-end gap-2 pt-2"><button onclick="cerrarModal('modalReset')" class="px-4 py-2.5 text-slate-600 text-sm font-semibold">Cancelar</button><button onclick="ejecutarReinicioSeguro()" class="btn-rojo px-5 py-2.5 rounded-xl text-sm">Ejecutar</button></div>
   </div>
 </div>
 
-<!-- ============ LÓGICA PRINCIPAL ============ -->
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-  import { getDatabase, ref, onValue, set, push, remove, update }
-    from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyC-7MMAHQ2Ib7TFjQynWP2mMBTeBE8U7xU",
-    authDomain: "tatocowspruebas.firebaseapp.com",
-    databaseURL: "https://tatocowspruebas-default-rtdb.firebaseio.com",
-    projectId: "tatocowspruebas",
-    storageBucket: "tatocowspruebas.firebasestorage.app",
-    messagingSenderId: "702960739873",
-    appId: "1:702960739873:web:63c72f142e755914f36560",
-    measurementId: "G-YQPTQR35VQ"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getDatabase(app);
-
-  const corralesRef  = ref(db, 'corrales');
-  const historialRef = ref(db, 'historial');
-  const fletesRef    = ref(db, 'fletes');
-  const tareasRef    = ref(db, 'tareas');
-  const notasRef     = ref(db, 'notas_rapidas');
-  const animalesRef  = ref(db, 'animales');
-
-  window.corralesData  = {};
-  window.historialData = [];
-  window.fletesData    = [];
-  window.tareasData    = {};
-  window.notasData     = {};
-  window.animalesData  = {};
-
-  /* ---------- Fecha en hero ---------- */
-  const hoy = new Date();
-  const heroFecha = document.getElementById('heroFecha');
-  if (heroFecha) {
-    heroFecha.textContent = hoy.toLocaleDateString('es-AR', { weekday:'short', day:'2-digit', month:'short' });
-  }
-
-  /* ---------- Listeners Firebase ---------- */
-  onValue(corralesRef, (snap) => {
-    window.corralesData = snap.val() || {};
-    renderCorrales(); renderAnimales(); renderStats(); populateSelects();
-  });
-  onValue(animalesRef, (snap) => {
-    window.animalesData = snap.val() || {};
-    renderAnimales(); renderCorrales(); renderStats(); populateSelects();
-  });
-  onValue(historialRef, (snap) => {
-    const data = snap.val() || {};
-    window.historialData = Object.keys(data).map(k => ({ id:k, ...data[k] }));
-    window.historialData.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-    renderHistorial();
-  });
-  onValue(fletesRef, (snap) => {
-    const data = snap.val() || {};
-    window.fletesData = Object.keys(data).map(k => ({ id:k, ...data[k] }));
-    window.fletesData.sort((a,b) => (b.timestamp||0) - (a.timestamp||0));
-    renderFletes(); renderStats();
-  });
-  onValue(tareasRef, (snap) => {
-    window.tareasData = snap.val() || {};
-    renderKanban(); renderStats();
-  });
-  onValue(notasRef, (snap) => {
-    window.notasData = snap.val() || {};
-    renderNotas();
-  });
-
-  /* ---------- Selects ---------- */
-  function populateSelects() {
-    const corrales = window.corralesData || {};
-    const opciones = Object.keys(corrales).length > 0
-      ? Object.keys(corrales).map(id => `<option value="${id}">${corrales[id].nombre}</option>`).join('')
-      : '<option value="">Sin lotes</option>';
-    ['ingCorralSelect','egCorralSelect','trOrigenSelect','trDestinoSelect',
-     'animalCorralSelect','moverCorralSelect','masivoOrigenSelect','masivoDestinoSelect'].forEach(id => {
-      const el = document.getElementById(id);
-      if (el) {
-        const prev = el.value;
-        el.innerHTML = opciones;
-        if (prev && corrales[prev]) el.value = prev;
-      }
-    });
-    if (typeof window.actualizarListaCaravanasMasivo === 'function') {
-      window.actualizarListaCaravanasMasivo();
-    }
-    if (typeof window.actualizarListaCaravanasEgreso === 'function') {
-      window.actualizarListaCaravanasEgreso();
-    }
-  }
-  window.populateSelects = populateSelects;
-
-  /* ---------- Stats ---------- */
-  function renderStats() {
-    const corrales = window.corralesData || {};
-    const animales = window.animalesData || {};
-    const keys = Object.keys(corrales);
-    const totalCar = Object.values(animales).filter(a => a.estado === 'activo').length;
-    const totalGen = keys.reduce((acc,k) => acc + (corrales[k].cantidadGenerica !== undefined ? corrales[k].cantidadGenerica : (corrales[k].cantidad||0)), 0);
-    const total = totalCar + totalGen;
-    const tareasActivas = Object.values(window.tareasData || {}).filter(t => !t.archivada).length;
-    const s1 = document.getElementById('statTotalVacas'); if (s1) s1.innerText = total;
-    const s2 = document.getElementById('statTotalCorrales'); if (s2) s2.innerText = keys.length;
-    const s3 = document.getElementById('statTotalFletes'); if (s3) s3.innerText = window.fletesData.length;
-    const s4 = document.getElementById('statTotalTareas'); if (s4) s4.innerText = tareasActivas;
-  }
-  window.renderStats = renderStats;
-
-  /* ---------- Render Corrales ---------- */
-  function renderCorrales() {
-    const container = document.getElementById('listaCorrales');
-    if (!container) return;
-    const corrales = window.corralesData || {};
-    const animales = window.animalesData || {};
-    let keys = Object.keys(corrales);
-
-    if (keys.length === 0) {
-      container.innerHTML = `<div class="tarjeta p-6 text-center text-slate-400 text-sm">No hay lotes. Creá el primero arriba.</div>`;
-      return;
-    }
-    const buscador = document.getElementById('buscarCorralInput');
-    const filtro = buscador ? buscador.value.toLowerCase().trim() : '';
-    if (filtro) {
-      keys = keys.filter(id => {
-        const c = corrales[id];
-        return (c.nombre && c.nombre.toLowerCase().includes(filtro)) ||
-               (c.observacion && c.observacion.toLowerCase().includes(filtro));
-      });
-    }
-    const ordenEl = document.getElementById('ordenCorralSelect');
-    const criterio = ordenEl ? ordenEl.value : 'nombre';
-    keys.sort((a,b) => {
-      const cA = corrales[a], cB = corrales[b];
-      const tA = Object.values(animales).filter(x => x.corralId===a && x.estado==='activo').length + (cA.cantidadGenerica ?? cA.cantidad ?? 0);
-      const tB = Object.values(animales).filter(x => x.corralId===b && x.estado==='activo').length + (cB.cantidadGenerica ?? cB.cantidad ?? 0);
-      if (criterio === 'nombre') return (cA.nombre||'').localeCompare(cB.nombre||'');
-      if (criterio === 'mayor_cantidad') return tB - tA;
-      if (criterio === 'menor_cantidad') return tA - tB;
-      return 0;
-    });
-    if (keys.length === 0) {
-      container.innerHTML = `<div class="tarjeta p-6 text-center text-slate-400 text-sm">Sin resultados.</div>`;
-      return;
-    }
-    const colorMap = {
-      emerald:'#1B3A2B', blue:'#1E40AF', amber:'#B45309', rose:'#B91C1C',
-      purple:'#6D28D9', cyan:'#0891B2', orange:'#E86A1A', slate:'#475569'
-    };
-    container.innerHTML = keys.map(id => {
-      const c = corrales[id];
-      const carLote = Object.values(animales).filter(x => x.corralId===id && x.estado==='activo').length;
-      const genLote = c.cantidadGenerica !== undefined ? c.cantidadGenerica : (c.cantidad || 0);
-      const totalCab = carLote + genLote;
-      const col = colorMap[c.color] || colorMap.emerald;
-      return `
-        <div class="tarjeta tarjeta-hover lote-item p-3.5 flex items-center justify-between gap-3" style="border-left-color:${col}">
-          <div class="min-w-0 flex-1">
-            <h3 class="font-display font-extrabold text-[15px] text-emerald-950 leading-tight">${c.nombre}</h3>
-            <p class="text-[11px] text-slate-500 mt-0.5 truncate">${c.observacion || '<span class="italic text-slate-400">Sin observación</span>'}</p>
-            <div class="flex items-center gap-1.5 mt-1.5 flex-wrap">
-              <span class="chip badge-verde"><i class="fa-solid fa-fingerprint text-[8px]"></i>${carLote}</span>
-              <span class="chip badge-naranja"><i class="fa-solid fa-hashtag text-[8px]"></i>${genLote}</span>
-            </div>
-          </div>
-          <div class="text-right flex-shrink-0">
-            <p class="font-display text-2xl font-extrabold text-emerald-950 leading-none">${totalCab}</p>
-            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">cab</p>
-            <div class="flex gap-1 mt-1.5 justify-end">
-              <button onclick="abrirEditarCorral('${id}')" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 hover:bg-blue-100 hover:text-blue-700 flex items-center justify-center transition-colors"><i class="fa-solid fa-pen text-[10px]"></i></button>
-              <button onclick="eliminarCorral('${id}','${(c.nombre||'').replace(/'/g,"\\'")}')" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-400 hover:bg-rose-100 hover:text-rose-700 flex items-center justify-center transition-colors"><i class="fa-solid fa-trash text-[10px]"></i></button>
-            </div>
-          </div>
-        </div>`;
-    }).join('');
-  }
-  window.renderCorrales = renderCorrales;
-
-  /* ---------- Render Animales ---------- */
-  function renderAnimales() {
-    const container = document.getElementById('listaAnimales');
-    if (!container) return;
-    const animales = window.animalesData || {};
-    const corrales = window.corralesData || {};
-    let keys = Object.keys(animales);
-    if (keys.length === 0) {
-      container.innerHTML = `<div class="tarjeta p-6 text-center text-slate-400 text-sm">No hay animales con caravana. Agregá el primero.</div>`;
-      return;
-    }
-    const buscador = document.getElementById('buscarAnimalInput');
-    const filtro = buscador ? buscador.value.toLowerCase().trim() : '';
-    if (filtro) {
-      keys = keys.filter(id => {
-        const a = animales[id];
-        const nombreLote = corrales[a.corralId]?.nombre?.toLowerCase() || '';
-        return (a.caravana&&a.caravana.toLowerCase().includes(filtro)) ||
-               (a.raza&&a.raza.toLowerCase().includes(filtro)) ||
-               (a.observaciones&&a.observaciones.toLowerCase().includes(filtro)) ||
-               nombreLote.includes(filtro);
-      });
-    }
-    const ordenEl = document.getElementById('ordenAnimalSelect');
-    const criterio = ordenEl ? ordenEl.value : 'caravana';
-    keys.sort((a,b) => {
-      const A = animales[a], B = animales[b];
-      if (criterio === 'caravana') return (A.caravana||'').localeCompare(B.caravana||'');
-      if (criterio === 'mayor_peso') return (B.peso||0) - (A.peso||0);
-      if (criterio === 'menor_peso') return (A.peso||0) - (B.peso||0);
-      return 0;
-    });
-    if (keys.length === 0) {
-      container.innerHTML = `<div class="tarjeta p-6 text-center text-slate-400 text-sm">Sin resultados.</div>`;
-      return;
-    }
-    container.innerHTML = keys.map(id => {
-      const a = animales[id];
-      const lote = corrales[a.corralId]?.nombre || 'Sin asignar';
-      return `
-        <div class="tarjeta tarjeta-hover caravana-item p-3.5 space-y-2">
-          <div class="flex justify-between items-start gap-2">
-            <div class="min-w-0">
-              <h3 class="font-display font-extrabold text-[15px] text-emerald-950 leading-tight">Caravana ${a.caravana}</h3>
-              <p class="text-[11px] text-slate-500 mt-0.5">Lote: <strong class="text-emerald-800">${lote}</strong></p>
-            </div>
-            <div class="flex gap-1 flex-shrink-0">
-              <button onclick="abrirMoverCaravana('${id}')" class="w-8 h-8 rounded-lg bg-blue-50 text-blue-700 flex items-center justify-center"><i class="fa-solid fa-arrow-right-arrow-left text-[11px]"></i></button>
-              <button onclick="abrirEditarAnimal('${id}')" class="w-8 h-8 rounded-lg bg-amber-50 text-amber-700 flex items-center justify-center"><i class="fa-solid fa-pen text-[11px]"></i></button>
-              <button onclick="eliminarAnimal('${id}','${a.caravana}')" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:bg-rose-50 hover:text-rose-600 flex items-center justify-center"><i class="fa-solid fa-trash text-[11px]"></i></button>
-            </div>
-          </div>
-          <div class="grid grid-cols-3 gap-1.5 bg-emerald-50/40 p-2 rounded-lg">
-            <div class="text-center">
-              <p class="text-[8px] font-bold text-slate-400 uppercase">Raza</p>
-              <p class="text-xs font-bold text-slate-800">${a.raza || '—'}</p>
-            </div>
-            <div class="text-center border-x border-emerald-100">
-              <p class="text-[8px] font-bold text-slate-400 uppercase">Edad</p>
-              <p class="text-xs font-bold text-slate-800">${a.edad || '—'}</p>
-            </div>
-            <div class="text-center">
-              <p class="text-[8px] font-bold text-slate-400 uppercase">Peso</p>
-              <p class="text-xs font-bold text-emerald-800">${a.peso ? a.peso+'kg' : '—'}</p>
-            </div>
-          </div>
-          ${a.observaciones ? `<p class="text-[11px] text-slate-600 italic px-1">📝 ${a.observaciones}</p>` : ''}
-        </div>`;
-    }).join('');
-  }
-  window.renderAnimales = renderAnimales;
-
-  /* ---------- Render Historial ---------- */
-  function renderHistorial() {
-    const container = document.getElementById('listaHistorial');
-    if (!container) return;
-    let list = window.historialData || [];
-    if (list.length === 0) {
-      container.innerHTML = `<div class="p-6 text-center text-slate-400 text-sm">Sin movimientos aún.</div>`;
-      return;
-    }
-    const buscador = document.getElementById('buscarHistorialInput');
-    const filtro = buscador ? buscador.value.toLowerCase().trim() : '';
-    if (filtro) {
-      list = list.filter(h =>
-        (h.nombreCorral&&h.nombreCorral.toLowerCase().includes(filtro)) ||
-        (h.motivo&&h.motivo.toLowerCase().includes(filtro)) ||
-        (h.usuario&&h.usuario.toLowerCase().includes(filtro)) ||
-        (h.notas&&h.notas.toLowerCase().includes(filtro))
-      );
-    }
-    const ordenEl = document.getElementById('ordenHistorialSelect');
-    const criterio = ordenEl ? ordenEl.value : 'recientes';
-    list.sort((a,b) => {
-      if (criterio === 'recientes') return (b.timestamp||0) - (a.timestamp||0);
-      if (criterio === 'antiguos') return (a.timestamp||0) - (b.timestamp||0);
-      if (criterio === 'lote') return (a.nombreCorral||'').localeCompare(b.nombreCorral||'');
-      return 0;
-    });
-    if (list.length === 0) {
-      container.innerHTML = `<div class="p-6 text-center text-slate-400 text-sm">Sin resultados.</div>`;
-      return;
-    }
-    container.innerHTML = list.map(h => {
-      const fecha = h.timestamp ? new Date(h.timestamp).toLocaleString('es-AR',{dateStyle:'short',timeStyle:'short'}) : '';
-      const esSuma = h.tipo === 'SUMAR';
-      const esTraslado = h.tipo === 'TRASLADO';
-      const icono = esTraslado ? 'fa-arrow-right-arrow-left' : (esSuma ? 'fa-plus' : 'fa-minus');
-      const chipCls = esTraslado ? 'badge-azul' : (esSuma ? 'badge-verde' : 'badge-rojo');
-      const cant = esTraslado ? h.cantidad : (esSuma ? '+'+h.cantidad : '-'+h.cantidad);
-      return `
-        <div class="p-3 flex items-start gap-2.5">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${chipCls}">
-            <i class="fa-solid ${icono} text-[10px]"></i>
-          </div>
-          <div class="min-w-0 flex-1">
-            <p class="text-xs font-bold text-slate-800 leading-tight">${h.nombreCorral||'—'}</p>
-            <p class="text-[11px] text-slate-500 mt-0.5 truncate">${h.motivo||''}</p>
-            <p class="text-[10px] text-slate-400 mt-0.5">${fecha}${h.usuario?' · '+h.usuario:''}${h.notas?' · '+h.notas:''}</p>
-          </div>
-          <span class="text-sm font-extrabold flex-shrink-0 ${esTraslado?'text-blue-700':(esSuma?'text-emerald-700':'text-rose-700')}">${cant}</span>
-        </div>`;
-    }).join('');
-  }
-  window.renderHistorial = renderHistorial;
-
-  /* ---------- Render Fletes ---------- */
-  function renderFletes() {
-    const container = document.getElementById('listaFletes');
-    if (!container) return;
-    const list = window.fletesData || [];
-    const totalGastado = list.reduce((a,b) => a+(b.costo||0), 0);
-    const totalPend = list.filter(f => f.estadoPago === 'Pendiente').reduce((a,b) => a+(b.costo||0), 0);
-    const gEl = document.getElementById('fletesTotalGastado'); if (gEl) gEl.innerText = '$'+totalGastado.toLocaleString('es-AR');
-    const pEl = document.getElementById('fletesTotalPendiente'); if (pEl) pEl.innerText = '$'+totalPend.toLocaleString('es-AR');
-
-    if (list.length === 0) {
-      container.innerHTML = `<div class="tarjeta p-6 text-center text-slate-400 text-sm">No hay fletes registrados.</div>`;
-      return;
-    }
-    container.innerHTML = list.map(f => `
-      <div class="tarjeta tarjeta-hover p-3.5 space-y-2">
-        <div class="flex justify-between items-start">
-          <div class="min-w-0">
-            <h3 class="font-display font-extrabold text-[15px] text-emerald-950 flex items-center gap-1.5"><i class="fa-solid fa-truck text-orange-500 text-xs"></i> ${f.transportista}</h3>
-            <p class="text-[11px] text-slate-500 mt-0.5">${f.chofer ? 'Chofer: '+f.chofer : 'Sin chofer'}</p>
-          </div>
-          <button onclick="eliminarFlete('${f.id}')" class="w-7 h-7 rounded-lg bg-slate-100 text-slate-400 hover:bg-rose-100 hover:text-rose-600 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-trash text-[10px]"></i></button>
-        </div>
-        <div class="grid grid-cols-2 gap-1.5 bg-slate-50 p-2 rounded-lg text-[11px]">
-          <div><span class="text-slate-400">Guía:</span> <strong class="text-slate-800">${f.guia||'—'}</strong></div>
-          <div><span class="text-slate-400">Cab:</span> <strong class="text-emerald-800">${f.cantidad}</strong></div>
-          <div><span class="text-slate-400">Destino:</span> <strong class="text-slate-800">${f.destino||'—'}</strong></div>
-          <div><span class="text-slate-400">Costo:</span> <strong class="text-slate-800">$${(f.costo||0).toLocaleString('es-AR')}</strong></div>
-        </div>
-        <div class="flex justify-between items-center pt-0.5">
-          <button onclick="toggleEstadoPagoFlete('${f.id}','${f.estadoPago}')" class="text-[10px] text-blue-700 font-bold hover:underline">Cambiar a ${f.estadoPago==='Pagado'?'Pendiente':'Pagado'}</button>
-          <span class="chip ${f.estadoPago==='Pagado'?'badge-verde':'badge-naranja'}">${f.estadoPago}</span>
-        </div>
-      </div>
-    `).join('');
-  }
-  window.renderFletes = renderFletes;
-
-  /* ---------- Render Kanban ---------- */
-  function renderKanban() {
-    const tareas = window.tareasData || {};
-    const cols = { tomado:'', en_ejecucion:'', completado:'' };
-    const counts = { tomado:0, en_ejecucion:0, completado:0 };
-    let archHTML = '';
-    let cArch = 0;
-
-    Object.keys(tareas).forEach(id => {
-      const t = tareas[id];
-      if (t.archivada) {
-        cArch++;
-        archHTML += `
-          <div class="bg-slate-50 p-2.5 rounded-xl border flex justify-between items-start gap-2 text-[11px]">
-            <div class="min-w-0"><p class="font-bold text-slate-800 truncate">${t.titulo}</p><p class="text-slate-500 truncate">${t.observaciones||''}</p></div>
-            <button onclick="restaurarTarea('${id}')" class="px-2 py-1 bg-indigo-100 text-indigo-800 rounded-lg font-bold flex-shrink-0">Restaurar</button>
-          </div>`;
-        return;
-      }
-      counts[t.estado]++;
-      cols[t.estado] += `
-        <div class="bg-white p-2.5 rounded-xl shadow-sm border border-slate-200 space-y-1.5">
-          <div class="flex justify-between items-start gap-1">
-            <span class="font-bold text-slate-800 text-xs leading-tight flex-1">${t.titulo}</span>
-            <button onclick="eliminarTarea('${id}')" class="text-slate-300 hover:text-rose-600 flex-shrink-0"><i class="fa-solid fa-xmark text-[10px]"></i></button>
-          </div>
-          <div onclick="editarObsTarea('${id}')" class="text-slate-600 bg-slate-50 p-1.5 rounded text-[10px] cursor-pointer border border-dashed border-slate-200 leading-snug">
-            ${t.observaciones || 'Tocá para editar'}
-          </div>
-          <div class="flex justify-between items-center pt-1 border-t border-slate-100">
-            ${t.estado!=='tomado' ? `<button onclick="cambiarEstadoTarea('${id}','${t.estado==='completado'?'en_ejecucion':'tomado'}')" class="w-6 h-6 rounded-md bg-slate-100 text-slate-600 flex items-center justify-center"><i class="fa-solid fa-chevron-left text-[9px]"></i></button>` : '<span></span>'}
-            ${t.estado!=='completado' ? `<button onclick="cambiarEstadoTarea('${id}','${t.estado==='tomado'?'en_ejecucion':'completado'}')" class="px-2 py-1 bg-indigo-50 text-indigo-800 font-bold rounded-md text-[10px]">Avanzar ›</button>` : '<span class="text-emerald-700 font-bold text-[10px]">✓ Listo</span>'}
-          </div>
-        </div>`;
-    });
-
-    const setIf = (id,val,fb) => { const el = document.getElementById(id); if (el) el.innerHTML = val || fb; };
-    setIf('colTomado', cols.tomado, '<p class="text-[10px] text-slate-400 text-center py-3">Sin tareas</p>');
-    setIf('colEjecucion', cols.en_ejecucion, '<p class="text-[10px] text-slate-400 text-center py-3">Sin tareas</p>');
-    setIf('colCompletado', cols.completado, '<p class="text-[10px] text-slate-400 text-center py-3">Sin tareas</p>');
-    const cT = document.getElementById('countTomado'); if (cT) cT.innerText = counts.tomado;
-    const cE = document.getElementById('countEjecucion'); if (cE) cE.innerText = counts.en_ejecucion;
-    const cC = document.getElementById('countCompletado'); if (cC) cC.innerText = counts.completado;
-    const cA = document.getElementById('countArchivadasBtn'); if (cA) cA.innerText = cArch;
-    const arcEl = document.getElementById('listaTareasArchivadas');
-    if (arcEl) arcEl.innerHTML = archHTML || '<p class="text-xs text-slate-400 text-center py-6">No hay tareas archivadas.</p>';
-  }
-  window.renderKanban = renderKanban;
-
-  /* ---------- Render Notas ---------- */
-  function renderNotas() {
-    const container = document.getElementById('listaNotasRapidas');
-    if (!container) return;
-    const notas = window.notasData || {};
-    const keys = Object.keys(notas);
-    if (keys.length === 0) {
-      container.innerHTML = `<p class="text-[11px] text-slate-400 text-center py-2 col-span-2">No hay notas.</p>`;
-      return;
-    }
-    container.innerHTML = keys.map(id => `
-      <div class="bg-amber-50 border border-amber-200 p-2 rounded-lg flex justify-between items-start gap-1 text-[11px]">
-        <p class="text-slate-800 break-words flex-1">${notas[id].texto}</p>
-        <button onclick="eliminarNotaRapida('${id}')" class="text-slate-400 hover:text-rose-600 flex-shrink-0"><i class="fa-solid fa-xmark text-[10px]"></i></button>
-      </div>
-    `).join('');
-  }
-  window.renderNotas = renderNotas;
-
-  /* ========== ACCIONES ========== */
-  window.exportarStockCSV = function() {
-    const corrales = window.corralesData || {};
-    const animales = window.animalesData || {};
-    const keys = Object.keys(corrales);
-    if (keys.length === 0) return alert("No hay datos para exportar.");
-    let csv = "\uFEFFLote,Observación,Con Caravana,Genéricas,Total\n";
-    keys.forEach(id => {
-      const c = corrales[id];
-      const car = Object.values(animales).filter(a => a.corralId===id && a.estado==='activo').length;
-      const gen = c.cantidadGenerica !== undefined ? c.cantidadGenerica : (c.cantidad||0);
-      csv += `"${(c.nombre||'').replace(/"/g,'""')}","${(c.observacion||'').replace(/"/g,'""')}",${car},${gen},${car+gen}\n`;
-    });
-    const blob = new Blob([csv],{type:'text/csv;charset=utf-8;'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `stock_${new Date().toISOString().slice(0,10)}.csv`;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  };
-
-  window.guardarAnimal = function() {
-    const caravana = document.getElementById('animalCaravanaInput').value.trim();
-    const raza = document.getElementById('animalRazaInput').value.trim();
-    const edad = document.getElementById('animalEdadInput').value.trim();
-    const peso = parseFloat(document.getElementById('animalPesoInput').value) || 0;
-    const corralId = document.getElementById('animalCorralSelect').value;
-    const obs = document.getElementById('animalObsInput').value.trim();
-    const motivo = document.getElementById('animalMotivoSelect').value;
-    const usuario = document.getElementById('animalUsuarioInput').value.trim() || 'Operador';
-    const notasIng = document.getElementById('animalNotasIngresoInput').value.trim();
-    if (!caravana || !corralId) return alert("Completá caravana y corral.");
-    cerrarModal('modalNuevoAnimal');
-    set(push(animalesRef), { caravana, raza, edad, peso, corralId, observaciones:obs, estado:'activo', timestamp:Date.now() }).then(() => {
-      const nombre = window.corralesData[corralId]?.nombre || 'Lote';
-      const detalle = [`Caravana ${caravana}`, notasIng, obs].filter(Boolean).join(' • ');
-      set(push(historialRef), { corralId, nombreCorral:nombre, tipo:'SUMAR', cantidad:1, motivo:`${motivo} (Caravana ${caravana})`, notas:detalle, usuario, timestamp:Date.now() });
-      const input = document.getElementById('animalCaravanaInput');
-      if (!isNaN(caravana)) input.value = parseInt(caravana,10)+1; else input.value='';
-      ['animalRazaInput','animalPesoInput','animalObsInput','animalNotasIngresoInput'].forEach(id => document.getElementById(id).value='');
-    });
-  };
-
-  window.abrirEditarAnimal = function(id) {
-    const a = window.animalesData[id]; if (!a) return;
-    document.getElementById('editAnimalId').value = id;
-    document.getElementById('editAnimalCaravanaInput').value = a.caravana||'';
-    document.getElementById('editAnimalRazaInput').value = a.raza||'';
-    document.getElementById('editAnimalEdadInput').value = a.edad||'';
-    document.getElementById('editAnimalPesoInput').value = a.peso||'';
-    document.getElementById('editAnimalCorralBloqueado').value = window.corralesData[a.corralId]?.nombre || 'Sin asignar';
-    document.getElementById('editAnimalObsInput').value = a.observaciones||'';
-    abrirModal('modalEditarAnimal');
-  };
-
-  window.guardarEdicionAnimal = function() {
-    const id = document.getElementById('editAnimalId').value;
-    const caravana = document.getElementById('editAnimalCaravanaInput').value.trim();
-    const raza = document.getElementById('editAnimalRazaInput').value.trim();
-    const edad = document.getElementById('editAnimalEdadInput').value.trim();
-    const peso = parseFloat(document.getElementById('editAnimalPesoInput').value)||0;
-    const observaciones = document.getElementById('editAnimalObsInput').value.trim();
-    if (!id || !caravana) return alert("Caravana obligatoria.");
-    cerrarModal('modalEditarAnimal');
-    update(ref(db,`animales/${id}`), { caravana, raza, edad, peso, observaciones });
-  };
-
-  window.abrirMoverCaravana = function(id) {
-    const a = window.animalesData[id]; if (!a) return;
-    document.getElementById('moverAnimalId').value = id;
-    document.getElementById('moverCaravanaTxt').innerText = a.caravana;
-    populateSelects();
-    document.getElementById('moverCorralSelect').value = a.corralId||'';
-    abrirModal('modalMoverCaravana');
-  };
-
-  window.ejecutarMoverCaravana = function() {
-    const id = document.getElementById('moverAnimalId').value;
-    const nuevo = document.getElementById('moverCorralSelect').value;
-    const a = window.animalesData[id];
-    if (!id || !nuevo || !a) return;
-    const origen = a.corralId;
-    if (origen === nuevo) return alert("Ya está en ese lote.");
-    cerrarModal('modalMoverCaravana');
-    update(ref(db,`animales/${id}`), { corralId:nuevo }).then(() => {
-      set(push(historialRef), { tipo:'TRASLADO', cantidad:1, motivo:`Traslado individual Caravana ${a.caravana}`,
-        nombreCorral:`Desde ${window.corralesData[origen]?.nombre||'—'} hacia ${window.corralesData[nuevo]?.nombre||'—'}`,
-        notas:'Cambio individual', usuario:'Operador', timestamp:Date.now() });
-    });
-  };
-
-  window.eliminarAnimal = function(id, caravana) {
-    if (confirm(`¿Eliminar caravana "${caravana}"?`)) remove(ref(db,`animales/${id}`));
-  };
-
-  window.abrirTrasladoMasivo = function() {
-    if (Object.keys(window.corralesData||{}).length < 2) return alert("Necesitás al menos 2 lotes.");
-    document.getElementById('masivoCantidadGenerica').value = '0';
-    abrirModal('modalTrasladoMasivo');
-    window.actualizarListaCaravanasMasivo();
-  };
-
-  window.actualizarListaCaravanasMasivo = function() {
-    const origenId = document.getElementById('masivoOrigenSelect')?.value;
-    const cont = document.getElementById('masivoListaCaravanasContainer');
-    if (!cont) return;
-    const animales = window.animalesData||{};
-    const lista = Object.keys(animales).filter(id => animales[id].corralId===origenId && animales[id].estado==='activo');
-    if (lista.length === 0) {
-      cont.innerHTML = `<p class="text-[10px] text-slate-400 italic p-2">Sin caravanas en este lote.</p>`;
-      return;
-    }
-    cont.innerHTML = lista.map(id => {
-      const a = animales[id];
-      return `<label class="flex items-center gap-2 p-1.5 hover:bg-white rounded-lg cursor-pointer text-[11px] border-b border-slate-100">
-        <input type="checkbox" value="${id}" class="chk-caravana-masivo w-4 h-4 accent-emerald-800">
-        <span class="font-bold text-slate-800">${a.caravana}</span>
-        <span class="text-slate-500 text-[10px]">${a.raza||'—'} · ${a.peso?a.peso+'kg':'s/p'}</span>
-      </label>`;
-    }).join('');
-  };
-
-  window.ejecutarTrasladoMasivo = function() {
-    const origen = document.getElementById('masivoOrigenSelect').value;
-    const destino = document.getElementById('masivoDestinoSelect').value;
-    const gen = parseInt(document.getElementById('masivoCantidadGenerica').value,10)||0;
-    const usuario = document.getElementById('masivoUsuarioInput').value.trim()||'Operador';
-    const notas = document.getElementById('masivoNotasInput').value.trim();
-    if (!origen || !destino || origen === destino) return alert("Verificá origen y destino.");
-    const cO = window.corralesData[origen], cD = window.corralesData[destino];
-    if (!cO || !cD) return;
-    const genO = cO.cantidadGenerica !== undefined ? cO.cantidadGenerica : (cO.cantidad||0);
-    if (gen > genO) return alert(`Solo ${genO} genéricas en origen.`);
-    const chks = document.querySelectorAll('.chk-caravana-masivo:checked');
-    const ids = Array.from(chks).map(c => c.value);
-    if (gen === 0 && ids.length === 0) return alert("Nada seleccionado.");
-    cerrarModal('modalTrasladoMasivo');
-    if (gen > 0) {
-      const genD = cD.cantidadGenerica !== undefined ? cD.cantidadGenerica : (cD.cantidad||0);
-      update(ref(db,`corrales/${origen}`), { cantidadGenerica:genO-gen });
-      update(ref(db,`corrales/${destino}`), { cantidadGenerica:genD+gen });
-    }
-    let detalle = '';
-    if (ids.length > 0) {
-      const nombres = [];
-      ids.forEach(id => {
-        update(ref(db,`animales/${id}`), { corralId:destino });
-        if (window.animalesData[id]) nombres.push(window.animalesData[id].caravana);
-      });
-      detalle = ` + Caravanas: [${nombres.join(', ')}]`;
-    }
-    set(push(historialRef), { tipo:'TRASLADO', cantidad:gen+ids.length, motivo:'Traslado masivo mixto',
-      nombreCorral:`Desde ${cO.nombre} hacia ${cD.nombre}`,
-      notas:`Genéricas: ${gen}${detalle}${notas?' • '+notas:''}`, usuario, timestamp:Date.now() });
-    document.getElementById('masivoCantidadGenerica').value = '0';
-    document.getElementById('masivoNotasInput').value = '';
-    document.getElementById('masivoUsuarioInput').value = '';
-  };
-
-  window.crearCorral = function() {
-    const nombre = document.getElementById('nombreCorralInput').value.trim();
-    const obs = document.getElementById('obsCorralInput').value.trim();
-    const color = document.getElementById('colorCorralInput').value;
-    if (!nombre) return;
-    cerrarModal('modalNuevoCorral');
-    set(push(corralesRef), { nombre, observacion:obs, color, cantidadGenerica:0 }).then(() => {
-      document.getElementById('nombreCorralInput').value = '';
-      document.getElementById('obsCorralInput').value = '';
-    });
-  };
-
-  window.abrirEditarCorral = function(id) {
-    const c = window.corralesData[id]; if (!c) return;
-    document.getElementById('editCorralIdInput').value = id;
-    document.getElementById('editNombreCorralInput').value = c.nombre||'';
-    document.getElementById('editObsCorralInput').value = c.observacion||'';
-    document.getElementById('editColorCorralInput').value = c.color||'emerald';
-    abrirModal('modalEditarCorral');
-  };
-
-  window.guardarEdicionCorral = function() {
-    const id = document.getElementById('editCorralIdInput').value;
-    const nombre = document.getElementById('editNombreCorralInput').value.trim();
-    const obs = document.getElementById('editObsCorralInput').value.trim();
-    const color = document.getElementById('editColorCorralInput').value;
-    if (!id || !nombre) return alert("Nombre obligatorio.");
-    cerrarModal('modalEditarCorral');
-    update(ref(db,`corrales/${id}`), { nombre, observacion:obs, color });
-  };
-
-  window.eliminarCorral = function(id, nombre) {
-    if (confirm(`¿Eliminar lote "${nombre}"?`)) remove(ref(db,`corrales/${id}`));
-  };
-
-  window.ejecutarIngreso = function() {
-    const id = document.getElementById('ingCorralSelect').value;
-    const cant = parseInt(document.getElementById('ingCantidadInput').value,10);
-    const motivo = document.getElementById('ingMotivoSelect').value;
-    const usuario = document.getElementById('ingUsuarioInput').value.trim()||'Operador';
-    const notas = document.getElementById('ingNotasInput').value.trim();
-    if (!id || isNaN(cant) || cant<=0) return alert("Cantidad inválida.");
-    const c = window.corralesData[id]; if (!c) return;
-    cerrarModal('modalIngresar');
-    const act = c.cantidadGenerica !== undefined ? c.cantidadGenerica : (c.cantidad||0);
-    update(ref(db,`corrales/${id}`), { cantidadGenerica:act+cant });
-    set(push(historialRef), { corralId:id, nombreCorral:c.nombre, tipo:'SUMAR', cantidad:cant, motivo, notas, usuario, timestamp:Date.now() });
-    document.getElementById('ingCantidadInput').value = '';
-    document.getElementById('ingNotasInput').value = '';
-  };
-
-  /* ---------- EGRESO MIXTO (GENÉRICAS + CARAVANAS) ---------- */
-  window.abrirEgreso = function() {
-    if (Object.keys(window.corralesData||{}).length === 0) return alert("Primero creá un lote.");
-    document.getElementById('egCantidadInput').value = '0';
-    abrirModal('modalEgresar');
-    window.actualizarListaCaravanasEgreso();
-  };
-
-  window.actualizarListaCaravanasEgreso = function() {
-    const corralId = document.getElementById('egCorralSelect')?.value;
-    const cont = document.getElementById('egListaCaravanasContainer');
-    if (!cont) return;
-    const animales = window.animalesData || {};
-    const lista = Object.keys(animales).filter(id => animales[id].corralId === corralId && animales[id].estado === 'activo');
-    if (lista.length === 0) {
-      cont.innerHTML = `<p class="text-[10px] text-slate-400 italic p-2">Sin caravanas activas en este lote.</p>`;
-      return;
-    }
-    cont.innerHTML = lista.map(id => {
-      const a = animales[id];
-      return `<label class="flex items-center gap-2 p-1.5 hover:bg-white rounded-lg cursor-pointer text-[11px] border-b border-rose-100">
-        <input type="checkbox" value="${id}" class="chk-caravana-egreso w-4 h-4 accent-rose-700">
-        <span class="font-bold text-slate-800">${a.caravana}</span>
-        <span class="text-slate-500 text-[10px]">${a.raza||'—'} · ${a.peso?a.peso+'kg':'s/p'}</span>
-      </label>`;
-    }).join('');
-  };
-
-  window.ejecutarEgreso = function() {
-    const id = document.getElementById('egCorralSelect').value;
-    const cantGen = parseInt(document.getElementById('egCantidadInput').value, 10) || 0;
-    const motivo = document.getElementById('egMotivoSelect').value;
-    const usuario = document.getElementById('egUsuarioInput').value.trim() || 'Operador';
-    const notas = document.getElementById('egNotasInput').value.trim();
-
-    if (!id) return alert("Seleccioná un lote.");
-    const c = window.corralesData[id];
-    if (!c) return;
-
-    const actGen = c.cantidadGenerica !== undefined ? c.cantidadGenerica : (c.cantidad || 0);
-    if (cantGen > actGen) return alert(`Solo hay ${actGen} cabezas genéricas disponibles en "${c.nombre}".`);
-
-    const chks = document.querySelectorAll('.chk-caravana-egreso:checked');
-    const caravanasIds = Array.from(chks).map(cb => cb.value);
-
-    if (cantGen === 0 && caravanasIds.length === 0) {
-      return alert("Indicá al menos una cabeza genérica o tildá una caravana para egresar.");
-    }
-
-    cerrarModal('modalEgresar');
-
-    // 1. Descontar genéricas si corresponde
-    if (cantGen > 0) {
-      update(ref(db, `corrales/${id}`), { cantidadGenerica: actGen - cantGen });
-    }
-
-    // 2. Dar de baja/eliminar caravanas tildadas
-    let detalleCaravanas = '';
-    if (caravanasIds.length > 0) {
-      const nombres = [];
-      caravanasIds.forEach(animId => {
-        if (window.animalesData[animId]) nombres.push(window.animalesData[animId].caravana);
-        remove(ref(db, `animales/${animId}`));
-      });
-      detalleCaravanas = `Caravanas: [${nombres.join(', ')}]`;
-    }
-
-    const totalEgresado = cantGen + caravanasIds.length;
-    const resumenNotas = [
-      cantGen > 0 ? `Genéricas: ${cantGen}` : '',
-      detalleCaravanas,
-      notas
-    ].filter(Boolean).join(' • ');
-
-    set(push(historialRef), {
-      corralId: id,
-      nombreCorral: c.nombre,
-      tipo: 'RESTAR',
-      cantidad: totalEgresado,
-      motivo,
-      notas: resumenNotas,
-      usuario,
-      timestamp: Date.now()
-    });
-
-    document.getElementById('egCantidadInput').value = '0';
-    document.getElementById('egNotasInput').value = '';
-  };
-
-  window.ejecutarTraslado = function() {
-    const origen = document.getElementById('trOrigenSelect').value;
-    const destino = document.getElementById('trDestinoSelect').value;
-    const cant = parseInt(document.getElementById('trCantidadInput').value,10);
-    const usuario = document.getElementById('trUsuarioInput').value.trim()||'Operador';
-    const notas = document.getElementById('trNotasInput').value.trim();
-    if (!origen || !destino || origen===destino || isNaN(cant) || cant<=0) return alert("Verificá los datos.");
-    const cO = window.corralesData[origen], cD = window.corralesData[destino];
-    if (!cO || !cD) return;
-    const genO = cO.cantidadGenerica !== undefined ? cO.cantidadGenerica : (cO.cantidad||0);
-    if (cant > genO) return alert(`Solo ${genO} disponibles en origen.`);
-    cerrarModal('modalTraslado');
-    const genD = cD.cantidadGenerica !== undefined ? cD.cantidadGenerica : (cD.cantidad||0);
-    update(ref(db,`corrales/${origen}`), { cantidadGenerica:genO-cant });
-    update(ref(db,`corrales/${destino}`), { cantidadGenerica:genD+cant });
-    set(push(historialRef), { tipo:'TRASLADO', cantidad:cant, motivo:'Traslado genérico',
-      nombreCorral:`Desde ${cO.nombre} hacia ${cD.nombre}`, notas, usuario, timestamp:Date.now() });
-    document.getElementById('trCantidadInput').value = '';
-    document.getElementById('trNotasInput').value = '';
-  };
-
-  window.guardarFlete = function() {
-    const transportista = document.getElementById('fleteTransportista').value.trim();
-    const chofer = document.getElementById('fleteChofer').value.trim();
-    const guia = document.getElementById('fleteGuia').value.trim();
-    const destino = document.getElementById('fleteDestino').value.trim();
-    const cant = parseInt(document.getElementById('fleteCantidad').value,10);
-    const costo = parseFloat(document.getElementById('fleteCosto').value)||0;
-    const estadoPago = document.getElementById('fleteEstadoPago').value;
-    if (!transportista || isNaN(cant) || cant<=0) return alert("Completá transportista y cantidad.");
-    cerrarModal('modalFlete');
-    set(push(fletesRef), { transportista, chofer, guia, destino, cantidad:cant, costo, estadoPago, timestamp:Date.now() });
-  };
-
-  window.toggleEstadoPagoFlete = function(id, actual) {
-    update(ref(db,`fletes/${id}`), { estadoPago: actual==='Pagado'?'Pendiente':'Pagado' });
-  };
-  window.eliminarFlete = function(id) { if (confirm("¿Eliminar flete?")) remove(ref(db,`fletes/${id}`)); };
-
-  window.guardarTarea = function() {
-    const titulo = document.getElementById('tareaTituloInput').value.trim();
-    const obs = document.getElementById('tareaObsInput').value.trim();
-    if (!titulo) return alert("Ingresá la tarea.");
-    cerrarModal('modalNuevaTarea');
-    set(push(tareasRef), { titulo, observaciones:obs, estado:'tomado', archivada:false, timestamp:Date.now() });
-  };
-  window.cambiarEstadoTarea = function(id, estado) { update(ref(db,`tareas/${id}`), { estado }); };
-  window.editarObsTarea = function(id) {
-    const nueva = prompt("Observaciones:", window.tareasData[id]?.observaciones||"");
-    if (nueva !== null) update(ref(db,`tareas/${id}`), { observaciones:nueva.trim() });
-  };
-  window.eliminarTarea = function(id) { if (confirm("¿Eliminar tarea?")) remove(ref(db,`tareas/${id}`)); };
-  window.archivarCompletadas = function() {
-    let c = 0;
-    Object.keys(window.tareasData).forEach(id => {
-      if (window.tareasData[id].estado==='completado' && !window.tareasData[id].archivada) {
-        update(ref(db,`tareas/${id}`), { archivada:true, fechaArchivado:Date.now() });
-        c++;
-      }
-    });
-    alert(c>0 ? `Se archivaron ${c}.` : "No hay completadas para archivar.");
-  };
-  window.restaurarTarea = function(id) { update(ref(db,`tareas/${id}`), { archivada:false }); };
-  window.guardarNotaRapida = function() {
-    const texto = document.getElementById('notaRapidaInput').value.trim();
-    if (!texto) return;
-    set(push(notasRef), { texto, timestamp:Date.now() }).then(() => document.getElementById('notaRapidaInput').value='');
-  };
-  window.eliminarNotaRapida = function(id) { remove(ref(db,`notas_rapidas/${id}`)); };
-
-  window.ejecutarReinicioSeguro = function() {
-    if (document.getElementById('inputPalabraBorrar').value.trim() !== "BORRAR") return alert("Escribí BORRAR.");
-    if (document.getElementById('chkCorrales').checked) set(corralesRef, null);
-    else if (document.getElementById('chkCabezas').checked) {
-      Object.keys(window.corralesData).forEach(id => update(ref(db,`corrales/${id}`), { cantidadGenerica:0 }));
-    }
-    if (document.getElementById('chkCaravanas').checked) set(animalesRef, null);
-    if (document.getElementById('chkFletes').checked) set(fletesRef, null);
-    if (document.getElementById('chkHistorial').checked) set(historialRef, null);
-    if (document.getElementById('chkTareas').checked) set(tareasRef, null);
-    if (document.getElementById('chkNotas').checked) set(notasRef, null);
-    alert("Limpieza ejecutada.");
-    cerrarModal('modalReset');
-    document.getElementById('inputPalabraBorrar').value = '';
-  };
-
-  console.log('✅ App inicializada correctamente');
-</script>
-
-<!-- ============ UI: tabs y modales ============ -->
-<script>
-  window.cambiarTab = function(tab) {
-    const secciones = ['corrales','caravanas','fletes','tareas','historial'];
-    secciones.forEach(s => {
-      const el = document.getElementById('seccion' + s.charAt(0).toUpperCase() + s.slice(1));
-      if (el) el.classList.add('hidden');
-      const btn = document.getElementById('btnTab' + s.charAt(0).toUpperCase() + s.slice(1));
-      if (btn) btn.classList.remove('activo');
-    });
-    const sec = document.getElementById('seccion' + tab.charAt(0).toUpperCase() + tab.slice(1));
-    const btn = document.getElementById('btnTab' + tab.charAt(0).toUpperCase() + tab.slice(1));
-    if (sec) { sec.classList.remove('hidden'); sec.classList.add('section-anim'); }
-    if (btn) btn.classList.add('activo');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
-  window.abrirModal = function(id) {
-    if (typeof window.populateSelects === 'function') window.populateSelects();
-    const m = document.getElementById(id);
-    if (!m) return;
-    m.classList.remove('hidden');
-    m.classList.add('flex');
-  };
-
-  window.cerrarModal = function(id) {
-    const m = document.getElementById(id);
-    if (!m) return;
-    m.classList.add('hidden');
-    m.classList.remove('flex');
-  };
-
-  document.querySelectorAll('.modal-bg').forEach(m => {
-    m.addEventListener('click', e => { if (e.target === m) cerrarModal(m.id); });
-  });
-
-  document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-bg:not(.hidden)').forEach(m => cerrarModal(m.id));
-    }
-  });
-
-  window.addEventListener('load', () => {
-    setTimeout(() => {
-      const faltantes = ['renderCorrales','renderAnimales','renderStats','cambiarTab','abrirModal']
-        .filter(f => typeof window[f] !== 'function');
-      if (faltantes.length) {
-        console.error('❌ Faltan funciones:', faltantes);
-        const banner = document.createElement('div');
-        banner.className = 'fixed bottom-2 left-2 right-2 bg-rose-700 text-white text-xs p-2 rounded-lg z-[999] font-bold text-center';
-        banner.textContent = '⚠️ Error: no cargaron funciones: ' + faltantes.join(', ');
-        document.body.appendChild(banner);
-      } else {
-        console.log('✅ Todas las funciones críticas están disponibles');
-      }
-    }, 1500);
-  });
-</script>
-
+<script type="module" src="./app.js"></script>
 </body>
 </html>
